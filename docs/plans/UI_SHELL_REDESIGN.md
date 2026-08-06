@@ -12,6 +12,9 @@
 > 仓库写入流两页已迁移（IssueCreate 新建议题 + ReleaseCreate 新建发布），FieldComponent 新增 isError/supportingText 表单校验 → 进行中
 > 通知详情页已迁移（NotificationDetail：快捷操作 + 打开链接，本地化复用 NotificationsPage 纯函数）→ 进行中
 > 终端/工作区同步两页已迁移（Terminal 工作区终端 + WorkspaceSync 同步方向入口），任务 1-4 全部完成 → 步骤 6（删旧壳）待统筹
+> 组 A 仓库写入/文件流四页已迁移（RepositoryFileEditPage 混合布局：schema+原生 Sora 编辑器嵌入、
+> renderPage 新增 fillMaxSize 参数默认 true 向后兼容；RepositoryFileUploadPage 双卡五态；
+> RepositoryCreatePage Hero+表单卡六态状态徽章；RepositoryForkPage 四态全映射+名称可用性提示）→ 组 B 待迁移
 > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。

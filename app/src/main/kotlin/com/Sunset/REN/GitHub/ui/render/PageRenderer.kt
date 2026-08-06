@@ -37,6 +37,9 @@ import com.Sunset.REN.GitHub.ui.layout.RowSchema
 fun PageSchema.renderPage(
     onAction: (String) -> Unit,
     modifier: Modifier = Modifier,
+    /** 是否填充父容器（默认 true 向后兼容）。混合布局页（schema + 原生编辑器）
+     *  传 false：页面高度由内容决定，由调用端 Column 组合排版。 */
+    fillMaxSize: Boolean = true,
 ) {
     val spacing = SunsetGitHubThemeTokens.spacing
     val scrollModifier = if (scrollable) {
@@ -46,7 +49,7 @@ fun PageSchema.renderPage(
     }
     Column(
         modifier = modifier
-            .fillMaxSize()
+            .then(if (fillMaxSize) Modifier.fillMaxSize() else Modifier)
             .then(scrollModifier),
     ) {
         Column(
