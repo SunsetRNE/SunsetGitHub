@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Component Implementation Blueprint v5</title>
+  <style>
+    :root{--bg:#f6f8fa;--text:#1f2328;--muted:#57606a;--subtle:#6e7781;--line:rgba(31,35,40,.12);--blue:#0969da;--blueSoft:#ddf4ff;--green:#1a7f37;--greenSoft:#dafbe1;--purple:#8250df;--purpleSoft:#f0e7ff;--orange:#bc4c00;--orangeSoft:#fff1e5;--red:#cf222e;--redSoft:#ffebe9;--ink:#0d1117;--shadow:0 14px 42px rgba(31,35,40,.1);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef6ff,#f6f8fa 380px),var(--bg);color:var(--text);line-height:1.55}.page{max-width:1240px;margin:0 auto;padding:30px 18px 72px}.card{background:rgba(255,255,255,.86);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.hero{display:grid;grid-template-columns:1fr .96fr;gap:20px}.heroText{padding:30px}.eyebrow{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--blueSoft);color:#0550ae;font-size:12px;font-weight:850;margin-bottom:14px}h1{font-size:clamp(32px,5vw,58px);line-height:1.03;letter-spacing:-1.5px;margin:0 0 14px}h2{font-size:27px;margin:0 0 12px;letter-spacing:-.4px}h3{font-size:17px;margin:0 0 8px}p{margin:0 0 12px;color:var(--muted)}strong{color:var(--text)}.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text);font-weight:800;text-decoration:none}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.map{padding:20px}.swim{display:grid;grid-template-columns:1fr 1fr;gap:12px}.lane{border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px}.lane h3{color:var(--blue)}.box{border:1px solid rgba(31,35,40,.1);border-radius:14px;background:#f6f8fa;padding:10px;margin-top:8px;color:var(--muted);font-size:13px}.section{margin-top:22px}.section.card{padding:24px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.mini{padding:17px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.76)}.tag{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:9px}.blue{background:var(--blueSoft);color:#0550ae}.green{background:var(--greenSoft);color:#116329}.purple{background:var(--purpleSoft);color:#6639ba}.orange{background:var(--orangeSoft);color:#9a3412}.red{background:var(--redSoft);color:#a40e26}.matrix{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;margin-top:12px}.matrix th,.matrix td{padding:12px 13px;border-bottom:1px solid rgba(31,35,40,.08);font-size:13.5px;text-align:left;vertical-align:top}.matrix th{background:#f6f8fa;color:var(--text);font-size:12px}.matrix tr:last-child td{border-bottom:0}.code{background:#0d1117;border:1px solid rgba(240,246,252,.12);border-radius:18px;padding:18px;overflow:hidden}.codeTitle{color:#f0f6fc;font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px}.pill{color:#79c0ff;background:rgba(56,139,253,.14);padding:3px 7px;border-radius:999px;font-size:11px;white-space:nowrap}pre{margin:0;color:#c9d1d9;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}.flow{display:grid;gap:10px;margin-top:12px}.step{display:grid;grid-template-columns:42px 1fr 120px;gap:12px;padding:14px;border-radius:17px;border:1px solid var(--line);background:#fff;align-items:start}.num{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:950;background:linear-gradient(135deg,#0969da,#8250df)}.status{justify-self:end;padding:5px 8px;border-radius:999px;background:var(--blueSoft);color:#0550ae;font-size:11px;font-weight:900}.callout{padding:16px;border-radius:18px;background:rgba(221,244,255,.72);border:1px solid rgba(9,105,218,.22);margin-top:14px}.ok{background:rgba(218,251,225,.78);border-color:rgba(26,127,55,.22)}.warn{background:rgba(255,241,229,.8);border-color:rgba(188,76,0,.22)}.danger{background:rgba(255,235,233,.78);border-color:rgba(207,34,46,.22)}.footer{text-align:center;color:var(--subtle);font-size:13px;margin-top:28px}@media(max-width:920px){.hero,.grid2,.grid3,.swim{grid-template-columns:1fr}.heroText{padding:22px}.step{grid-template-columns:42px 1fr}.status{justify-self:start}}
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="heroText card">
+      <div class="eyebrow">Spec v5 · Implementation Blueprint</div>
+      <h1>把前四版收束成一份可开工蓝图</h1>
+      <p>前面几版分别补了方向、物理组件、变体、运行时。但它们还缺一个“工程落地总图”：<strong>现有代码怎么迁、每一步交付什么、怎么验收、失败怎么回滚、最后长什么样。</strong></p>
+      <p>v5 的目标不是再增加概念，而是把方案压成可以进入实现的路线图。</p>
+      <div class="links"><a class="btn primary" href="#mapping">现状映射</a><a class="btn" href="#milestones">实施里程碑</a><a class="btn" href="#acceptance">验收</a><a class="btn" href="#adr">ADR</a></div>
+    </div>
+    <div class="map card">
+      <div class="swim">
+        <div class="lane"><h3>Current</h3><div class="box">MainActivity owns nav container</div><div class="box">NavigationBarHostController mixes state and rendering calls</div><div class="box">Renderer mutates Fragment root padding</div><div class="box">MenuBinder directly rewrites BottomNavigationView</div></div>
+        <div class="lane"><h3>Target</h3><div class="box">MainActivity owns AppNavigationBarHost only</div><div class="box">Host produces AppNavigationBarState</div><div class="box">Planner produces RenderPlan + Insets</div><div class="box">AppNavigationBarLayout commits pixels and events</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section card" id="mapping">
+    <h2>一、当前代码到目标组件的映射</h2>
+    <table class="matrix">
+      <thead><tr><th>当前文件 / 职责</th><th>目标归宿</th><th>迁移方式</th><th>保留风险</th></tr></thead>
+      <tbody>
+        <tr><td>MainActivity: navViewContainer / navViewDivider / navView</td><td>AppNavigationBarLayout</td><td>替换 XML 为单组件，Activity 只绑定 Host</td><td>切换布局时可能影响 AppBar/NavHost constraint</td></tr>
+        <tr><td>NavigationBarHostController</td><td>AppNavigationBarHost</td><td>保留导航事件处理，移除直接 render/menu 操作</td><td>仓库 BottomSheet 回调要保持不变</td></tr>
+        <tr><td>NavigationDestinationRegistry</td><td>DestinationPolicy + RepositorySectionPolicy</td><td>先复制为 policy，旧 registry 暂留适配</td><td>遗漏 destination 会导致底栏隐藏</td></tr>
+        <tr><td>NavigationBarController</td><td>RenderPlanner + AppNavigationBarLayout commit</td><td>把视觉参数先转为 RenderPlan，再由 View 应用</td><td>content padding 从直接 mutation 迁到 inset applier</td></tr>
+        <tr><td>MainNavigationMenuBinder</td><td>MainMenuModelFactory + MenuRenderer</td><td>先保留 BottomNavigationView，抽出 item model</td><td>选中态回调要防止递归</td></tr>
+        <tr><td>RepositoryNavigationMenuBinder</td><td>RepositoryMenuModelFactory + MenuRenderer</td><td>加入未钉选当前分区临时入栏规则</td><td>More 不能抢高亮</td></tr>
+        <tr><td>RepositoryNavigationPreferenceStore</td><td>继续保留</td><td>作为 repository menu model 的输入</td><td>不在本轮修改存储格式</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card">
+    <h2>二、最终目标 API</h2>
+    <div class="grid2">
+      <div class="code"><div class="codeTitle">MainActivity 目标接入 <span class="pill">Thin Activity</span></div><pre>appNavigationBarHost = AppNavigationBarHost(
+    navController = navController,
+    navigationBar = binding.appNavigationBar,
+    repositoryPreferences = repositoryNavigationPreferencesRepository,
+    showRepositoryMoreSections = ::showRepositoryMoreSectionsSheet,
+    logTag = TAG
+)
+
+navController.addOnDestinationChangedListener { _, destination, arguments ->
+    appNavigationBarHost.onDestinationChanged(destination.id, arguments)
+    applyRepositoryTitleForDestination(destination.id, arguments)
+    invalidateOptionsMenu()
+}</pre></div>
+      <div class="code"><div class="codeTitle">View 目标 API <span class="pill">No business logic</span></div><pre>class AppNavigationBarLayout : FrameLayout {
+    fun commit(plan: AppNavigationBarRenderPlan)
+    fun setEventListener(listener: (AppNavigationBarEvent) -> Unit)
+    fun setInsetsChangedListener(listener: (AppNavigationBarInsets) -> Unit)
+    fun setDebugOverlayEnabled(enabled: Boolean)
+    fun release()
+}</pre></div>
+    </div>
+  </section>
+
+  <section class="section card" id="milestones">
+    <h2>三、实施里程碑</h2>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div><h3>纯模型与测试</h3><p>新增 State、Variant、RenderPlan、MenuModel、Insets、DebugInfo。给 destination policy 和 repository menu model 加单测。</p></div><div class="status">无 UI 改动</div></div>
+      <div class="step"><div class="num">2</div><div><h3>AppNavigationBarLayout 壳</h3><p>新增自定义 View，内部仍使用 BottomNavigationView，能 commit Docked Solid / Hidden plan。</p></div><div class="status">可并行</div></div>
+      <div class="step"><div class="num">3</div><div><h3>RenderPlanner 接入</h3><p>把当前 NavigationBarController 的 appearance/inset 逻辑转成 RenderPlan，不直接操作 Fragment root。</p></div><div class="status">关键切片</div></div>
+      <div class="step"><div class="num">4</div><div><h3>替换 activity_main.xml</h3><p>用 AppNavigationBarLayout 替代 nav_view_container/nav_view_divider/nav_view，并加入 ContentInsetApplier。</p></div><div class="status">高风险</div></div>
+      <div class="step"><div class="num">5</div><div><h3>仓库菜单迁移</h3><p>迁移 RepositorySections 菜单，修复未钉选分区高亮，保持 More 行为。</p></div><div class="status">用户可见</div></div>
+      <div class="step"><div class="num">6</div><div><h3>Floating FakeGlass</h3><p>实现 floating placement + fake glass material，保留 RenderEffectGlass 接口但不启用。</p></div><div class="status">视觉验收</div></div>
+      <div class="step"><div class="num">7</div><div><h3>旧层清理</h3><p>稳定后删除或内化 MaterialBottomNavigationBarSurface、旧 Renderer、旧 MenuSurface。</p></div><div class="status">收尾</div></div>
+    </div>
+  </section>
+
+  <section class="section card">
+    <h2>四、每个里程碑的退出条件</h2>
+    <table class="matrix">
+      <thead><tr><th>里程碑</th><th>必须通过</th><th>不通过就回滚</th></tr></thead>
+      <tbody>
+        <tr><td>模型与测试</td><td>policy/menu model 单测通过</td><td>目的地映射与现有行为不一致</td></tr>
+        <tr><td>Layout 壳</td><td>Docked 和 Hidden 与当前视觉一致</td><td>BottomNavigationView 行为回退</td></tr>
+        <tr><td>RenderPlanner</td><td>同一输入生成稳定 RenderPlan</td><td>inset 计算依赖 View 副作用</td></tr>
+        <tr><td>XML 替换</td><td>主导航四页可切换，返回栈正常</td><td>AppBar/NavHost 约束异常</td></tr>
+        <tr><td>仓库菜单</td><td>Code、快捷分区、More、未钉选当前分区都可高亮/跳转</td><td>More 抢选中态或仓库参数丢失</td></tr>
+        <tr><td>FakeGlass</td><td>浅色/深色底色连续，无明显 canvas 断层</td><td>滚动底部闪烁或遮挡内容</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card" id="acceptance">
+    <h2>五、验收用例清单</h2>
+    <div class="grid3">
+      <div class="mini"><span class="tag blue">主导航</span><h3>四个底栏入口</h3><p>Home、Dashboard、Notifications、Settings 切换后高亮正确，返回栈不异常。</p></div>
+      <div class="mini"><span class="tag green">仓库导航</span><h3>分区替换菜单</h3><p>进入仓库页后底栏变成 Code + 快捷分区 + More。</p></div>
+      <div class="mini"><span class="tag green">临时分区</span><h3>未钉选也高亮</h3><p>从 More 打开 Pull Requests 等未钉选分区，底栏临时显示并高亮。</p></div>
+      <div class="mini"><span class="tag purple">悬浮模式</span><h3>开启/关闭偏好</h3><p>切换浮动导航偏好后当前页面实时应用，不需要重启。</p></div>
+      <div class="mini"><span class="tag orange">内容避让</span><h3>长列表底部</h3><p>列表最后一项不会被遮挡，Hidden 后 inset 清空。</p></div>
+      <div class="mini"><span class="tag red">隐藏页面</span><h3>登录/他人 Profile</h3><p>强制隐藏页面不保留透明残影、inset 或点击区。</p></div>
+    </div>
+  </section>
+
+  <section class="section card">
+    <h2>六、风险与回滚</h2>
+    <table class="matrix">
+      <thead><tr><th>风险</th><th>表现</th><th>缓解</th><th>回滚点</th></tr></thead>
+      <tbody>
+        <tr><td>XML 根布局变化</td><td>NavHost 尺寸、AppBar inset 异常</td><td>单独提交 XML 替换，截图比对</td><td>恢复 activity_main.xml 与旧 binding</td></tr>
+        <tr><td>Inset 迁移</td><td>内容遮挡或底部抖动</td><td>目标态一次性发布 inset，不跟随动画帧</td><td>临时回到旧 padding 逻辑</td></tr>
+        <tr><td>仓库参数丢失</td><td>分区跳转失败或菜单退回主导航</td><td>Policy 单测覆盖 owner/repo/full_name</td><td>保留旧 RepositorySectionFragment 调用路径</td></tr>
+        <tr><td>玻璃过度复杂</td><td>掉帧或背景错层</td><td>第一轮只 FakeGlass，不启用 snapshot</td><td>降级到 Solid material</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card" id="adr">
+    <h2>七、建议 ADR</h2>
+    <div class="code"><div class="codeTitle">ADR 摘要 <span class="pill">可落 docs/adr</span></div><pre>Decision:
+导航栏将从 Activity 附属控件重构为 AppNavigationBarLayout + AppNavigationBarHost 组成的独立物理组件。
+
+Context:
+当前悬浮导航栏依赖 Activity 布局、BottomNavigationView 背景、Fragment 根 padding 协作，导致底色不一致、玻璃材质难以稳定实现、变体扩展需要多处修改。
+
+Consequences:
+1. MainActivity 只接入 Host，不直接操作导航栏 View。
+2. 运行时通过 Context -> Policy -> Variant -> RenderPlan -> Commit 管线渲染。
+3. 新增变体通过 VariantRegistry / Resolver / Renderer 接入。
+4. 第一轮只实现 Solid 与 FakeGlass，不实现真 backdrop blur。
+5. 旧实现分阶段迁移，直到验收通过后清理。</pre></div>
+  </section>
+
+  <section class="section card">
+    <h2>八、v5 结论</h2>
+    <p>这份蓝图把前四版的概念压成实施计划。真正开始做时，不建议一次性实现完整变体系统；应该先按里程碑 1 到 5 建出稳定管线，再做 FakeGlass。</p>
+    <div class="callout ok"><strong>最小成功定义：</strong>MainActivity 变薄、主导航与仓库导航行为不回退、RenderPlan 可测试、inset 统一、未钉选分区可高亮。达到这一步，再进入玻璃材质深化。</div>
+    <div class="callout warn"><strong>还可以继续补的一项：</strong>如果要提交给未来维护者，应把 v5 再拆成 ADR + Issue 切片 + 测试清单三份正式文档。</div>
+  </section>
+
+  <div class="footer">生成文件：docs/navigation-bar-component-plan-preview-v5.html</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/editor_line_numbers"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/github_file_preview_gutter_background"
+        android:fontFamily="monospace"
+        android:gravity="top|end"
+        android:includeFontPadding="false"
+        android:minWidth="32dp"
+        android:paddingStart="4dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="6dp"
+        android:textColor="#FFB0B0B0"
+        android:textSize="12.5sp"
+        tools:text="1\n2\n3" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/github_file_preview_gutter_divider" />
+
+    <com.Sunset.REN.GitHub.ui.editor.CodeEditText
+        android:id="@+id/editor_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/github_canvas"
+        android:fontFamily="monospace"
+        android:gravity="top|start"
+        android:includeFontPadding="false"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:minLines="12"
+        android:overScrollMode="always"
+        android:paddingStart="6dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="4dp"
+        android:scrollbars="vertical|horizontal"
+        android:textColor="@color/github_text_primary"
+        android:textSize="15sp"
+        tools:text="# README" />
+
+</LinearLayout>

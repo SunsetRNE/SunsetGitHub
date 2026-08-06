@@ -1,0 +1,40 @@
+# cargo-deny 许可证门禁：保证依赖树与 GPL-3.0 兼容
+# 安装：cargo install cargo-deny --locked
+# 使用：cargo deny check
+# 注意：cargo-deny >= 0.18.4 移除了 deny/copyleft 字段（未显式允许即拒绝），
+#       GNU 系列许可需按 SPDX 精确 ID 声明（如 GPL-3.0-or-later）。
+
+[graph]
+targets = [
+    { triple = "x86_64-unknown-linux-gnu" },
+    { triple = "aarch64-linux-android" },
+]
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "MPL-2.0",
+    "ISC",
+    "Unicode-3.0",
+    "Zlib",
+    "CC0-1.0",
+    "OpenSSL",
+    "LicenseRef-ring",
+    # rustls 根证书包（宽松许可，GPL 兼容）
+    "CDLA-Permissive-2.0",
+    # 本项目自身许可证（workspace 成员）
+    "GPL-3.0-or-later",
+]
+# GPL-2.0-only、EPL、LGPL-2.0、AGPL-3.0 等未列入 allow，
+# 按"未显式允许即拒绝"策略自动拦截。
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

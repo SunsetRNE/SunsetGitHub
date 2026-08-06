@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <shape>
+            <solid android:color="@color/github_surface" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/github_black" />
+            <corners android:radius="16dp" />
+            <padding
+                android:left="10dp"
+                android:top="9dp"
+                android:right="10dp"
+                android:bottom="9dp" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@color/github_surface" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/github_border" />
+            <corners android:radius="16dp" />
+            <padding
+                android:left="10dp"
+                android:top="9dp"
+                android:right="10dp"
+                android:bottom="9dp" />
+        </shape>
+    </item>
+</selector>

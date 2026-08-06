@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_login">
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name=".ui.auth.LoginHomeFragment"
+        android:label="@string/auth_login_page_title"
+        tools:layout="@layout/fragment_login_home" />
+
+    <fragment
+        android:id="@+id/navigation_device_flow_intro"
+        android:name=".ui.auth.device.DeviceFlowIntroFragment"
+        android:label="@string/title_auth_device_flow"
+        tools:layout="@layout/fragment_device_flow_intro" />
+
+    <fragment
+        android:id="@+id/navigation_device_flow_code"
+        android:name=".ui.auth.device.DeviceFlowCodeFragment"
+        android:label="@string/title_auth_device_code"
+        tools:layout="@layout/fragment_device_flow_code" />
+
+    <fragment
+        android:id="@+id/navigation_token_choice"
+        android:name=".ui.auth.token.TokenLoginChoiceFragment"
+        android:label="@string/title_auth_token_choice"
+        tools:layout="@layout/fragment_token_login_choice" />
+
+    <fragment
+        android:id="@+id/navigation_token_guide"
+        android:name=".ui.auth.token.TokenGuideFragment"
+        android:label="@string/title_auth_token_guide"
+        tools:layout="@layout/fragment_token_guide" />
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name=".ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <!-- Token 登录使用 navigation_token_choice / navigation_token_permission_review 新流程。 -->
+
+    <fragment
+        android:id="@+id/navigation_token_permission_review"
+        android:name=".ui.auth.TokenPermissionReviewFragment"
+        android:label="@string/auth_token_review_title"
+        tools:layout="@layout/fragment_token_permission_review" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.Sunset.REN.GitHub.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile">
+        <argument
+            android:name="login"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name=".ui.dashboard.DashboardFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name=".ui.notifications.NotificationsFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/notification_detail_fragment"
+        android:name=".ui.notifications.NotificationDetailFragment"
+        android:label="@string/title_notification_detail"
+        tools:layout="@layout/fragment_notification_detail" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name=".ui.settings.SettingsFragment"
+        android:label="@string/title_settings" />
+
+    <fragment
+        android:id="@+id/account_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.account.AccountFragment"
+        android:label="@string/title_account"
+        tools:layout="@layout/fragment_account" />
+
+    <fragment
+        android:id="@+id/repository_create_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryCreateFragment"
+        android:label="@string/title_repository_create"
+        tools:layout="@layout/fragment_repository_create" />
+
+    <fragment
+        android:id="@+id/repository_detail_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryDetailFragment"
+        android:label="@string/title_repository_detail"
+        tools:layout="@layout/fragment_repository_detail" />
+
+    <fragment
+        android:id="@+id/repository_file_edit_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryFileEditFragment"
+        android:label="@string/title_repository_file_edit"
+        tools:layout="@layout/fragment_repository_file_edit" />
+
+    <fragment
+        android:id="@+id/repository_file_upload_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryFileUploadFragment"
+        android:label="@string/repository_file_upload_title"
+        tools:layout="@layout/fragment_repository_file_upload" />
+
+    <fragment
+        android:id="@+id/local_file_manager_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.filemanager.LocalFileManagerFragment"
+        android:label="@string/local_file_manager_title" />
+
+    <fragment
+        android:id="@+id/local_file_preview_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.filemanager.LocalFilePreviewFragment"
+        android:label="@string/local_file_preview_title"
+        tools:layout="@layout/fragment_local_file_preview" />
+
+    <fragment
+        android:id="@+id/repository_releases_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryReleasesFragment"
+        android:label="@string/title_repository_releases"
+        tools:layout="@layout/fragment_repository_releases" />
+
+    <fragment
+        android:id="@+id/repository_pull_requests_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryPullRequestsFragment"
+        android:label="@string/title_repository_pull_requests"
+        tools:layout="@layout/fragment_repository_pull_requests" />
+
+    <fragment
+        android:id="@+id/repository_section_native_stub_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositorySectionNativeStubFragment"
+        android:label="@string/repository_section_native_stub_title"
+        tools:layout="@layout/fragment_repository_section_native_stub" />
+    <fragment
+        android:id="@+id/repository_projects_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryProjectsFragment"
+        android:label="@string/title_repository_projects"
+        tools:layout="@layout/fragment_repository_projects" />
+
+    <fragment
+        android:id="@+id/repository_wiki_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryWikiFragment"
+        android:label="@string/title_repository_wiki"
+        tools:layout="@layout/fragment_repository_wiki" />
+
+    <fragment
+        android:id="@+id/repository_settings_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositorySettingsFragment"
+        android:label="@string/title_repository_settings" />
+
+    <fragment
+        android:id="@+id/repository_branch_settings_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryBranchSettingsFragment"
+        android:label="@string/title_repository_branch_settings" />
+
+    <fragment
+        android:id="@+id/repository_collaborators_settings_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryCollaboratorsSettingsFragment"
+        android:label="@string/title_repository_collaborators_settings" />
+
+    <fragment
+        android:id="@+id/repository_actions_settings_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryActionsSettingsFragment"
+        android:label="@string/title_repository_actions_settings" />
+
+    <fragment
+        android:id="@+id/repository_danger_zone_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryDangerZoneFragment"
+        android:label="@string/repository_danger_zone_title" />
+
+    <fragment
+        android:id="@+id/repository_webhooks_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryWebhooksFragment"
+        android:label="@string/title_repository_webhooks" />
+
+    <fragment
+        android:id="@+id/repository_rulesets_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryRulesetsFragment"
+        android:label="@string/title_repository_rulesets" />
+
+    <fragment
+        android:id="@+id/repository_deploy_keys_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryDeployKeysFragment"
+        android:label="@string/title_repository_deploy_keys" />
+
+    <fragment
+        android:id="@+id/repository_insights_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryInsightsFragment"
+        android:label="@string/title_repository_insights"
+        tools:layout="@layout/fragment_repository_insights" />
+
+    <fragment
+        android:id="@+id/repository_agents_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryAgentsOfficialFragment"
+        android:label="@string/title_repository_agents"
+        tools:layout="@layout/fragment_repository_agents_official" />
+
+
+
+    <fragment
+        android:id="@+id/repository_actions_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryActionsFragment"
+        android:label="@string/title_repository_actions"
+        tools:layout="@layout/fragment_repository_actions" />
+
+    <fragment
+        android:id="@+id/repository_action_run_detail_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryActionRunDetailFragment"
+        android:label="@string/title_repository_action_run_detail"
+        tools:layout="@layout/fragment_repository_action_run_detail" />
+
+    <fragment
+        android:id="@+id/repository_action_run_developer_info_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryActionRunDeveloperInfoFragment"
+        android:label="@string/title_repository_action_run_developer_info"
+        tools:layout="@layout/fragment_repository_action_run_developer_info" />
+
+    <fragment
+        android:id="@+id/repository_security_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositorySecurityFragment"
+        android:label="@string/title_repository_security"
+        tools:layout="@layout/fragment_repository_security" />
+
+    <fragment
+        android:id="@+id/repository_security_alert_detail_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositorySecurityAlertDetailFragment"
+        android:label="@string/title_repository_security_alert_detail"
+        tools:layout="@layout/fragment_repository_security_alert_detail" />
+
+    <fragment
+        android:id="@+id/repository_issues_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryIssuesFragment"
+        android:label="@string/title_repository_issues"
+        tools:layout="@layout/fragment_repository_issues" />
+
+    <fragment
+        android:id="@+id/repository_issue_detail_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryIssueDetailFragment"
+        android:label="@string/title_repository_issue_detail"
+        tools:layout="@layout/fragment_repository_issue_detail" />
+
+    <fragment
+        android:id="@+id/repository_issue_create_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryIssueCreateFragment"
+        android:label="@string/title_repository_issue_create"
+        tools:layout="@layout/fragment_repository_issue_create" />
+
+    <fragment
+        android:id="@+id/repository_release_create_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryReleaseCreateFragment"
+        android:label="@string/title_repository_release_create"
+        tools:layout="@layout/fragment_repository_release_create" />
+
+    <fragment
+        android:id="@+id/repository_fork_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.repo.RepositoryForkFragment"
+        android:label="@string/title_repository_fork"
+        tools:layout="@layout/fragment_repository_fork" />
+
+    <fragment
+        android:id="@+id/workspace_sync_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.workspace.WorkspaceSyncFragment"
+        android:label="@string/title_workspace_sync" />
+
+    <fragment
+        android:id="@+id/workspace_pull_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.workspace.WorkspacePullFragment"
+        android:label="@string/title_workspace_pull" />
+
+    <fragment
+        android:id="@+id/workspace_push_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.workspace.WorkspacePushFragment"
+        android:label="@string/title_workspace_push" />
+
+    <fragment
+        android:id="@+id/workspace_terminal_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.terminal.TerminalFragment"
+        android:label="@string/title_workspace_terminal" />
+
+    <fragment
+        android:id="@+id/app_log_fragment"
+        android:name="com.Sunset.REN.GitHub.ui.debug.AppLogFragment"
+        android:label="应用日志" />
+</navigation>

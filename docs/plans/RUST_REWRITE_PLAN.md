@@ -1,0 +1,50 @@
+# Rust 重写路线图（2026-08-06 启动）
+
+> 状态：阶段 2 GitHub API 深化已完成 ✅（2026-08-06）
+> 决策：核心逻辑 Rust 化（GPL-3.0-or-later 彻底开源），UI 层保留
+> Kotlin/Compose 壳，经 UniFFI 桥接。旧代码备份于
+> `.backup/pre_rust_rewrite_20260806/`（397MB，含全部源码与文档）。
+
+## 1. 最终目标形态
+
+```text
+SunsetGitHub（GPL-3.0）
+├── crates/sunset-core     # 纯 Rust 核心（无 Android 依赖）
+│   ├── github/            # GitHub REST API（reqwest）
+│   ├── filemanager/       # 文件引擎（条目/排序/类型）
+│   ├── markdown/          # GFM 渲染（comrak）
+│   ├── archive/           # zip/tar.gz（zip/tar/flate2）
+│   └── reverse/           # APK/Dex/ARSC 逆向（自研）
+├── crates/sunset-ffi      # UniFFI 桥接层 → Kotlin/Swift
+├── app/                   # Kotlin + Compose UI 壳（逐步精简）
+├── LICENSE                # GPL-3.0（官方全文）
+├── NOTICE / THIRD_PARTY_NOTICES.md
+└── deny.toml              # cargo-deny 许可证门禁
+```
+
+## 2. 许可证红线
+
+- 允许：MIT、Apache-2.0、BSD-2/3、MPL-2.0、ISC、Zlib、CC0
+- 拒绝：GPL-2.0-only、EPL、LGPL-2.0、AGPL-3.0（deny.toml 已配置）
+- 每次引入依赖跑 `cargo deny check`
+- 不复用 MT 管理器 / GitHub 官方应用代码与资源
+
+## 3. 阶段清单
+
+| 阶段 | 内容 | 状态 |
+|---|---|---|
+| 0 | 备份旧代码（.backup/pre_rust_rewrite_20260806） | ✅ |
+| 1 | Cargo workspace + sunset-core 骨架 + 测试 + GPL-3.0/NOTICE | ✅ 2026-08-06 |
+| 2 | GitHub API 深化：Issues/PR/Releases/Actions/文件上传编辑 | ✅ 2026-08-06 |
+| 3 | 文件引擎深化：复制/移动/回收站/递归搜索/双栏状态 | ⬜ |
+| 4 | 逆向工具链：Dex 类/方法/字符串解析、ARSC 解析、AXML 解码 | ⬜ |
+| 5 | AI 工作区：gix Git 操作、工具运行时、记忆模型 | ⬜ |
+| 6 | UniFFI 接入：生成 Kotlin 绑定，替换 UI 层调用 | ⬜ |
+| 7 | UI 壳清理：删除旧 Kotlin 业务逻辑，发布 1.0 | ⬜ |
+
+## 4. 每阶段验收标准
+
+- `cargo build --workspace` 与 `cargo test --workspace` 全绿
+- `cargo clippy --workspace` 无新增警告
+- `cargo deny check` 通过
+- 涉及 Android 集成时：`./gradlew assembleDebug` 可安装

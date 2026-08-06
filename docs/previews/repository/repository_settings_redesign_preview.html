@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SunsetGitHub 仓库设置页面重绘预览</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --canvas: #f6f8fa;
+      --surface: #ffffff;
+      --surface-raised: #ffffff;
+      --surface-subtle: #f6f8fa;
+      --surface-soft: #eef5ff;
+      --border: #d0d7de;
+      --border-muted: #d8dee4;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --accent: #0969da;
+      --accent-pressed: #0757b2;
+      --success: #1a7f37;
+      --danger: #cf222e;
+      --warning: #9a6700;
+      --disabled: #8c959f;
+      --shadow: 0 16px 45px rgba(27, 31, 36, 0.12);
+      --card-shadow: 0 8px 24px rgba(27, 31, 36, 0.06);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --phone-w: 390px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --canvas: #0d1117;
+        --surface: #161b22;
+        --surface-raised: #1c2128;
+        --surface-subtle: #0d1117;
+        --surface-soft: #10223a;
+        --border: #30363d;
+        --border-muted: #21262d;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --subtle: #7d8590;
+        --accent: #58a6ff;
+        --accent-pressed: #79c0ff;
+        --success: #3fb950;
+        --danger: #ff7b72;
+        --warning: #d29922;
+        --disabled: #6e7681;
+        --shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+        --card-shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(9, 105, 218, 0.14), transparent 26rem),
+        radial-gradient(circle at 88% 8%, rgba(45, 164, 78, 0.10), transparent 22rem),
+        var(--canvas);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 32px;
+    }
+
+    .hero-card {
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(30px, 5vw, 54px); letter-spacing: -0.045em; line-height: 1.02; }
+    .lead { margin-top: 16px; font-size: 18px; color: var(--muted); max-width: 820px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .tag {
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .principles { display: grid; gap: 12px; }
+    .principle {
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .principle strong { display: block; margin-bottom: 4px; }
+    .principle span { color: var(--muted); font-size: 13px; }
+
+    .section-title {
+      margin: 36px 0 18px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .section-title h2 { font-size: 26px; letter-spacing: -0.025em; }
+    .section-title p { color: var(--muted); font-size: 14px; }
+
+    .phone-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 28px;
+      align-items: start;
+    }
+
+    .phone-wrap { display: grid; place-items: center; gap: 12px; }
+    .caption { width: min(100%, var(--phone-w)); color: var(--muted); font-size: 14px; text-align: center; }
+    .caption strong { color: var(--text); }
+
+    .phone {
+      width: min(100%, var(--phone-w));
+      height: 820px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 36px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88px;
+      height: 24px;
+      background: #0b0f14;
+      border-radius: 0 0 16px 16px;
+      z-index: 5;
+      opacity: 0.95;
+    }
+    .screen {
+      height: 100%;
+      padding: 44px 14px 18px;
+      overflow-y: auto;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--surface) 88%, var(--accent) 12%) 0, var(--surface) 150px),
+        var(--surface);
+    }
+    .screen.dense { padding-left: 10px; padding-right: 10px; }
+
+    .topbar {
+      position: sticky;
+      top: -44px;
+      z-index: 4;
+      min-height: 48px;
+      display: grid;
+      grid-template-columns: 40px 1fr 40px;
+      align-items: center;
+      gap: 8px;
+      margin: 0 -2px 10px;
+      padding-top: 2px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      backdrop-filter: blur(12px);
+    }
+    .back, .icon-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); display: grid; place-items: center; color: var(--text); background: var(--surface-raised);
+      font-weight: 800;
+    }
+    .topbar-title { font-weight: 750; font-size: 17px; text-align: center; }
+
+    .repo-hero {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface-raised) 92%, var(--accent) 8%), var(--surface-raised));
+      border-radius: 24px;
+      padding: 14px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 10px;
+    }
+    .repo-line { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start; }
+    .repo-avatar { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--accent), #8250df); font-weight: 900; }
+    .repo-name { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.18; word-break: break-word; }
+    .repo-path { margin-top: 3px; color: var(--muted); font-size: 12.5px; }
+    .repo-desc { margin-top: 10px; color: var(--muted); font-size: 13px; }
+    .repo-chips, .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .chip { border: 1px solid var(--border); background: var(--surface-subtle); color: var(--muted); border-radius: 999px; padding: 5px 9px; font-size: 11.5px; font-weight: 650; }
+    .chip.blue { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 42%, var(--border)); background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+    .chip.green { color: var(--success); border-color: color-mix(in srgb, var(--success) 42%, var(--border)); background: color-mix(in srgb, var(--success) 9%, var(--surface)); }
+    .chip.warn { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 38%, var(--border)); background: color-mix(in srgb, var(--warning) 10%, var(--surface)); }
+    .chip.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 38%, var(--border)); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .stat { border: 1px solid var(--border-muted); background: var(--surface); border-radius: 16px; padding: 10px 4px; text-align: center; }
+    .stat strong { display: block; font-size: 15px; }
+    .stat span { display: block; color: var(--subtle); font-size: 11px; }
+
+    .notice {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      align-items: start;
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+      background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+      color: var(--muted);
+      border-radius: 16px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      font-size: 12.5px;
+    }
+    .notice b { color: var(--text); }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--surface-raised);
+      border-radius: 22px;
+      padding: 14px;
+      box-shadow: var(--card-shadow);
+      margin-top: 10px;
+    }
+    .card-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .card-title { font-weight: 800; font-size: 15px; letter-spacing: -0.01em; }
+    .card-subtitle { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .mini-action { border: 1px solid var(--border); color: var(--accent); background: var(--surface); border-radius: 999px; padding: 5px 8px; font-size: 11px; font-weight: 750; white-space: nowrap; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .info { border: 1px solid var(--border-muted); background: var(--surface-subtle); border-radius: 15px; padding: 10px; min-height: 62px; }
+    .info .label { color: var(--subtle); font-size: 11.5px; }
+    .info .value { color: var(--text); font-size: 12.5px; font-weight: 700; margin-top: 4px; word-break: break-word; }
+
+    .segmented { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .segment { border: 1px solid var(--border); background: var(--surface); border-radius: 14px; padding: 11px 4px; text-align: center; font-size: 13px; font-weight: 750; color: var(--muted); }
+    .segment.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 30%, transparent); }
+
+    .form-list { display: grid; gap: 10px; }
+    .field { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: center; }
+    .field-label strong { display: block; font-size: 13px; }
+    .field-label span { display: block; color: var(--subtle); font-size: 11px; }
+    .input-pill { min-width: 0; border: 1px solid var(--border); background: var(--surface-subtle); color: var(--muted); border-radius: 999px; padding: 8px 10px; text-align: right; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .input-pill.empty { color: var(--subtle); }
+
+    .switch-list { display: grid; gap: 2px; }
+    .switch-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--border-muted); }
+    .switch-row:first-child { border-top: 0; padding-top: 2px; }
+    .switch-main strong { display: block; font-size: 14px; font-weight: 750; }
+    .switch-main span { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+    .toggle { width: 42px; height: 24px; border-radius: 999px; background: #d8dee4; position: relative; flex: 0 0 auto; }
+    .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.22); }
+    .toggle.on { background: var(--accent); }
+    .toggle.on::after { left: 21px; }
+
+    .nav-list { display: grid; gap: 0; }
+    .nav-row { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid var(--border-muted); }
+    .nav-row:first-child { border-top: 0; padding-top: 2px; }
+    .nav-icon { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-subtle); color: var(--accent); font-weight: 900; }
+    .nav-main strong { display: block; font-size: 14px; }
+    .nav-main span { display: block; color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+    .chev { color: var(--subtle); font-size: 24px; }
+
+    .danger-card { border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); background: color-mix(in srgb, var(--danger) 4%, var(--surface)); }
+    .danger-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 11px 0; border-top: 1px solid color-mix(in srgb, var(--danger) 20%, var(--border-muted)); }
+    .danger-row:first-of-type { border-top: 0; }
+    .danger-row strong { display: block; color: var(--danger); font-size: 14px; }
+    .danger-row span { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+    .danger-button { border: 1px solid color-mix(in srgb, var(--danger) 38%, var(--border)); color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 750; }
+
+    .sticky-save {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px 2px 0;
+      background: linear-gradient(180deg, transparent, var(--surface) 30%);
+      margin-top: 4px;
+    }
+    .btn { border: 1px solid var(--border); border-radius: 14px; padding: 12px 10px; font-size: 14px; font-weight: 800; background: var(--surface); color: var(--text); }
+    .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn.danger { background: color-mix(in srgb, var(--danger) 10%, var(--surface)); color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+
+    .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+    .quick { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); padding: 10px; min-height: 76px; }
+    .quick strong { display: block; font-size: 13px; }
+    .quick span { display: block; margin-top: 3px; color: var(--muted); font-size: 11.5px; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .page { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>仓库设置页重绘 · 可落地预览</h1>
+        <p class="lead">针对截图中的“仓库设置”长页面，保留现有功能分区，但重绘为更接近 GitHub Mobile / Material Card 的信息架构：顶部仓库摘要、权限状态提示、设置分组卡片、二级入口和危险区分离。</p>
+        <div class="tag-row">
+          <span class="tag">Repository Settings</span>
+          <span class="tag">XML + ViewBinding 可实现</span>
+          <span class="tag">卡片分组</span>
+          <span class="tag">Sticky 保存操作</span>
+          <span class="tag">权限感知</span>
+        </div>
+      </div>
+      <div class="hero-card principles">
+        <div class="principle"><strong>1. 降低长页面压迫感</strong><span>把当前平铺的基础信息、可见性、可编辑项、开关和二级项拆成视觉明确的卡片，卡片内部再保持紧凑。</span></div>
+        <div class="principle"><strong>2. 将“能否修改”前置</strong><span>截图里已有“可修改”标签，新方案把权限原因和可保存状态做成提示条，避免用户改完才发现不能提交。</span></div>
+        <div class="principle"><strong>3. 操作可落实到现有页面</strong><span>不引入 Compose；可用 ScrollView / MaterialCardView / Chip / SwitchMaterial / TextInputLayout 逐步替换。</span></div>
+        <div class="principle"><strong>4. 危险区独立且弱默认</strong><span>归档、转移、删除从普通列表中抽出，使用红色边框与二次确认，避免误触。</span></div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <h2>一、推荐主方案：同页重绘，保留当前功能</h2>
+        <p>最容易落地：不改变导航结构，只重排视觉层级和组件样式。</p>
+      </div>
+    </div>
+
+    <section class="phone-grid">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar">
+              <div class="back">‹</div>
+              <div class="topbar-title">仓库设置</div>
+              <div class="icon-btn">⋯</div>
+            </div>
+
+            <section class="repo-hero">
+              <div class="repo-line">
+                <div class="repo-avatar">R</div>
+                <div>
+                  <div class="repo-name">SunsetRNE/oppo_oplus_realme_sm8850</div>
+                </div>
+              </div>
+              <p class="repo-desc">An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8850 series in a completely new way.</p>
+              <div class="repo-chips">
+                <span class="chip blue">public</span>
+                <span class="chip">main</span>
+                <span class="chip green">可修改</span>
+                <span class="chip">Shell</span>
+              </div>
+              <div class="stats">
+                <div class="stat"><strong>0</strong><span>Stars</span></div>
+                <div class="stat"><strong>1</strong><span>Forks</span></div>
+                <div class="stat"><strong>0</strong><span>Issues</span></div>
+              </div>
+            </section>
+
+            <div class="notice"><span>ⓘ</span><span><b>当前账号具备管理员权限。</b> 此页面支持修改仓库资料、功能开关与合并策略。</span></div>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div><div class="card-title">基础信息</div><div class="card-subtitle">来自 GitHub REST API，部分字段只读</div></div>
+                <span class="mini-action">刷新</span>
+              </div>
+              <div class="info-grid">
+                <div class="info"><div class="label">数据来源</div><div class="value">GitHub REST API</div></div>
+                <div class="info"><div class="label">当前可见性</div><div class="value">public</div></div>
+                <div class="info"><div class="label">许可证</div><div class="value">未设置</div></div>
+                <div class="info"><div class="label">主要语言</div><div class="value">Shell</div></div>
+                <div class="info"><div class="label">创建时间</div><div class="value">2026-03-11 03:44</div></div>
+                <div class="info"><div class="label">最近更新</div><div class="value">2026-07-06 01:30</div></div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div><div class="card-title">可见性</div><div class="card-subtitle">修改后需要确认并提交到 GitHub</div></div>
+                <span class="chip green">可编辑</span>
+              </div>
+              <div class="segmented">
+                <div class="segment active">公开</div>
+                <div class="segment">内部</div>
+                <div class="segment">私有</div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div><div class="card-title">仓库资料</div><div class="card-subtitle">名称、描述、主页和默认分支</div></div>
+                <span class="mini-action">编辑</span>
+              </div>
+              <div class="form-list">
+                <div class="field"><div class="field-label"><strong>仓库名</strong><span>地址会变化</span></div><div class="input-pill">oppo_oplus_realme_s...</div></div>
+                <div class="field"><div class="field-label"><strong>描述</strong><span>仓库简介</span></div><div class="input-pill">An automatic kernel b...</div></div>
+                <div class="field"><div class="field-label"><strong>主页</strong><span>项目主页 URL</span></div><div class="input-pill empty">未设置</div></div>
+                <div class="field"><div class="field-label"><strong>默认分支</strong><span>现有分支名</span></div><div class="input-pill">main</div></div>
+              </div>
+            </section>
+
+            <div class="sticky-save">
+              <button class="btn">放弃更改</button>
+              <button class="btn primary">保存设置</button>
+            </div>
+          </div>
+        </div>
+        <div class="caption"><strong>主页面上半段</strong>：顶部摘要取代拥挤的信息堆叠，基础信息和可编辑资料分开。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen dense">
+            <div class="topbar">
+              <div class="back">‹</div>
+              <div class="topbar-title">仓库设置</div>
+              <div class="icon-btn">✓</div>
+            </div>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div><div class="card-title">功能开关</div><div class="card-subtitle">控制仓库内可用的协作模块</div></div>
+                <span class="mini-action">全部</span>
+              </div>
+              <div class="switch-list">
+                <div class="switch-row"><div class="switch-main"><strong>Issues</strong><span>跟踪任务、缺陷和讨论事项</span></div><div class="toggle"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Projects</strong><span>在仓库中使用项目看板和规划视图</span></div><div class="toggle on"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Wiki</strong><span>允许维护仓库 Wiki 文档</span></div><div class="toggle on"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Discussions</strong><span>启用 GitHub Discussions 社区讨论区</span></div><div class="toggle"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Fork</strong><span>允许其他用户派生此仓库</span></div><div class="toggle on"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>归档</strong><span>归档后仓库变为只读</span></div><div class="toggle"></div></div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div><div class="card-title">合并策略</div><div class="card-subtitle">Pull Request 合并方式</div></div>
+                <span class="chip blue">PR</span>
+              </div>
+              <div class="switch-list">
+                <div class="switch-row"><div class="switch-main"><strong>Squash merge</strong><span>将 Pull Request 合并为一个提交</span></div><div class="toggle on"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Merge commit</strong><span>保留分支提交并创建合并提交</span></div><div class="toggle on"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Rebase merge</strong><span>将提交变基到目标分支</span></div><div class="toggle on"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>合并后删除分支</strong><span>Pull Request 合并后自动删除源分支</span></div><div class="toggle"></div></div>
+                <div class="switch-row"><div class="switch-main"><strong>Auto merge</strong><span>检查通过后自动合并 Pull Request</span></div><div class="toggle"></div></div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div><div class="card-title">二级功能页</div><div class="card-subtitle">这些配置建议进入独立页面处理</div></div>
+              </div>
+              <div class="nav-list">
+                <div class="nav-row"><div class="nav-icon">⑂</div><div class="nav-main"><strong>分支与保护规则</strong><span>默认分支、保护规则、状态检查</span></div><div class="chev">›</div></div>
+                <div class="nav-row"><div class="nav-icon">👥</div><div class="nav-main"><strong>协作者与访问权限</strong><span>成员、团队、邀请和角色</span></div><div class="chev">›</div></div>
+                <div class="nav-row"><div class="nav-icon">⚙</div><div class="nav-main"><strong>Actions 与自动化</strong><span>Workflow 权限、运行策略</span></div><div class="chev">›</div></div>
+                <div class="nav-row"><div class="nav-icon">⌘</div><div class="nav-main"><strong>Webhooks</strong><span>回调地址、事件订阅和密钥</span></div><div class="chev">›</div></div>
+                <div class="nav-row"><div class="nav-icon">🔐</div><div class="nav-main"><strong>Deploy Keys</strong><span>部署密钥和只读/写入权限</span></div><div class="chev">›</div></div>
+              </div>
+            </section>
+
+            <section class="card danger-card">
+              <div class="card-title-row"><div><div class="card-title">危险区</div><div class="card-subtitle">需要二次确认，避免误操作</div></div></div>
+              <div class="danger-row"><div><strong>归档仓库</strong><span>仓库会变为只读，可稍后取消归档</span></div><button class="danger-button">归档</button></div>
+              <div class="danger-row"><div><strong>转移仓库</strong><span>移交给其他用户或组织</span></div><button class="danger-button">转移</button></div>
+              <div class="danger-row"><div><strong>删除仓库</strong><span>永久删除代码、Issues 和设置</span></div><button class="danger-button">删除</button></div>
+            </section>
+
+            <div class="sticky-save">
+              <button class="btn">放弃更改</button>
+              <button class="btn primary">保存设置</button>
+            </div>
+          </div>
+        </div>
+        <div class="caption"><strong>主页面下半段</strong>：开关统一使用 SwitchMaterial 风格，二级复杂功能只保留入口。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar">
+              <div class="back">‹</div>
+              <div class="topbar-title">保存确认</div>
+              <div></div>
+            </div>
+            <section class="repo-hero">
+              <div class="repo-line">
+                <div class="repo-avatar">✓</div>
+                <div>
+                  <div class="repo-name">确认修改仓库设置</div>
+                  <div class="repo-path">将向 GitHub 提交 PATCH /repos/{owner}/{repo}</div>
+                </div>
+              </div>
+              <div class="repo-chips">
+                <span class="chip green">3 项变更</span>
+                <span class="chip warn">需要管理员权限</span>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row"><div><div class="card-title">变更摘要</div><div class="card-subtitle">保存前给用户最后一次核对</div></div></div>
+              <div class="nav-list">
+                <div class="nav-row"><div class="nav-icon">🌐</div><div class="nav-main"><strong>可见性</strong><span>public → private</span></div><span class="chip warn">敏感</span></div>
+                <div class="nav-row"><div class="nav-icon">✎</div><div class="nav-main"><strong>仓库描述</strong><span>已更新简介文本</span></div><span class="chip blue">资料</span></div>
+                <div class="nav-row"><div class="nav-icon">PR</div><div class="nav-main"><strong>合并后删除分支</strong><span>关闭 → 开启</span></div><span class="chip green">策略</span></div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row"><div><div class="card-title">权限与风险提示</div></div></div>
+              <div class="notice" style="margin:0;"><span>!</span><span>修改可见性、删除、转移等高风险操作建议使用独立确认弹窗，并要求输入仓库名。</span></div>
+              <div class="quick-actions">
+                <div class="quick"><strong>网络失败</strong><span>保留页面草稿，允许重试。</span></div>
+                <div class="quick"><strong>权限不足</strong><span>展示 token scope 或账号权限说明。</span></div>
+                <div class="quick"><strong>字段冲突</strong><span>刷新远端信息后再提交。</span></div>
+                <div class="quick"><strong>提交成功</strong><span>更新本地缓存并返回设置页。</span></div>
+              </div>
+            </section>
+
+            <div style="height: 120px"></div>
+            <div class="sticky-save">
+              <button class="btn">返回修改</button>
+              <button class="btn primary">确认保存</button>
+            </div>
+          </div>
+        </div>
+        <div class="caption"><strong>可选确认页/底部弹窗</strong>：适合可见性、删除、转移等高风险操作。</div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <h2>二、落地拆分建议</h2>
+        <p>从当前截图出发，优先做视觉重排；复杂设置暂时做入口，不一次性扩大范围。</p>
+      </div>
+    </div>
+
+    <section class="phone-grid">
+      <div class="hero-card">
+        <h3>第一阶段：只改布局和样式</h3>
+        <p class="lead" style="font-size:15px;">保留现有数据加载、保存逻辑和字段模型。把页面拆成：顶部摘要卡、基础信息卡、可见性卡、仓库资料卡、功能开关卡、合并策略卡、二级入口卡、危险区卡。这个阶段最稳，可直接对照截图替换 XML。</p>
+        <div class="tag-row"><span class="tag">低风险</span><span class="tag">最快可落地</span><span class="tag">不改 API</span></div>
+      </div>
+      <div class="hero-card">
+        <h3>第二阶段：保存体验增强</h3>
+        <p class="lead" style="font-size:15px;">新增“未保存更改”状态、底部保存栏、变更摘要弹窗。保存成功后刷新仓库缓存；失败时保留草稿并提供重试。</p>
+        <div class="tag-row"><span class="tag">Dirty State</span><span class="tag">Confirm Sheet</span><span class="tag">Retry</span></div>
+      </div>
+      <div class="hero-card">
+        <h3>第三阶段：二级设置页</h3>
+        <p class="lead" style="font-size:15px;">分支保护、协作者、Rulesets、Webhooks、Deploy Keys、Actions 建议独立页面逐个实现。主设置页先作为入口，避免一个长页面承载过多 API 与异常状态。</p>
+        <div class="tag-row"><span class="tag">Branch Rules</span><span class="tag">Collaborators</span><span class="tag">Webhooks</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

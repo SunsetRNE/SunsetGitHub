@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Component Variant Spec v3</title>
+  <style>
+    :root {
+      --bg:#f6f8fa; --surface:#fff; --soft:rgba(255,255,255,.82); --text:#1f2328; --muted:#57606a; --subtle:#6e7781;
+      --line:rgba(31,35,40,.12); --line2:rgba(31,35,40,.22); --blue:#0969da; --blueSoft:#ddf4ff;
+      --green:#1a7f37; --greenSoft:#dafbe1; --purple:#8250df; --purpleSoft:#f0e7ff; --orange:#bc4c00; --orangeSoft:#fff1e5;
+      --red:#cf222e; --redSoft:#ffebe9; --ink:#0d1117; --shadow:0 14px 42px rgba(31,35,40,.1);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;color:var(--text);background:linear-gradient(180deg,#eef6ff 0,#f6f8fa 380px),var(--bg);line-height:1.55}.page{max-width:1220px;margin:0 auto;padding:30px 18px 72px}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:20px}.card{background:var(--soft);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.heroText{padding:30px}.eyebrow{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--blueSoft);color:#0550ae;font-size:12px;font-weight:850;margin-bottom:14px}h1{font-size:clamp(32px,5vw,58px);line-height:1.03;letter-spacing:-1.5px;margin:0 0 14px}h2{font-size:27px;letter-spacing:-.4px;margin:0 0 12px}h3{font-size:17px;margin:0 0 8px}p{margin:0 0 12px;color:var(--muted)}strong{color:var(--text)}.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text);font-weight:800;text-decoration:none}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.preview{padding:18px;display:grid;gap:12px}.variantBoard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.phone{position:relative;min-height:235px;border-radius:24px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f6f8fa);overflow:hidden;padding:14px}.phone.dark{background:linear-gradient(180deg,#0d1117,#161b22);color:#f0f6fc}.fakeRows{display:grid;gap:8px;margin-top:18px}.fakeRows i{height:9px;border-radius:999px;background:#d8dee4}.dark .fakeRows i{background:#30363d}.nav{position:absolute;left:12px;right:12px;bottom:12px;height:48px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(31,35,40,.12)}.nav.float{left:26px;right:26px;bottom:18px;border-radius:22px;background:rgba(255,255,255,.68);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}.nav.compact{height:38px;border-radius:16px}.nav.glass{background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.42));border-color:rgba(255,255,255,.72)}.dark .nav{background:#161b22;border-color:#30363d}.dark .nav.glass{background:linear-gradient(135deg,rgba(48,54,61,.84),rgba(22,27,34,.58));border-color:rgba(240,246,252,.18)}.label{font-size:12px;font-weight:850;color:var(--muted)}.dark .label{color:#8b949e}.section{margin-top:22px}.section.card{padding:24px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.mini{padding:17px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.75)}.tag{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:9px}.blue{background:var(--blueSoft);color:#0550ae}.green{background:var(--greenSoft);color:#116329}.purple{background:var(--purpleSoft);color:#6639ba}.orange{background:var(--orangeSoft);color:#9a3412}.red{background:var(--redSoft);color:#a40e26}.matrix{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;margin-top:12px}.matrix th,.matrix td{padding:12px 13px;border-bottom:1px solid rgba(31,35,40,.08);font-size:13.5px;text-align:left;vertical-align:top}.matrix th{background:#f6f8fa;color:var(--text);font-size:12px}.matrix tr:last-child td{border-bottom:0}.code{background:#0d1117;border:1px solid rgba(240,246,252,.12);border-radius:18px;padding:18px;overflow:hidden}.codeTitle{color:#f0f6fc;font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px}.pill{color:#79c0ff;background:rgba(56,139,253,.14);padding:3px 7px;border-radius:999px;font-size:11px;white-space:nowrap}pre{margin:0;color:#c9d1d9;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}.flow{display:grid;gap:10px;margin-top:12px}.step{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:14px;border-radius:17px;border:1px solid var(--line);background:#fff}.num{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:950;background:linear-gradient(135deg,#0969da,#8250df)}.callout{padding:16px;border-radius:18px;background:rgba(221,244,255,.72);border:1px solid rgba(9,105,218,.22);margin-top:14px}.warn{background:rgba(255,241,229,.8);border-color:rgba(188,76,0,.22)}.ok{background:rgba(218,251,225,.78);border-color:rgba(26,127,55,.22)}.danger{background:rgba(255,235,233,.78);border-color:rgba(207,34,46,.22)}.footer{text-align:center;color:var(--subtle);font-size:13px;margin-top:28px}@media(max-width:920px){.hero,.grid2,.grid3,.variantBoard{grid-template-columns:1fr}.heroText{padding:22px}}
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="heroText card">
+      <div class="eyebrow">Spec v3 · Variant System</div>
+      <h1>把导航栏做成可新增变体的组件系统</h1>
+      <p>v2 补了物理层级和玻璃路线，但还少了关键一块：<strong>变体如何处理、如何组合、如何新增、如何避免冲突</strong>。v3 把导航栏拆成“基础组件 + 变体解析 + 渲染策略 + 能力降级”。</p>
+      <p>目标是以后新增悬浮玻璃、紧凑模式、横屏模式、仓库临时分区、平板 NavigationRail、沉浸式编辑页等，不再改一堆 if，而是新增一个 Variant 或 Resolver。</p>
+      <div class="links"><a class="btn primary" href="#taxonomy">变体分类</a><a class="btn" href="#resolver">解析链</a><a class="btn" href="#adding">新增流程</a><a class="btn" href="#conflicts">冲突规则</a></div>
+    </div>
+    <div class="preview card">
+      <div class="variantBoard">
+        <div class="phone"><div class="label">Docked / Solid / Main</div><div class="fakeRows"><i></i><i style="width:70%"></i><i style="width:48%"></i></div><div class="nav"></div></div>
+        <div class="phone"><div class="label">Floating / Glass / Repository</div><div class="fakeRows"><i></i><i style="width:62%"></i><i style="width:82%"></i></div><div class="nav float glass"></div></div>
+        <div class="phone"><div class="label">Compact / Dense / Keyboard</div><div class="fakeRows"><i></i><i style="width:76%"></i><i style="width:44%"></i></div><div class="nav float compact"></div></div>
+        <div class="phone dark"><div class="label">Dark / Glass / API fallback</div><div class="fakeRows"><i></i><i style="width:68%"></i><i style="width:50%"></i></div><div class="nav float glass"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section card" id="taxonomy">
+    <h2>一、变体不是一个枚举，而是多个轴</h2>
+    <p>不要做一个巨型 enum，例如 `FloatingGlassRepositoryCompactDark`。应该把变体拆成多个独立轴，最后组合成 `AppNavigationBarResolvedVariant`。</p>
+    <table class="matrix">
+      <thead><tr><th>变体轴</th><th>例子</th><th>谁决定</th><th>影响范围</th></tr></thead>
+      <tbody>
+        <tr><td>PlacementVariant</td><td>Docked / Floating / Rail / Hidden</td><td>用户偏好、窗口尺寸、目的地规则</td><td>布局位置、尺寸、内容避让</td></tr>
+        <tr><td>MaterialVariant</td><td>Solid / Translucent / FakeGlass / RenderEffectGlass</td><td>主题、设备能力、性能策略</td><td>背景、透明度、描边、模糊</td></tr>
+        <tr><td>MenuVariant</td><td>Main / RepositorySections / ContextualActions</td><td>当前 destination 与业务上下文</td><td>菜单项、选中态、事件输出</td></tr>
+        <tr><td>DensityVariant</td><td>Regular / Compact / LabelHidden / IconOnly</td><td>屏幕宽高、键盘、横屏、无障碍字体</td><td>高度、label、item spacing</td></tr>
+        <tr><td>SurfaceVariant</td><td>Light / Dark / HighContrast / DynamicColor</td><td>主题与可访问性</td><td>颜色 token、stroke、状态层</td></tr>
+        <tr><td>BehaviorVariant</td><td>Persistent / AutoHideOnScroll / KeyboardHidden</td><td>页面行为策略</td><td>显示动画、隐藏规则、hit slop</td></tr>
+      </tbody>
+    </table>
+    <div class="callout ok"><strong>核心：</strong>新增变体时优先判断它属于哪个轴。只有跨多个轴的体验，才新增一个 Resolver 或 Preset。</div>
+  </section>
+
+  <section class="section card">
+    <h2>二、目标状态模型</h2>
+    <div class="grid2">
+      <div class="code"><div class="codeTitle">Resolved Variant <span class="pill">最终渲染输入</span></div><pre>data class AppNavigationBarResolvedVariant(
+    val visibility: VisibilityVariant,
+    val placement: PlacementVariant,
+    val material: MaterialVariant,
+    val menu: MenuVariant,
+    val density: DensityVariant,
+    val surface: SurfaceVariant,
+    val behavior: BehaviorVariant,
+    val animation: AnimationVariant,
+    val contentAvoidance: ContentAvoidanceVariant
+)</pre></div>
+      <div class="code"><div class="codeTitle">State <span class="pill">业务 + 变体分离</span></div><pre>data class AppNavigationBarState(
+    val variant: AppNavigationBarResolvedVariant,
+    val items: List&lt;AppNavigationBarItem&gt;,
+    val selectedItemId: Int?,
+    val repositoryContext: RepositoryNavigationContext? = null
+)</pre></div>
+    </div>
+  </section>
+
+  <section class="section card" id="resolver">
+    <h2>三、变体解析链</h2>
+    <p>变体不应该散在 Host 里判断。Host 收集上下文，Resolver 链产出最终变体。</p>
+    <div class="code"><div class="codeTitle">Variant Resolver Chain <span class="pill">顺序很重要</span></div><pre>interface AppNavigationBarVariantResolver {
+    fun resolve(
+        input: AppNavigationBarVariantInput,
+        draft: AppNavigationBarVariantDraft
+    ): AppNavigationBarVariantDraft
+}
+
+class AppNavigationBarVariantPipeline(
+    private val resolvers: List&lt;AppNavigationBarVariantResolver&gt;
+) {
+    fun resolve(input: AppNavigationBarVariantInput): AppNavigationBarResolvedVariant {
+        val draft = resolvers.fold(AppNavigationBarVariantDraft.default()) { current, resolver ->
+            resolver.resolve(input, current)
+        }
+        return draft.normalize().toResolvedVariant()
+    }
+}</pre></div>
+    <table class="matrix">
+      <thead><tr><th>解析器</th><th>职责</th><th>例子</th></tr></thead>
+      <tbody>
+        <tr><td>DestinationVariantResolver</td><td>由页面决定显示、菜单类型、强制隐藏</td><td>登录页 Hidden，仓库页 RepositorySections</td></tr>
+        <tr><td>PreferenceVariantResolver</td><td>应用用户设置</td><td>开启悬浮则 Docked -> Floating</td></tr>
+        <tr><td>WindowVariantResolver</td><td>根据屏幕、横屏、平板调整</td><td>宽屏可切 Rail，低高度切 Compact</td></tr>
+        <tr><td>CapabilityVariantResolver</td><td>根据 API 和性能降级</td><td>RenderEffectGlass -> FakeGlass</td></tr>
+        <tr><td>InteractionVariantResolver</td><td>根据键盘、滚动、选择模式调整</td><td>键盘弹出 Hidden 或 Compact</td></tr>
+        <tr><td>AccessibilityVariantResolver</td><td>根据字体缩放、对比度调整</td><td>大字体禁用 LabelHidden，强化 stroke</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card">
+    <h2>四、变体注册与新增机制</h2>
+    <p>新增变体要通过注册表进入系统，而不是直接改 View 的 when。注册表负责把 variant 映射到 renderer、dimension、token 和 fallback。</p>
+    <div class="grid2">
+      <div class="code"><div class="codeTitle">Variant Registry <span class="pill">集中注册</span></div><pre>class AppNavigationBarVariantRegistry(
+    val placementRenderers: Map&lt;PlacementVariant, PlacementRenderer&gt;,
+    val materialRenderers: Map&lt;MaterialVariant.Kind, MaterialRenderer&gt;,
+    val menuRenderers: Map&lt;MenuVariant.Kind, MenuRenderer&gt;,
+    val fallbackRules: List&lt;VariantFallbackRule&gt;
+)</pre></div>
+      <div class="code"><div class="codeTitle">Fallback Rule <span class="pill">可降级</span></div><pre>data class VariantFallbackRule(
+    val whenRequested: VariantMatcher,
+    val ifUnsupported: CapabilityMatcher,
+    val replaceWith: VariantPatch,
+    val reason: String
+)</pre></div>
+    </div>
+  </section>
+
+  <section class="section card" id="adding">
+    <h2>五、新增一个变体的标准流程</h2>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div><h3>判断变体轴</h3><p>先问：这是 placement、material、menu、density、surface、behavior，还是多个轴的 preset？不要默认新建大枚举。</p></div></div>
+      <div class="step"><div class="num">2</div><div><h3>定义数据模型</h3><p>新增小而独立的 variant data class，例如 `MaterialVariant.Glass(radius, tintAlpha, strokeAlpha)`。</p></div></div>
+      <div class="step"><div class="num">3</div><div><h3>注册 renderer</h3><p>在 registry 中注册该变体对应 renderer。View 只查 registry，不直接知道所有变体。</p></div></div>
+      <div class="step"><div class="num">4</div><div><h3>定义 fallback</h3><p>为低 API、低性能、深色、高对比度、大字体定义降级路径。</p></div></div>
+      <div class="step"><div class="num">5</div><div><h3>加入 resolver</h3><p>只有当变体需要自动选择时才加 resolver；如果只是可手动指定，不要污染解析链。</p></div></div>
+      <div class="step"><div class="num">6</div><div><h3>补状态矩阵和测试</h3><p>至少覆盖该变体与 Docked/Floating、Light/Dark、Main/Repository 的组合。</p></div></div>
+    </div>
+  </section>
+
+  <section class="section card" id="conflicts">
+    <h2>六、变体冲突处理</h2>
+    <table class="matrix">
+      <thead><tr><th>冲突</th><th>规则</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td>Hidden + 任意 Material</td><td>Material 不渲染，inset = 0</td><td>隐藏态不应保留视觉副作用</td></tr>
+        <tr><td>Rail + Bottom menu density</td><td>切换到 RailDensity</td><td>横向 BottomNavigationView 尺寸规则不适用</td></tr>
+        <tr><td>Glass + API &lt; 31</td><td>RenderEffectGlass -> FakeGlass</td><td>避免不可用 API 和伪真模糊</td></tr>
+        <tr><td>Compact + 大字体</td><td>Compact -> Regular，必要时 LabelHidden -> LabelVisible</td><td>无障碍优先级高于视觉密度</td></tr>
+        <tr><td>Floating + 键盘显示</td><td>按页面策略 Hidden 或 Compact</td><td>避免遮挡输入和 IME 动画冲突</td></tr>
+        <tr><td>Repository 未钉选当前分区</td><td>临时注入当前分区，占用最后一个快捷槽</td><td>保证当前态可见且可高亮</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card">
+    <h2>七、建议内置变体清单</h2>
+    <div class="grid3">
+      <div class="mini"><span class="tag blue">Placement</span><h3>Docked</h3><p>默认底栏，占用底部空间，稳定可靠。</p></div>
+      <div class="mini"><span class="tag blue">Placement</span><h3>Floating</h3><p>overlay 浮动栏，发布 touch-space inset。</p></div>
+      <div class="mini"><span class="tag blue">Placement</span><h3>RailCandidate</h3><p>平板或横屏预留，不必第一轮实现。</p></div>
+      <div class="mini"><span class="tag purple">Material</span><h3>Solid</h3><p>主题 surface，作为所有降级终点。</p></div>
+      <div class="mini"><span class="tag purple">Material</span><h3>FakeGlass</h3><p>第一轮悬浮玻璃目标，稳定优先。</p></div>
+      <div class="mini"><span class="tag purple">Material</span><h3>RenderEffectGlass</h3><p>API 31+ 实验变体，必须可降级。</p></div>
+      <div class="mini"><span class="tag green">Menu</span><h3>Main</h3><p>Home、Dashboard、Notifications、Settings。</p></div>
+      <div class="mini"><span class="tag green">Menu</span><h3>RepositorySections</h3><p>Code、快捷分区、More、临时分区。</p></div>
+      <div class="mini"><span class="tag orange">Behavior</span><h3>KeyboardAware</h3><p>键盘出现时隐藏或压缩，按页面策略决定。</p></div>
+    </div>
+  </section>
+
+  <section class="section card">
+    <h2>八、落地到当前项目的文件拆分</h2>
+    <div class="code"><div class="codeTitle">建议结构 <span class="pill">新增 variant 子包</span></div><pre>ui/navigation/component/
+├── AppNavigationBarLayout.kt
+├── AppNavigationBarState.kt
+├── AppNavigationBarEvent.kt
+├── AppNavigationBarInsets.kt
+├── renderer/
+│   ├── PlacementRenderer.kt
+│   ├── DockedPlacementRenderer.kt
+│   ├── FloatingPlacementRenderer.kt
+│   ├── MaterialRenderer.kt
+│   ├── SolidMaterialRenderer.kt
+│   ├── FakeGlassMaterialRenderer.kt
+│   └── RenderEffectGlassMaterialRenderer.kt
+├── menu/
+│   ├── AppNavigationBarMenuRenderer.kt
+│   ├── MainNavigationMenuModelFactory.kt
+│   └── RepositoryNavigationMenuModelFactory.kt
+└── variant/
+    ├── AppNavigationBarVariant.kt
+    ├── AppNavigationBarVariantInput.kt
+    ├── AppNavigationBarVariantPipeline.kt
+    ├── AppNavigationBarVariantRegistry.kt
+    ├── DestinationVariantResolver.kt
+    ├── PreferenceVariantResolver.kt
+    ├── WindowVariantResolver.kt
+    ├── CapabilityVariantResolver.kt
+    └── AccessibilityVariantResolver.kt</pre></div>
+  </section>
+
+  <section class="section card">
+    <h2>九、第一轮实现范围</h2>
+    <table class="matrix">
+      <thead><tr><th>范围</th><th>包含</th><th>不包含</th></tr></thead>
+      <tbody>
+        <tr><td>Placement</td><td>Docked、Floating、Hidden</td><td>Rail 只预留模型</td></tr>
+        <tr><td>Material</td><td>Solid、FakeGlass</td><td>RenderEffectGlass 只预留接口</td></tr>
+        <tr><td>Menu</td><td>Main、RepositorySections</td><td>ContextualActions 暂不做</td></tr>
+        <tr><td>Density</td><td>Regular、Compact</td><td>完全自绘 item 暂不做</td></tr>
+        <tr><td>Resolver</td><td>Destination、Preference、Capability</td><td>AutoHideOnScroll 暂不做</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn"><strong>重点：</strong>v3 的价值不是第一轮做很多变体，而是让第一轮实现天然能接住后续变体。</div>
+  </section>
+
+  <section class="section card">
+    <h2>十、验收标准：新增变体不改核心 Host</h2>
+    <p>以后新增一个导航栏变体，理想情况下只需要新增模型、renderer、fallback、resolver 测试，而不是改 MainActivity 或 AppNavigationBarHost 的核心流程。</p>
+    <div class="callout ok"><strong>完成定义：</strong>当 `AppNavigationBarHost` 只负责收集 input、调用 pipeline、处理 event，而所有视觉变化都由 variant registry + renderer 承接时，这个组件才算真正可扩展。</div>
+  </section>
+
+  <div class="footer">生成文件：docs/navigation-bar-component-plan-preview-v3.html</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>GitHub Insights Mobile Redesign Preview</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-raised: #ffffff;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --border: #d0d7de;
+      --border-muted: #d8dee4;
+      --accent: #0969da;
+      --accent-bg: #ddf4ff;
+      --success: #1f883d;
+      --success-bg: #dafbe1;
+      --danger: #cf222e;
+      --danger-bg: #ffebe9;
+      --warning: #9a6700;
+      --warning-bg: #fff8c5;
+      --done: #8250df;
+      --shadow: 0 8px 24px rgba(140,149,159,.18);
+      --radius: 12px;
+      --radius-lg: 18px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-raised: #1c2128;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --subtle: #7d8590;
+      --border: #30363d;
+      --border-muted: #30363d;
+      --accent: #58a6ff;
+      --accent-bg: rgba(56,139,253,.15);
+      --success: #3fb950;
+      --success-bg: rgba(46,160,67,.15);
+      --danger: #f85149;
+      --danger-bg: rgba(248,81,73,.15);
+      --warning: #d29922;
+      --warning-bg: rgba(187,128,9,.16);
+      --done: #a371f7;
+      --shadow: none;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.45;
+    }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .phone {
+      width: min(100vw, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    .system-bar {
+      height: 34px;
+      padding: 10px 18px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .system-icons { color: var(--muted); font-size: 12px; letter-spacing: .08em; }
+
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 0%, transparent);
+    }
+    .title-row {
+      height: 64px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      padding: 0 10px;
+    }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .icon-btn:active { background: var(--accent-bg); color: var(--accent); }
+    h1 { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -.03em; }
+
+    .repo-strip {
+      padding: 0 18px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: auto;
+      scrollbar-width: none;
+    }
+    .repo-strip::-webkit-scrollbar { display: none; }
+    .repo-name { color: var(--accent); font-weight: 700; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    main { padding: 14px 14px 28px; }
+
+    .state-switcher {
+      position: sticky;
+      top: 98px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      padding: 6px 2px 12px;
+      margin: -2px 0 6px;
+      background: linear-gradient(var(--bg) 70%, transparent);
+      scrollbar-width: none;
+    }
+    .state-switcher::-webkit-scrollbar { display: none; }
+    .state-switcher button {
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .state-switcher button.active {
+      border-color: var(--text);
+      background: var(--text);
+      color: var(--surface);
+    }
+
+    .hero {
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 34%),
+        linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, var(--accent-bg)), var(--surface));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .hero-top { padding: 18px 18px 12px; }
+    .hero h2 { margin: 12px 0 5px; font-size: 26px; letter-spacing: -.04em; }
+    .hero p { margin: 0; color: var(--muted); font-size: 14.5px; }
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border-muted);
+      background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+    }
+    .hero-meta div { padding: 12px; border-right: 1px solid var(--border-muted); }
+    .hero-meta div:last-child { border-right: 0; }
+    .hero-meta b { display: block; font-size: 18px; }
+    .hero-meta span { color: var(--subtle); font-size: 11px; }
+
+    .gh-tabs {
+      display: flex;
+      gap: 6px;
+      overflow: auto;
+      padding: 2px 0 12px;
+      margin-top: 8px;
+      scrollbar-width: none;
+    }
+    .gh-tabs::-webkit-scrollbar { display: none; }
+    .gh-tab {
+      flex: 0 0 auto;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      padding: 9px 10px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .gh-tab.active { color: var(--text); border-bottom-color: #fd8c73; }
+
+    .card {
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 15px 16px 12px;
+      border-bottom: 1px solid var(--border-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-title { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+    .card-subtitle { margin: 2px 0 0; color: var(--subtle); font-size: 12px; }
+    .card-body { padding: 15px 16px; }
+
+    .metric-list { display: grid; gap: 0; }
+    .metric {
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid color-mix(in srgb, var(--border-muted) 70%, transparent);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .metric:last-child { border-bottom: 0; }
+    .metric strong { color: var(--text); font-size: 15.5px; text-align: right; }
+    .metric small { color: var(--subtle); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .summary-box {
+      min-height: 92px;
+      padding: 13px;
+      border: 1px solid var(--border-muted);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--surface-raised) 88%, var(--bg));
+    }
+    .summary-box b { display: block; font-size: 24px; letter-spacing: -.04em; }
+    .summary-box span { display: block; color: var(--muted); font-size: 12px; }
+    .summary-box em { display: inline-block; margin-top: 8px; color: var(--subtle); font-size: 11px; font-style: normal; }
+
+    .graph {
+      height: 142px;
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      padding: 10px 4px 0;
+      border: 1px solid var(--border-muted);
+      border-radius: 14px;
+      background: repeating-linear-gradient(to top, transparent 0 34px, color-mix(in srgb, var(--border-muted) 65%, transparent) 35px 36px), color-mix(in srgb, var(--surface-raised) 75%, var(--bg));
+    }
+    .bar {
+      flex: 1;
+      min-width: 5px;
+      border-radius: 6px 6px 0 0;
+      background: var(--accent);
+      opacity: .82;
+    }
+    .bar.good { background: var(--success); }
+    .bar.warn { background: #fb8500; }
+
+    .timeline { display: grid; gap: 14px; }
+    .event {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+    .event-icon {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border-muted);
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--surface-raised);
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .event b { display: block; font-size: 14px; }
+    .event p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+
+    .callout {
+      border: 1px solid var(--border-muted);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--surface-raised) 86%, var(--bg));
+      font-size: 13px;
+    }
+    .callout b { color: var(--text); }
+    .callout.success { border-color: color-mix(in srgb, var(--success) 40%, var(--border)); background: var(--success-bg); color: color-mix(in srgb, var(--success) 75%, var(--text)); }
+    .callout.warning { border-color: color-mix(in srgb, var(--warning) 45%, var(--border)); background: var(--warning-bg); color: color-mix(in srgb, var(--warning) 78%, var(--text)); }
+    .callout.danger { border-color: color-mix(in srgb, var(--danger) 45%, var(--border)); background: var(--danger-bg); color: color-mix(in srgb, var(--danger) 80%, var(--text)); }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 13px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-raised);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .btn.primary { background: #1f2328; border-color: #1f2328; color: #fff; }
+    [data-theme="dark"] .btn.primary { background: #f0f6fc; color: #0d1117; border-color: #f0f6fc; }
+    .btn.green { background: var(--success); color: #fff; border-color: var(--success); }
+
+    .state { display: none; }
+    .state.active { display: block; }
+    .tab-page { display: none; }
+    .tab-page.active { display: block; }
+
+    .skeleton {
+      border-radius: 999px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--border-muted) 40%, transparent), color-mix(in srgb, var(--border) 75%, transparent), color-mix(in srgb, var(--border-muted) 40%, transparent));
+      background-size: 220% 100%;
+      animation: shimmer 1.2s infinite linear;
+    }
+    @keyframes shimmer { to { background-position: -220% 0; } }
+    .sk-line { height: 14px; margin: 12px 0; }
+    .sk-box { height: 92px; border-radius: 14px; }
+
+    .empty {
+      padding: 24px 18px;
+      text-align: center;
+    }
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border-muted);
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--surface-raised) 88%, var(--bg));
+      font-size: 32px;
+    }
+    .empty h3 { margin: 0 0 6px; font-size: 18px; }
+    .empty p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+    @media (max-width: 360px) {
+      main { padding-inline: 10px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .hero-meta { grid-template-columns: 1fr; }
+      .hero-meta div { border-right: 0; border-bottom: 1px solid var(--border-muted); }
+      .hero-meta div:last-child { border-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="system-bar"><span>14:11</span><span class="system-icons">◉  ◒  ▮▮  51</span></div>
+    <header class="appbar">
+      <div class="title-row">
+        <button class="icon-btn" aria-label="返回">‹</button>
+        <h1>洞察</h1>
+        <button class="icon-btn" id="themeBtn" aria-label="切换主题">◐</button>
+      </div>
+      <div class="repo-strip">
+        <span>Insights for</span>
+        <span class="repo-name">Sunset/ExampleRepo</span>
+        <span class="pill">Public</span>
+        <span class="pill">main</span>
+      </div>
+    </header>
+
+    <main>
+      <nav class="state-switcher" aria-label="多状态预览">
+        <button class="active" data-state="ready">完整数据</button>
+        <button data-state="loading">加载骨架</button>
+        <button data-state="empty">空仓库</button>
+        <button data-state="limited">权限受限</button>
+        <button data-state="stale">缓存降级</button>
+        <button data-state="error">失败</button>
+      </nav>
+
+      <section class="hero">
+        <div class="hero-top">
+          <span class="pill" id="heroBadge">REST + Pulse 摘要</span>
+          <h2 id="heroTitle">Repository Insights</h2>
+          <p id="heroText">移动端不直接解析 GitHub HTML Insights/Pulse，而是复刻网页的信息架构：Pulse、Contributors、Community、Traffic、Security 多区块组合，并为每个 API 结果提供状态。</p>
+        </div>
+        <div class="hero-meta">
+          <div><b id="heroHealth">Good</b><span>仓库状态</span></div>
+          <div><b id="heroFreshness">刚刚</b><span>数据新鲜度</span></div>
+          <div><b id="heroCoverage">8/10</b><span>可用数据源</span></div>
+        </div>
+      </section>
+
+      <div id="ready" class="state active">
+        <nav class="gh-tabs" aria-label="GitHub Insights tabs">
+          <button class="gh-tab active" data-tab="pulse">Pulse</button>
+          <button class="gh-tab" data-tab="contributors">Contributors</button>
+          <button class="gh-tab" data-tab="community">Community</button>
+          <button class="gh-tab" data-tab="traffic">Traffic</button>
+          <button class="gh-tab" data-tab="security">Security</button>
+        </nav>
+
+        <section id="pulse" class="tab-page active">
+          <div class="card">
+            <div class="card-header"><div><h3 class="card-title">Pulse</h3><p class="card-subtitle">对标网页 Pulse：最近 30 天仓库活动摘要</p></div><span class="pill">30 days</span></div>
+            <div class="card-body">
+              <div class="summary-grid">
+                <div class="summary-box"><b>0</b><span>Merged pull requests</span><em>没有合并记录</em></div>
+                <div class="summary-box"><b>1</b><span>Open issues</span><em>最近：#1 测试性问题</em></div>
+                <div class="summary-box"><b>5</b><span>Workflow runs</span><em>失败 0，成功 5</em></div>
+                <div class="summary-box"><b>0</b><span>Releases</span><em>暂无版本发布</em></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div><h3 class="card-title">Activity graph</h3><p class="card-subtitle">Issues / Actions / Releases 聚合趋势</p></div></div>
+            <div class="card-body">
+              <div class="graph" aria-label="活动趋势柱状图">
+                <i class="bar" style="height:14%"></i><i class="bar" style="height:22%"></i><i class="bar good" style="height:18%"></i><i class="bar" style="height:34%"></i><i class="bar good" style="height:68%"></i><i class="bar" style="height:28%"></i><i class="bar warn" style="height:46%"></i><i class="bar good" style="height:76%"></i><i class="bar" style="height:36%"></i><i class="bar good" style="height:60%"></i><i class="bar" style="height:24%"></i><i class="bar" style="height:40%"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div><h3 class="card-title">Recent activity</h3><p class="card-subtitle">GitHub 网页事件流移动版</p></div></div>
+            <div class="card-body timeline">
+              <div class="event"><div class="event-icon" style="color:var(--success)">✓</div><div><b>Auto Commit completed successfully</b><p>最近 Action run，状态 success。</p></div></div>
+              <div class="event"><div class="event-icon">#</div><div><b>#1 测试性问题 opened</b><p>Open issue，参与维护提示。</p></div></div>
+              <div class="event"><div class="event-icon">↗</div><div><b>main branch updated</b><p>默认分支 main，最近提交可在后续接入 commits endpoint。</p></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contributors" class="tab-page">
+          <div class="card"><div class="card-header"><div><h3 class="card-title">Contributors</h3><p class="card-subtitle">对标 Contributors 图表与列表</p></div><span class="pill">Preview</span></div><div class="card-body"><div class="metric-list"><div class="metric"><span>Contributors API</span><strong>可接入</strong></div><div class="metric"><span>Commit activity</span><strong>可接入</strong></div><div class="metric"><span>Code frequency</span><strong>可接入</strong></div><div class="metric"><span>当前实现</span><strong>占位降级</strong></div></div></div></div>
+        </section>
+
+        <section id="community" class="tab-page">
+          <div class="card"><div class="card-header"><div><h3 class="card-title">Community standards</h3><p class="card-subtitle">README、License、Code of conduct 等健康度</p></div></div><div class="card-body"><div class="callout success"><span>✓</span><span><b>README 可用。</b>适合展示仓库介绍。</span></div><div class="callout warning"><span>!</span><span><b>建议补齐 License / Contributing。</b>对应 GitHub Community 页面检查项。</span></div><div class="metric-list"><div class="metric"><span>README</span><strong>Present</strong></div><div class="metric"><span>License</span><strong>Missing</strong></div><div class="metric"><span>Code of conduct</span><strong>Missing</strong></div><div class="metric"><span>Issue templates</span><strong>Missing</strong></div></div></div></div>
+        </section>
+
+        <section id="traffic" class="tab-page">
+          <div class="card"><div class="card-header"><div><h3 class="card-title">Traffic</h3><p class="card-subtitle">Views / Clones 通常需要 push 权限</p></div><span class="pill">Privileged</span></div><div class="card-body"><div class="callout warning"><span>!</span><span>如果 GitHub API 返回 403，应显示权限解释，而不是整页失败。</span></div><div class="summary-grid"><div class="summary-box"><b>--</b><span>Views</span><em>等待授权</em></div><div class="summary-box"><b>--</b><span>Clones</span><em>等待授权</em></div></div></div></div>
+        </section>
+
+        <section id="security" class="tab-page">
+          <div class="card"><div class="card-header"><div><h3 class="card-title">Security</h3><p class="card-subtitle">Dependabot / Code scanning / Secret scanning</p></div></div><div class="card-body"><div class="metric-list"><div class="metric"><span>Dependabot alerts</span><strong>Disabled</strong></div><div class="metric"><span>Code scanning alerts</span><strong>Disabled</strong></div><div class="metric"><span>Secret scanning</span><strong>Unknown</strong></div><div class="metric"><span>Failed Actions</span><strong>0</strong></div></div><div class="btn-row"><a class="btn primary" href="#">在 GitHub 打开</a><a class="btn" href="#">刷新安全状态</a></div></div></div>
+        </section>
+      </div>
+
+      <div id="loading" class="state">
+        <div class="card"><div class="card-header"><div><h3 class="card-title">正在加载 Insights</h3><p class="card-subtitle">分层请求，避免单个接口阻塞整页</p></div></div><div class="card-body"><div class="skeleton sk-line" style="width:62%"></div><div class="skeleton sk-line" style="width:88%"></div><div class="summary-grid"><div class="skeleton sk-box"></div><div class="skeleton sk-box"></div><div class="skeleton sk-box"></div><div class="skeleton sk-box"></div></div></div></div>
+        <div class="card"><div class="card-body metric-list"><div class="metric"><span>Repository</span><strong>Loading</strong></div><div class="metric"><span>Issues / PR</span><strong>Queued</strong></div><div class="metric"><span>Actions</span><strong>Queued</strong></div><div class="metric"><span>Traffic</span><strong>Queued</strong></div></div></div>
+      </div>
+
+      <div id="empty" class="state">
+        <div class="card"><div class="empty"><div class="empty-icon">◌</div><h3>这个仓库还没有足够活动</h3><p>对标 GitHub 空状态：不要显示冷冰冰的全 0，优先解释为什么没有 Pulse，并提供创建 Issue、提交代码、配置 Action 的入口。</p><div class="btn-row" style="justify-content:center"><a class="btn green" href="#">创建第一个 Issue</a><a class="btn" href="#">查看仓库文件</a></div></div></div>
+        <div class="card"><div class="card-header"><h3 class="card-title">可开始收集的数据</h3></div><div class="card-body metric-list"><div class="metric"><span>默认分支</span><strong>main</strong></div><div class="metric"><span>语言</span><strong>Shell</strong></div><div class="metric"><span>Stars</span><strong>0</strong></div></div></div>
+      </div>
+
+      <div id="limited" class="state">
+        <div class="card"><div class="card-header"><div><h3 class="card-title">部分数据受限</h3><p class="card-subtitle">GitHub 网页版也是按权限显示不同信息</p></div><span class="pill">403 safe</span></div><div class="card-body"><div class="callout warning"><span>!</span><span><b>Traffic 与 Security API 可能需要仓库管理员或 push 权限。</b>当前页只隐藏受限区块，基础 Pulse 保持可用。</span></div><div class="metric-list"><div class="metric"><span>Repository summary</span><strong>Available</strong></div><div class="metric"><span>Issues</span><strong>Available</strong></div><div class="metric"><span>Actions</span><strong>Available</strong></div><div class="metric"><span>Traffic</span><strong>Restricted</strong></div><div class="metric"><span>Security alerts</span><strong>Restricted</strong></div></div></div></div>
+      </div>
+
+      <div id="stale" class="state">
+        <div class="card"><div class="card-header"><div><h3 class="card-title">显示缓存数据</h3><p class="card-subtitle">网络慢或限流时的降级策略</p></div><span class="pill">12 分钟前</span></div><div class="card-body"><div class="callout warning"><span>↻</span><span><b>当前数据不是实时结果。</b>用户仍可浏览上次 Insights，顶部明确标注 stale。</span></div><div class="summary-grid"><div class="summary-box"><b>1</b><span>Open issues</span><em>cached</em></div><div class="summary-box"><b>5</b><span>Actions</span><em>cached</em></div></div><div class="btn-row"><a class="btn primary" href="#">重新加载</a><a class="btn" href="#">在 GitHub 打开</a></div></div></div>
+      </div>
+
+      <div id="error" class="state">
+        <div class="card"><div class="empty"><div class="empty-icon" style="background:var(--danger-bg);color:var(--danger)">!</div><h3>Insights 加载失败</h3><p>网络异常、API rate limit、仓库不存在或 token scope 不足时，显示可恢复错误。不要让用户误以为仓库没有活动。</p><div class="btn-row" style="justify-content:center"><a class="btn primary" href="#">重试</a><a class="btn" href="#">复制错误</a></div></div></div>
+        <div class="card"><div class="card-header"><h3 class="card-title">错误诊断</h3></div><div class="card-body metric-list"><div class="metric"><span>HTTP</span><strong style="color:var(--danger)">403</strong></div><div class="metric"><span>Reason</span><strong>rate_limit / scope</strong></div><div class="metric"><span>Fallback</span><strong>Open in GitHub</strong></div></div></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const stateCopy = {
+      ready: ['REST + Pulse 摘要', 'Repository Insights', '移动端不直接解析 GitHub HTML Insights/Pulse，而是复刻网页的信息架构：Pulse、Contributors、Community、Traffic、Security 多区块组合，并为每个 API 结果提供状态。', 'Good', '刚刚', '8/10'],
+      loading: ['Loading', '正在同步 Insights', '使用骨架屏展示整体结构；各 API 独立进入 loading，避免页面跳动。', 'Loading', '--', '0/10'],
+      empty: ['Empty repository', '暂无可用洞察', '仓库活动不足时展示 GitHub 风格空状态与下一步操作，而不是堆叠 0 值卡片。', 'Empty', '刚刚', '3/10'],
+      limited: ['Permission limited', '部分 Insights 受限', '基础数据可展示，Traffic / Security 等权限接口单独降级，解释 GitHub 权限原因。', 'Partial', '刚刚', '5/10'],
+      stale: ['Stale cache', '缓存 Insights', 'API 失败但本地有缓存时，继续展示旧数据并明确新鲜度。', 'Stale', '12 分钟前', '6/10'],
+      error: ['Failed', '加载失败', '明确失败原因与恢复动作，保留跳转 GitHub 网页作为兜底。', 'Error', '--', '0/10']
+    };
+
+    const stateButtons = document.querySelectorAll('[data-state]');
+    const states = document.querySelectorAll('.state');
+    stateButtons.forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.state;
+      stateButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      states.forEach(s => s.classList.remove('active'));
+      document.getElementById(key).classList.add('active');
+      const c = stateCopy[key];
+      document.getElementById('heroBadge').textContent = c[0];
+      document.getElementById('heroTitle').textContent = c[1];
+      document.getElementById('heroText').textContent = c[2];
+      document.getElementById('heroHealth').textContent = c[3];
+      document.getElementById('heroFreshness').textContent = c[4];
+      document.getElementById('heroCoverage').textContent = c[5];
+    }));
+
+    const tabs = document.querySelectorAll('[data-tab]');
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    }));
+
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? '' : 'dark';
+    });
+  </script>
+</body>
+</html>

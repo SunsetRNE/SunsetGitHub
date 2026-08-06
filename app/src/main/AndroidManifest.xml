@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission 
+        android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />                
+
+    <!--
+      Android 11+ 包可见性：声明对 GET_CONTENT / OPEN_DOCUMENT 的查询意图，
+      使应用能枚举到 MT 管理器、NP 管理器等第三方文件管理器并显式列入选择面板。
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <!--
+          部分文件管理器（如 MT 管理器）的 GET_CONTENT intent-filter 只声明 type、不带 data scheme，
+          按 mimeType 查询时会因系统补全 content scheme 而匹配不上，导致不可见。
+          这里显式按包名声明可见性，覆盖 MT 管理器多版本与 NP 管理器。
+        -->
+        <package android:name="bin.mt.plus" />
+        <package android:name="bin.mt.plus.canary" />
+        <package android:name="bin.mt.plus.x" />
+        <package android:name="bin.mt.plus.apk" />
+        <package android:name="player.normal.np" />
+        <package android:name="com.np.manager" />
+        <package android:name="com.wn.app.np" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.terminal.export.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/terminal_export_paths" />
+        </provider>
+    </application>
+    
+</manifest>

@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Fork 状态卡预览</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #24292f;
+      --muted: #6e7781;
+      --border: #d8dee4;
+      --border-soft: #eaeef2;
+      --blue: #0969da;
+      --blue-soft: #ddf4ff;
+      --green: #1a7f37;
+      --green-soft: #dafbe1;
+      --orange: #bc4c00;
+      --orange-soft: #fff1e5;
+      --shadow: 0 8px 24px rgba(140, 149, 159, 0.16);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(430px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: #fff;
+      padding: 26px 14px 34px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 8px 8px 24px;
+    }
+
+    .back {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      background: transparent;
+      color: #57606a;
+      font-size: 34px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .title {
+      flex: 1;
+      font-size: 26px;
+      font-weight: 760;
+      letter-spacing: -0.7px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-card,
+    .compare-card,
+    .preview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 1px 2px rgba(27, 31, 36, 0.04);
+      margin: 0 0 16px;
+      overflow: hidden;
+    }
+
+    .repo-card { padding: 16px 14px 14px; }
+
+    .repo-head {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) auto auto auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b7f5ce, #f6fbff);
+      border: 1px solid var(--border-soft);
+      display: grid;
+      place-items: center;
+      color: #6a737d;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .repo-name {
+      min-width: 0;
+      font-size: 24px;
+      font-weight: 760;
+      line-height: 1.12;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meta {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      color: #57606a;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .icon-btn.active {
+      color: #57606a;
+      background: var(--blue-soft);
+      border-color: #b6e3ff;
+    }
+
+    .description {
+      margin: 15px 0 14px;
+      color: #57606a;
+      font-size: 18px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .chips-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 12px;
+    }
+
+    .chips-title {
+      color: #57606a;
+      font-weight: 680;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #57606a;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .chip.green {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: transparent;
+    }
+
+    .stats {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      height: 36px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      color: #57606a;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .section-label {
+      margin: 22px 4px 10px;
+      font-size: 13px;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      color: #8c959f;
+      text-transform: uppercase;
+    }
+
+    .rough-card {
+      padding: 18px 14px 16px;
+    }
+
+    .rough-title {
+      font-size: 20px;
+      font-weight: 760;
+      line-height: 1.35;
+      margin-bottom: 9px;
+    }
+
+    .rough-body {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .heavy-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .heavy-btn {
+      height: 52px;
+      border: 0;
+      border-radius: 12px;
+      background: #000;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 720;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .fork-card {
+      position: relative;
+      padding: 14px;
+      border: 1px solid #d0d7de;
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(180deg, rgba(221,244,255,0.55), rgba(255,255,255,0) 64px),
+        #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .fork-header {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .fork-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      background: #eef6ff;
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+      border: 1px solid #b6e3ff;
+    }
+
+    .fork-kicker {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 680;
+      margin-bottom: 3px;
+    }
+
+    .fork-title {
+      min-width: 0;
+      font-size: 20px;
+      font-weight: 780;
+      line-height: 1.2;
+      letter-spacing: -0.25px;
+    }
+
+    .status-pill {
+      align-self: start;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 760;
+      color: var(--orange);
+      background: var(--orange-soft);
+      border: 1px solid #ffd8b5;
+      white-space: nowrap;
+    }
+
+    .fork-copy {
+      margin: 12px 0 13px 53px;
+      color: #57606a;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .repo-target {
+      color: #24292f;
+      font-weight: 680;
+    }
+
+    .fork-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-left: 53px;
+    }
+
+    .action {
+      height: 42px;
+      border-radius: 13px;
+      font-size: 15px;
+      font-weight: 740;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #24292f;
+    }
+
+    .action.primary {
+      border-color: #000;
+      background: #000;
+      color: #fff;
+    }
+
+    .loading-card {
+      padding: 14px;
+      border: 1px solid #d0d7de;
+      border-radius: var(--radius-lg);
+      background: #fff;
+    }
+
+    .loading-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid #d8dee4;
+      border-top-color: var(--blue);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-title {
+      font-size: 17px;
+      font-weight: 760;
+      margin-bottom: 3px;
+    }
+
+    .loading-copy {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .directory-card {
+      margin-top: 16px;
+    }
+
+    .directory-head {
+      padding: 18px 14px 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .directory-title {
+      font-size: 22px;
+      font-weight: 780;
+      margin-bottom: 7px;
+    }
+
+    .directory-meta {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .file-row {
+      height: 48px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      font-size: 17px;
+    }
+
+    .file-row:last-child { border-bottom: 0; }
+
+    .folder { color: #54aeff; }
+    .chev { color: #6e7781; font-size: 24px; }
+
+    .notes {
+      margin: 14px 4px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 360px) {
+      .repo-head { grid-template-columns: 42px minmax(0, 1fr) auto auto; }
+      .repo-head .icon-btn:first-of-type { display: none; }
+      .fork-copy, .fork-actions { margin-left: 0; }
+      .heavy-actions, .fork-actions { grid-template-columns: 1fr; }
+      .title { font-size: 23px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="top-bar">
+      <button class="back" aria-label="返回">‹</button>
+      <div class="title">SunsetRNE/oppo_oplus_realme_sm8650</div>
+    </header>
+
+    <section class="repo-card" aria-label="仓库信息">
+      <div class="repo-head">
+        <div class="avatar">H</div>
+        <div>
+          <div class="repo-name">oppo_oplus_realme_sm8650</div>
+          <div class="meta">SunsetRNE · User · main</div>
+        </div>
+        <button class="icon-btn" aria-label="打开外部链接">↗</button>
+        <button class="icon-btn active" aria-label="已收藏">★</button>
+        <button class="icon-btn" aria-label="关注">●</button>
+      </div>
+
+      <p class="description">An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8650 series in a complete workflow.</p>
+
+      <div class="chips-box">
+        <div class="chips-title">仓库标签</div>
+        <div class="chips">
+          <span class="chip green">公开</span>
+          <span class="chip">主要语言：Shell</span>
+          <span class="chip">Fork</span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <span>★ 5</span>
+        <span>⑂ 1</span>
+        <span>Issue 0</span>
+        <span>👁 5</span>
+      </div>
+    </section>
+
+    <div class="section-label">Before / 当前粗糙感来源</div>
+    <section class="compare-card rough-card" aria-label="旧版 Fork 状态卡">
+      <div class="rough-title">领先 11 个提交 · cctv18/oppo_oplus_realme_sm8650:main</div>
+      <div class="rough-body">你的 Fork 领先源仓库 11 个提交，可向源仓库贡献更改。</div>
+      <div class="heavy-actions">
+        <button class="heavy-btn">⑂ 贡献更改</button>
+        <button class="heavy-btn">⟳ 同步 Fork</button>
+      </div>
+    </section>
+
+    <div class="section-label">After / 推荐轻量状态卡</div>
+    <section class="fork-card" aria-label="新版 Fork 状态卡">
+      <div class="fork-header">
+        <div class="fork-icon">⑂</div>
+        <div>
+          <div class="fork-kicker">Fork 状态</div>
+          <div class="fork-title">领先源仓库 11 个提交</div>
+        </div>
+        <span class="status-pill">可贡献</span>
+      </div>
+      <div class="fork-copy">
+        当前分支可向 <span class="repo-target">cctv18/main</span> 贡献更改；同步前建议先确认本地变更。
+      </div>
+      <div class="fork-actions">
+        <button class="action primary">⑂ 贡献更改</button>
+        <button class="action">⟳ 同步 Fork</button>
+      </div>
+    </section>
+
+    <div class="section-label">Loading / 检查状态</div>
+    <section class="loading-card" aria-label="检查同步状态">
+      <div class="loading-row">
+        <div class="spinner" aria-hidden="true"></div>
+        <div>
+          <div class="loading-title">正在检查 Fork 同步状态…</div>
+          <div class="loading-copy">正在比较源仓库与当前 Fork 的提交差异</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="repo-card directory-card" aria-label="根目录">
+      <div class="directory-head">
+        <div class="directory-title">根目录</div>
+        <div class="directory-meta">共 8 项 · 6 个目录 · 2 个文件</div>
+      </div>
+      <div class="file-row"><span class="folder">■</span><span>.github</span><span class="chev">›</span></div>
+      <div class="file-row"><span class="folder">■</span><span>droidspaces_patch</span><span class="chev">›</span></div>
+      <div class="file-row"><span class="folder">■</span><span>lib</span><span class="chev">›</span></div>
+      <div class="file-row"><span class="folder">■</span><span>local</span><span class="chev">›</span></div>
+      <div class="file-row"><span class="folder">■</span><span>other_patch</span><span class="chev">›</span></div>
+    </section>
+
+    <p class="notes">设计重点：缩短标题、弱化长仓库名、把状态和操作分层；主操作保留黑色强调，次操作使用描边按钮，避免整块区域显得过重。</p>
+  </main>
+</body>
+</html>

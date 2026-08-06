@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:paddingBottom="0dp"
+    tools:context=".ui.repo.RepositoryForkFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/repository_fork_page_title"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+            android:textColor="@color/github_text_primary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/repository_fork_page_subtitle"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+            android:textColor="@color/github_text_secondary" />
+
+        <TextView
+            android:id="@+id/text_repository_fork_required_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/repository_fork_required_hint"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+        <TextView
+            android:id="@+id/text_repository_fork_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+            android:visibility="gone"
+            tools:text="状态" />
+
+        <LinearLayout
+            android:id="@+id/container_repository_fork_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_repository_empty_state_panel"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/repository_fork_source_section"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+            <TextView
+                android:id="@+id/text_repository_fork_source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.RepositoryName"
+                tools:text="owner/repo" />
+
+            <TextView
+                android:id="@+id/text_repository_fork_source_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                tools:text="默认分支 main" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/repository_fork_target_owner_section"
+                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+            <EditText
+                android:id="@+id/edit_repository_fork_target_owner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/repository_fork_target_owner_hint"
+                android:inputType="text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/repository_fork_target_name_section"
+                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+            <EditText
+                android:id="@+id/edit_repository_fork_target_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/repository_fork_target_name_hint"
+                android:inputType="text" />
+
+            <TextView
+                android:id="@+id/text_repository_fork_name_availability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                android:visibility="gone"
+                tools:text="仓库名可用。" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/repository_fork_name_helper"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/repository_fork_description_section"
+                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+            <EditText
+                android:id="@+id/edit_repository_fork_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/repository_fork_description_hint"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLength="350"
+                android:minLines="1" />
+
+            <TextView
+                android:id="@+id/text_repository_fork_description_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                tools:text="0 / 350 characters" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/check_repository_fork_default_branch_only"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/repository_fork_default_branch_only" />
+
+            <TextView
+                android:id="@+id/text_repository_fork_default_branch_only_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/repository_fork_default_branch_only_desc"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+
+            <TextView
+                android:id="@+id/text_repository_fork_account_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                tools:text="ⓘ You are creating a fork in your personal account." />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_repository_fork_submit"
+                style="@style/Widget.SunsetGitHub.Material.PrimaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/repository_fork_submit" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_repository_fork_open_existing"
+                style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/repository_fork_open_existing"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

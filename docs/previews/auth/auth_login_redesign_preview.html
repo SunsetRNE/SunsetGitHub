@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SunsetGitHub 登录重构页面预览</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --canvas: #f6f8fa;
+      --surface: #ffffff;
+      --surface-subtle: #f6f8fa;
+      --border: #d0d7de;
+      --border-muted: #d8dee4;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --accent: #0969da;
+      --accent-pressed: #0757b2;
+      --success: #1a7f37;
+      --danger: #cf222e;
+      --github-dark: #24292f;
+      --button: #2da44e;
+      --button-pressed: #2c974b;
+      --shadow: 0 16px 45px rgba(27, 31, 36, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --phone-w: 390px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --canvas: #0d1117;
+        --surface: #161b22;
+        --surface-subtle: #0d1117;
+        --border: #30363d;
+        --border-muted: #21262d;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --subtle: #7d8590;
+        --accent: #58a6ff;
+        --accent-pressed: #79c0ff;
+        --success: #3fb950;
+        --danger: #ff7b72;
+        --github-dark: #e6edf3;
+        --button: #238636;
+        --button-pressed: #2ea043;
+        --shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(9, 105, 218, 0.12), transparent 28rem),
+        radial-gradient(circle at 90% 12%, rgba(45, 164, 78, 0.10), transparent 22rem),
+        var(--canvas);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .hero-card {
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(30px, 5vw, 56px); letter-spacing: -0.045em; line-height: 1.02; }
+    .lead { margin-top: 16px; font-size: 18px; color: var(--muted); max-width: 780px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .tag {
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .flow-map {
+      display: grid;
+      gap: 12px;
+      font-size: 14px;
+    }
+    .flow-node {
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .flow-node strong { display: block; margin-bottom: 4px; }
+    .arrow { text-align: center; color: var(--subtle); font-size: 18px; }
+
+    .section-title {
+      margin: 36px 0 18px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .section-title h2 { font-size: 26px; letter-spacing: -0.025em; }
+    .section-title p { color: var(--muted); font-size: 14px; }
+
+    .phone-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 28px;
+      align-items: start;
+    }
+
+    .phone-wrap {
+      display: grid;
+      place-items: center;
+      gap: 12px;
+    }
+    .caption {
+      width: min(100%, var(--phone-w));
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+    .caption strong { color: var(--text); }
+
+    .phone {
+      width: min(100%, var(--phone-w));
+      height: 790px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 36px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88px;
+      height: 24px;
+      background: #0b0f14;
+      border-radius: 0 0 16px 16px;
+      z-index: 5;
+      opacity: 0.95;
+    }
+    .screen {
+      height: 100%;
+      padding: 46px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, var(--accent) 10%), var(--surface) 170px);
+    }
+    .screen.scroll { overflow-y: auto; }
+
+    .topbar {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+    .back {
+      width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); display: grid; place-items: center; color: var(--text); background: var(--surface);
+      font-weight: 800;
+    }
+    .topbar-title { font-weight: 700; font-size: 15px; flex: 1; text-align: center; margin-right: 46px; }
+    .brand-space { flex: 1; }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--github-dark);
+      color: var(--surface);
+      display: grid;
+      place-items: center;
+      margin: 18px auto 18px;
+      box-shadow: 0 12px 30px rgba(36, 41, 47, 0.2);
+    }
+    .logo svg { width: 42px; height: 42px; fill: currentColor; }
+
+    .title { font-size: 29px; line-height: 1.08; letter-spacing: -0.04em; text-align: center; font-weight: 800; }
+    .subtitle { margin-top: 10px; text-align: center; color: var(--muted); font-size: 15px; }
+    .state { margin: 16px 0 0; color: var(--subtle); text-align: center; font-size: 13px; }
+
+    .spacer { flex: 1; min-height: 18px; }
+    .card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: 0 8px 22px rgba(27, 31, 36, 0.06);
+      margin-top: 14px;
+    }
+    .card.subtle { background: var(--surface-subtle); box-shadow: none; }
+    .card-title { font-weight: 750; font-size: 16px; margin-bottom: 6px; }
+    .card-text { color: var(--muted); font-size: 13px; }
+    .hint { color: var(--subtle); font-size: 12px; margin-top: 6px; }
+
+    .method-card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 42px 1fr 20px;
+      gap: 12px;
+      align-items: center;
+    }
+    .method-icon {
+      width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-subtle); color: var(--accent); font-size: 20px; font-weight: 900;
+    }
+    .method-title { font-weight: 750; font-size: 15px; }
+    .method-desc { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+    .chev { color: var(--subtle); font-size: 24px; }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: 750;
+      cursor: default;
+    }
+    .btn.primary { background: var(--button); color: #fff; }
+    .btn.primary.blue { background: var(--accent); }
+    .btn.secondary { background: var(--surface-subtle); color: var(--text); border: 1px solid var(--border); }
+    .btn.danger { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border)); }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .btn-row .btn { margin-top: 0; }
+
+    .steps { display: grid; gap: 12px; margin-top: 22px; }
+    .step {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 16px;
+    }
+    .num {
+      width: 36px; height: 36px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); display: grid; place-items: center; font-weight: 800;
+    }
+    .step strong { display: block; font-size: 14px; }
+    .step span { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+
+    .code-box {
+      margin: 24px 0 12px;
+      padding: 24px 16px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 60%, var(--border));
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+      text-align: center;
+    }
+    .code-label { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 36px; letter-spacing: 0.08em; font-weight: 900; color: var(--text); }
+    .progress {
+      height: 8px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-muted);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+    .progress > i { display: block; height: 100%; width: 58%; background: var(--success); border-radius: inherit; }
+
+    .browser-visual {
+      height: 130px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, var(--surface-subtle) 0 30px, transparent 30px),
+        var(--surface);
+      margin-top: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .browser-visual::before {
+      content: "";
+      position: absolute; left: 14px; top: 11px; width: 8px; height: 8px; border-radius: 50%; background: #ff5f56; box-shadow: 14px 0 #ffbd2e, 28px 0 #27c93f;
+    }
+    .browser-visual .mini-logo { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 46px; height: 46px; border-radius: 50%; background: var(--github-dark); color: var(--surface); display: grid; place-items: center; font-weight: 900; }
+    .browser-visual .mini-text { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; color: var(--muted); font-size: 12px; }
+
+    .choice-big {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+    .choice-big strong { font-size: 17px; }
+    .choice-big p { margin-top: 6px; color: var(--muted); font-size: 13px; }
+
+    .token-input {
+      width: 100%;
+      min-height: 96px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+      color: var(--text);
+      margin-top: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+    .check-list { display: grid; gap: 10px; margin-top: 14px; }
+    .check {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+    .check .mark { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 13px; }
+    .check.ok .mark { background: color-mix(in srgb, var(--success) 15%, var(--surface)); color: var(--success); }
+    .check.warn .mark { background: #fff8c5; color: #9a6700; }
+    .check.miss .mark { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); }
+    .check strong { font-size: 13.5px; }
+    .check span { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
+
+    .account-row {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid var(--border-muted);
+    }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--button)); display: grid; place-items: center; color: white; font-weight: 900; }
+    .account-name { font-weight: 750; font-size: 14px; }
+    .account-meta { color: var(--muted); font-size: 12px; }
+    .pill { border: 1px solid var(--border); border-radius: 999px; padding: 6px 9px; font-size: 12px; color: var(--muted); background: var(--surface-subtle); }
+    .pill.current { color: var(--success); border-color: color-mix(in srgb, var(--success) 45%, var(--border)); }
+
+    .bottom-note {
+      text-align: center;
+      color: var(--subtle);
+      font-size: 12px;
+      margin-top: 18px;
+    }
+
+    .toast {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: 24px;
+      background: rgba(36, 41, 47, 0.94);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 13px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.24);
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .page { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>登录模式大重构 · 页面渲染预览</h1>
+        <p class="lead">把“首次登录选择页”和“内置账号管理页”彻底拆开；登录页仿 GitHub Android App 的双选择入口，流程页面只负责单一任务；浏览器相关操作统一用按钮直接拉起默认浏览器，不展示长链接。</p>
+        <div class="tag-row">
+          <span class="tag">Device Flow</span>
+          <span class="tag">Access Token</span>
+          <span class="tag">账号管理独立</span>
+          <span class="tag">默认浏览器拉起</span>
+          <span class="tag">GitHub Mobile 风格</span>
+        </div>
+      </div>
+      <div class="hero-card flow-map">
+        <div class="flow-node"><strong>登录首页</strong>两个入口：Device Flow / 访问令牌。</div>
+        <div class="arrow">↓</div>
+        <div class="flow-node"><strong>Device Flow</strong>解释页 → 验证码页 → 浏览器授权 → 自动进入首页。</div>
+        <div class="flow-node"><strong>Token Flow</strong>是否已有 Token → 教学或输入 → 权限校验 → 进入首页。</div>
+        <div class="arrow">↓</div>
+        <div class="flow-node"><strong>账号管理页</strong>当前账号、历史账号、切换、移除、添加账号。</div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <h2>一、登录入口与 Device Flow</h2>
+        <p>登录入口不再承担账号管理，只作为新会话认证起点。</p>
+      </div>
+    </div>
+
+    <section class="phone-grid">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar"><div class="brand-space"></div></div>
+            <div class="logo" aria-hidden="true">
+              <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.63 5.47 7.71.4.08.55-.18.55-.39 0-.19-.01-.83-.01-1.51-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.96-.82-1.15-.28-.15-.68-.52-.01-.53.63-.01 1.08.59 1.23.83.72 1.23 1.87.88 2.33.67.07-.53.28-.88.51-1.08-1.78-.21-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.42 7.42 0 0 1 8 3.91c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.13-1.87 3.82-3.65 4.03.29.25.54.74.54 1.5 0 1.08-.01 1.95-.01 2.22 0 .21.15.47.55.39A8.13 8.13 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/></svg>
+            </div>
+            <h2 class="title">Sign in to GitHub</h2>
+            <p class="subtitle">选择一种方式继续使用 SunsetGitHub。</p>
+            <p class="state">推荐使用 Device Flow，在浏览器中完成官方授权。</p>
+
+            <div class="spacer"></div>
+
+            <div class="method-card">
+              <div class="method-icon">⌁</div>
+              <div>
+                <div class="method-title">使用 Device Flow 登录</div>
+                <div class="method-desc">生成验证码，拉起浏览器完成 GitHub 授权。</div>
+              </div>
+              <div class="chev">›</div>
+            </div>
+            <div class="method-card">
+              <div class="method-icon">🔑</div>
+              <div>
+                <div class="method-title">使用访问令牌登录</div>
+                <div class="method-desc">适合已经拥有 Personal Access Token 的用户。</div>
+              </div>
+              <div class="chev">›</div>
+            </div>
+            <p class="bottom-note">登录凭据仅保存在本机。Token 将使用本地加密存储。</p>
+          </div>
+        </div>
+        <div class="caption"><strong>LoginHomeFragment</strong>：仿 GitHub Android 首屏，只有双选择入口。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">Device Flow</div></div>
+            <h2 class="title">使用设备代码登录</h2>
+            <p class="subtitle">你将在 GitHub 官方网页中确认授权，应用会自动等待授权结果。</p>
+            <div class="browser-visual"><div class="mini-logo">GH</div><div class="mini-text">默认浏览器 · GitHub 授权</div></div>
+            <div class="steps">
+              <div class="step"><div class="num">1</div><div><strong>生成验证码</strong><span>应用会向 GitHub 请求一个短时间有效的 8 位验证码。</span></div></div>
+              <div class="step"><div class="num">2</div><div><strong>打开浏览器</strong><span>点击按钮直接拉起当前手机默认浏览器，不再让用户复制链接。</span></div></div>
+              <div class="step"><div class="num">3</div><div><strong>完成授权</strong><span>你在 GitHub 页面确认后，应用自动保存账号并进入首页。</span></div></div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn primary">下一步</button>
+            <button class="btn secondary">返回</button>
+          </div>
+        </div>
+        <div class="caption"><strong>DeviceFlowIntroFragment</strong>：流程解释页，点击下一步后才请求验证码。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">输入验证码</div></div>
+            <h2 class="title">在浏览器中输入验证码</h2>
+            <p class="subtitle">请打开 GitHub 官方授权页面，输入下面的验证码。</p>
+            <div class="code-box">
+              <div class="code-label">你的 8 位验证码</div>
+              <div class="code">ABCD-1234</div>
+            </div>
+            <div class="btn-row">
+              <button class="btn secondary">复制验证码</button>
+              <button class="btn primary blue">打开浏览器</button>
+            </div>
+            <div class="card subtle">
+              <div class="card-title">等待授权中</div>
+              <p class="card-text">浏览器打开后，请在 GitHub 页面完成登录和授权。完成后回到应用即可。</p>
+              <div class="progress"><i></i></div>
+              <p class="hint">剩余时间 04:32 · 应用正在自动检查授权结果</p>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn danger">取消登录</button>
+            <div class="toast">验证码已复制到剪贴板</div>
+          </div>
+        </div>
+        <div class="caption"><strong>DeviceFlowCodeFragment</strong>：显示验证码、复制、直接拉起默认浏览器、轮询登录。</div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <h2>二、访问令牌登录流程</h2>
+        <p>Token 流程分为“是否已有 Token”“获取教学”“输入并校验权限”。</p>
+      </div>
+    </div>
+
+    <section class="phone-grid">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">访问令牌</div></div>
+            <h2 class="title">使用访问令牌登录</h2>
+            <p class="subtitle">Personal Access Token 适合高级用户或需要指定权限范围的场景。</p>
+            <div class="choice-big">
+              <strong>你是否已经有有效 Token？</strong>
+              <p>如果已经从 GitHub 创建并复制了 Token，可以直接进入输入页面。</p>
+              <button class="btn primary">我已有 Token</button>
+            </div>
+            <div class="choice-big">
+              <strong>我还没有 Token</strong>
+              <p>查看简短教学，并通过按钮直接拉起浏览器前往 GitHub 官方页面创建。</p>
+              <button class="btn secondary">查看获取教学</button>
+            </div>
+            <div class="spacer"></div>
+            <p class="bottom-note">请只在 GitHub 官方页面生成 Token，不要向任何人泄露。</p>
+          </div>
+        </div>
+        <div class="caption"><strong>TokenLoginChoiceFragment</strong>：先询问用户是否已有 Token。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen scroll">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">获取 Token</div></div>
+            <h2 class="title">创建 GitHub Token</h2>
+            <p class="subtitle">应用不会展示长链接，点击按钮即可拉起浏览器打开 GitHub 官方 Token 页面。</p>
+            <div class="steps">
+              <div class="step"><div class="num">1</div><div><strong>打开 GitHub Token 页面</strong><span>使用浏览器登录 GitHub，并进入 Personal access tokens 设置。</span></div></div>
+              <div class="step"><div class="num">2</div><div><strong>选择权限</strong><span>至少需要读取用户信息；仓库浏览、文件编辑、Issues 等能力需要对应权限。</span></div></div>
+              <div class="step"><div class="num">3</div><div><strong>复制 Token</strong><span>Token 只会显示一次。复制后回到应用点击“我已获取 Token”。</span></div></div>
+            </div>
+            <div class="card subtle">
+              <div class="card-title">建议权限</div>
+              <p class="card-text">读取用户信息、仓库读取；如需上传/编辑文件，请授予仓库写入；如需 Issues/PR，请授予对应权限。</p>
+            </div>
+            <div class="card subtle">
+              <div class="card-title">安全提醒</div>
+              <p class="card-text">Token 相当于账号授权凭据。不要分享给任何人。应用会将 Token 加密保存在本机。</p>
+            </div>
+            <button class="btn primary blue">打开浏览器</button>
+            <button class="btn secondary">我已获取 Token</button>
+          </div>
+        </div>
+        <div class="caption"><strong>TokenGuideFragment</strong>：教学页只提供浏览器按钮，不展示 URL。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen scroll">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">Token 登录</div></div>
+            <h2 class="title">输入访问令牌</h2>
+            <p class="subtitle">输入后会先检查有效性和权限，再保存到本机。</p>
+            <textarea class="token-input" readonly>github_pat_••••••••••••••••••••••••••••</textarea>
+            <button class="btn primary">校验 Token 权限</button>
+            <div class="card">
+              <div class="card-title">账号</div>
+              <div class="account-row" style="border-top:0;padding-bottom:0;">
+                <div class="avatar">O</div>
+                <div><div class="account-name">octocat</div><div class="account-meta">The Octocat</div></div>
+                <span class="pill current">有效</span>
+              </div>
+            </div>
+            <div class="check-list">
+              <div class="check ok"><div class="mark">✓</div><div><strong>仓库访问</strong><span>可以读取仓库信息，满足基础浏览需求。</span></div></div>
+              <div class="check ok"><div class="mark">✓</div><div><strong>Issues / Pull Requests</strong><span>可以读取 Issues 和 PR 信息。</span></div></div>
+              <div class="check warn"><div class="mark">!</div><div><strong>Actions / Workflow</strong><span>未发现 workflow scope，部分 Actions 功能可能受限。</span></div></div>
+              <div class="check ok"><div class="mark">✓</div><div><strong>用户信息</strong><span>可以读取当前账号资料。</span></div></div>
+            </div>
+            <button class="btn primary">确认登录并进入首页</button>
+          </div>
+        </div>
+        <div class="caption"><strong>TokenLoginFragment</strong>：输入、权限检查、确认登录可以合并在同一页。</div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <h2>三、内置账号管理页</h2>
+        <p>账号管理从登录页剥离，专门处理当前账号、历史账号、切换和移除。</p>
+      </div>
+    </div>
+
+    <section class="phone-grid">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen scroll">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">账号管理</div></div>
+            <h2 class="title">GitHub 账号</h2>
+            <p class="subtitle">管理当前账号和本机已保存的登录凭据。</p>
+            <div class="card">
+              <div class="card-title">当前账号</div>
+              <div class="account-row" style="border-top:0;">
+                <div class="avatar">O</div>
+                <div><div class="account-name">octocat</div><div class="account-meta">Device Flow 登录 · 当前使用中</div></div>
+                <span class="pill current">当前</span>
+              </div>
+              <button class="btn secondary">退出当前账号</button>
+            </div>
+            <div class="card">
+              <div class="card-title">Device Flow 登录</div>
+              <div class="account-row">
+                <div class="avatar">O</div>
+                <div><div class="account-name">octocat</div><div class="account-meta">The Octocat</div></div>
+                <span class="pill current">当前</span>
+              </div>
+              <div class="account-row">
+                <div class="avatar">S</div>
+                <div><div class="account-name">sunset-ren</div><div class="account-meta">个人账号</div></div>
+                <span class="pill">切换</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">访问令牌登录</div>
+              <div class="account-row">
+                <div class="avatar">B</div>
+                <div><div class="account-name">bot-account</div><div class="account-meta">Token 登录 · 权限受限</div></div>
+                <span class="pill">切换</span>
+              </div>
+            </div>
+            <button class="btn primary blue">添加新账号</button>
+            <button class="btn danger">移除当前账号</button>
+          </div>
+        </div>
+        <div class="caption"><strong>AccountFragment</strong>：只做账号管理，不混入首次登录引导。</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar"><div class="back">‹</div><div class="topbar-title">登录成功</div></div>
+            <div class="logo" aria-hidden="true">✓</div>
+            <h2 class="title">欢迎回来，octocat</h2>
+            <p class="subtitle">账号信息已加载，Token 已加密保存到本机。</p>
+            <div class="card">
+              <div class="account-row" style="border-top:0;">
+                <div class="avatar">O</div>
+                <div><div class="account-name">octocat</div><div class="account-meta">The Octocat</div></div>
+                <span class="pill current">已登录</span>
+              </div>
+            </div>
+            <div class="steps">
+              <div class="step"><div class="num">✓</div><div><strong>验证授权</strong><span>GitHub 已确认授权。</span></div></div>
+              <div class="step"><div class="num">✓</div><div><strong>加载账号</strong><span>已通过 GitHub API 读取当前用户信息。</span></div></div>
+              <div class="step"><div class="num">✓</div><div><strong>本地存储</strong><span>账号与凭据已写入本机安全存储。</span></div></div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn primary">进入首页</button>
+          </div>
+        </div>
+        <div class="caption"><strong>成功态</strong>：Device Flow 和 Token Flow 可以共用短暂成功反馈后进入首页。</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

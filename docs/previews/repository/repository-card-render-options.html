@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Repository Card Render Options</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --canvas: #0d1117;
+      --surface: #161b22;
+      --surface-2: #0f141b;
+      --border: #30363d;
+      --border-soft: #21262d;
+      --text: #f0f6fc;
+      --muted: #8b949e;
+      --muted-2: #6e7681;
+      --accent: #2f81f7;
+      --accent-soft: rgba(47, 129, 247, 0.16);
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --purple: #a371f7;
+      --button: #21262d;
+      --button-border: #30363d;
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+      font-family: Inter, Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1080px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 -14px 16px;
+      padding: 12px 14px;
+      background: rgba(13, 17, 23, 0.92);
+      border-bottom: 1px solid var(--border-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .option {
+      min-width: 0;
+    }
+
+    .option-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .score {
+      color: var(--muted-2);
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    .phone-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .card {
+      width: 100%;
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.compact {
+      border-radius: 10px;
+      padding: 12px 13px;
+      box-shadow: none;
+    }
+
+    .card.flat {
+      background: var(--surface-2);
+      border-color: var(--border-soft);
+      box-shadow: none;
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .header-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .repo-name {
+      margin: 0;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 650;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .owner-line {
+      margin: 0 0 1px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .repo-large {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--button-border);
+      background: var(--button);
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .icon-button.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(47, 129, 247, 0.45);
+    }
+
+    .pin-mark {
+      color: var(--accent);
+      font-size: 15px;
+      line-height: 1.25;
+      padding-top: 1px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(110, 118, 129, 0.12);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .badge.private {
+      color: var(--warning);
+      border-color: rgba(210, 153, 34, 0.42);
+      background: rgba(210, 153, 34, 0.12);
+    }
+
+    .badge.archived {
+      color: var(--purple);
+      border-color: rgba(163, 113, 247, 0.38);
+      background: rgba(163, 113, 247, 0.12);
+    }
+
+    .desc {
+      display: -webkit-box;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.42;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 11px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .dot.shell { background: #89e051; }
+    .dot.kotlin { background: #a97bff; }
+    .dot.java { background: #b07219; }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 11px;
+    }
+
+    .soft-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--button-border);
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--button);
+      font-size: 12.5px;
+    }
+
+    .soft-action.active {
+      color: var(--accent);
+      border-color: rgba(47, 129, 247, 0.45);
+      background: var(--accent-soft);
+    }
+
+    .right-note {
+      margin-left: auto;
+      color: var(--muted-2);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .split-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .repo-short {
+      margin: 0;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 680;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .owner-chip {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      margin-top: 9px;
+      padding-top: 9px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .status-label {
+      flex: 1;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dense-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px 10px;
+      align-items: center;
+    }
+
+    .dense-card .desc,
+    .dense-card .meta-row {
+      grid-column: 1 / -1;
+    }
+
+    .rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .section-note {
+      margin: 16px 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(430px, calc(100vw - 20px));
+        padding-top: 10px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        margin-left: -10px;
+        margin-right: -10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <h1>仓库卡片多方案渲染</h1>
+      <div class="subtitle">对比模板化列表项的内容层级、操作入口和信息密度。</div>
+    </div>
+
+    <div class="layout">
+      <section class="option">
+        <div class="option-title">方案 A：轻量 GitHub 卡片 <span class="score">推荐：稳妥</span></div>
+        <div class="phone-list">
+          <article class="card">
+            <div class="header">
+              <div class="header-main">
+                <h2 class="repo-name">SunsetRNE/SunsetGitHub</h2>
+                <div class="badge-row">
+                  <span class="badge">公开</span>
+                  <span class="badge">Kotlin</span>
+                </div>
+              </div>
+            </div>
+            <p class="desc">移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、README 预览和 Issues 浏览。</p>
+            <div class="meta-row">
+              <span class="meta"><span class="dot kotlin"></span>Kotlin</span>
+              <span class="meta">★ 12</span>
+              <span class="meta">Fork 3</span>
+              <span class="meta">Issue 4</span>
+            </div>
+            <div class="action-row">
+              <span class="soft-action active">⌖ 置顶</span>
+              <span class="soft-action">☆ 收藏</span>
+              <span class="right-note">更新于 2 天前</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="header">
+              <div class="header-main">
+                <h2 class="repo-name">SunsetRNE/oppo_oplus_realme_sm8750</h2>
+                <div class="badge-row">
+                  <span class="badge">公开</span>
+                  <span class="badge">派生仓库</span>
+                </div>
+              </div>
+            </div>
+            <p class="desc">An automatic kernel builder for OPlus Realme devices with reproducible release artifacts.</p>
+            <div class="meta-row">
+              <span class="meta"><span class="dot shell"></span>Shell</span>
+              <span class="meta">★ 2</span>
+              <span class="meta">Fork 0</span>
+              <span class="meta">Issue 0</span>
+            </div>
+            <div class="action-row">
+              <span class="soft-action">⌖ 置顶</span>
+              <span class="soft-action active">★ 收藏</span>
+              <span class="right-note">main</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="option">
+        <div class="option-title">方案 B：状态图标头部化 <span class="score">推荐：更省高度</span></div>
+        <div class="phone-list">
+          <article class="card compact">
+            <div class="header">
+              <button class="icon-button active" aria-label="取消置顶">⌖</button>
+              <div class="header-main">
+                <h2 class="repo-name">SunsetRNE/SunsetGitHub</h2>
+                <div class="badge-row">
+                  <span class="badge">公开</span>
+                  <span class="badge">Kotlin</span>
+                </div>
+              </div>
+              <button class="icon-button" aria-label="收藏">☆</button>
+            </div>
+            <p class="desc">移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、README 预览和 Issues 浏览。</p>
+            <div class="meta-row">
+              <span class="meta"><span class="dot kotlin"></span>Kotlin</span>
+              <span class="meta">★ 12</span>
+              <span class="meta">⑂ 3</span>
+              <span class="meta">● 4</span>
+            </div>
+          </article>
+
+          <article class="card compact">
+            <div class="header">
+              <button class="icon-button" aria-label="置顶">⌖</button>
+              <div class="header-main">
+                <h2 class="repo-name">SunsetRNE/oppo_oplus_realme_sm8750</h2>
+                <div class="badge-row">
+                  <span class="badge">公开</span>
+                  <span class="badge">派生仓库</span>
+                </div>
+              </div>
+              <button class="icon-button active" aria-label="取消收藏">★</button>
+            </div>
+            <p class="desc">An automatic kernel builder for OPlus Realme devices with reproducible release artifacts.</p>
+            <div class="meta-row">
+              <span class="meta"><span class="dot shell"></span>Shell</span>
+              <span class="meta">★ 2</span>
+              <span class="meta">⑂ 0</span>
+              <span class="meta">● 0</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="option">
+        <div class="option-title">方案 C：Owner / Repo 分层 <span class="score">推荐：长仓库名</span></div>
+        <div class="phone-list">
+          <article class="card flat">
+            <div class="header">
+              <div class="header-main split-title">
+                <span class="owner-chip">SunsetRNE</span>
+                <h2 class="repo-large">SunsetGitHub</h2>
+              </div>
+              <button class="icon-button active" aria-label="已置顶">⌖</button>
+              <button class="icon-button" aria-label="收藏">☆</button>
+            </div>
+            <p class="desc">移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、README 预览和 Issues 浏览。</p>
+            <div class="badge-row">
+              <span class="badge">公开</span>
+              <span class="badge">Kotlin</span>
+              <span class="badge">main</span>
+            </div>
+            <div class="status-strip">
+              <span class="status-label">★ 12 · Fork 3 · Issue 4 · Watch 8</span>
+              <span class="right-note">2 天前</span>
+            </div>
+          </article>
+
+          <article class="card flat">
+            <div class="header">
+              <div class="header-main split-title">
+                <span class="owner-chip">SunsetRNE</span>
+                <h2 class="repo-large">oppo_oplus_realme_sm8750</h2>
+              </div>
+              <button class="icon-button" aria-label="置顶">⌖</button>
+              <button class="icon-button active" aria-label="已收藏">★</button>
+            </div>
+            <p class="desc">An automatic kernel builder for OPlus Realme devices with reproducible release artifacts.</p>
+            <div class="badge-row">
+              <span class="badge">公开</span>
+              <span class="badge">派生仓库</span>
+              <span class="badge">Shell</span>
+            </div>
+            <div class="status-strip">
+              <span class="status-label">★ 2 · Fork 0 · Issue 0 · main</span>
+              <span class="right-note">今天</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="option">
+        <div class="option-title">方案 D：高密度列表 <span class="score">推荐：仓库很多</span></div>
+        <div class="phone-list">
+          <article class="card compact dense-card">
+            <div class="header-main">
+              <h2 class="repo-name">SunsetRNE/SunsetGitHub</h2>
+              <div class="owner-line">公开 · Kotlin · main</div>
+            </div>
+            <span class="rank">1</span>
+            <p class="desc">移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、README 预览和 Issues 浏览。</p>
+            <div class="meta-row">
+              <span class="meta"><span class="dot kotlin"></span>Kotlin</span>
+              <span class="meta">★ 12</span>
+              <span class="meta">Fork 3</span>
+              <span class="meta">⌖ 已置顶</span>
+              <span class="meta">☆ 收藏</span>
+            </div>
+          </article>
+
+          <article class="card compact dense-card">
+            <div class="header-main">
+              <h2 class="repo-name">SunsetRNE/oppo_oplus_realme_sm8750</h2>
+              <div class="owner-line">公开 · 派生仓库 · Shell</div>
+            </div>
+            <span class="rank">2</span>
+            <p class="desc">An automatic kernel builder for OPlus Realme devices with reproducible release artifacts.</p>
+            <div class="meta-row">
+              <span class="meta"><span class="dot shell"></span>Shell</span>
+              <span class="meta">★ 2</span>
+              <span class="meta">Fork 0</span>
+              <span class="meta">⌖ 置顶</span>
+              <span class="meta">★ 已收藏</span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <p class="section-note">建议优先看方案 B 和 C：B 最接近当前列表但更轻，C 对长仓库名更友好。方案 D 信息密度最高，但操作入口会弱一些。</p>
+  </main>
+</body>
+</html>

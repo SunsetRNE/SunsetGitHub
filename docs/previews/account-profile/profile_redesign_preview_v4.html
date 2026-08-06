@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SunsetGitHub 个人资料页重绘预览 V4</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-2: #f6f8fa;
+      --surface-3: #eef6ff;
+      --border: #d0d7de;
+      --border-2: #d8dee4;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --blue: #0969da;
+      --green: #1f883d;
+      --purple: #8250df;
+      --yellow: #bf8700;
+      --shadow: 0 18px 48px rgba(27,31,36,.12);
+      --phone: 390px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface-2: #0d1117;
+        --surface-3: #0f1b2b;
+        --border: #30363d;
+        --border-2: #21262d;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --subtle: #7d8590;
+        --blue: #58a6ff;
+        --green: #3fb950;
+        --purple: #a371f7;
+        --yellow: #d29922;
+        --shadow: 0 18px 48px rgba(0,0,0,.38);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(9,105,218,.13), transparent 28rem),
+        radial-gradient(circle at 92% 6%, rgba(31,136,61,.12), transparent 24rem),
+        var(--bg);
+    }
+    .page { max-width: 1180px; margin: 0 auto; padding: 28px 18px 72px; }
+    h1, h2, h3, p { margin: 0; }
+    .top-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .top-note b { color: var(--text); }
+    .chip-note { border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 92%, transparent); border-radius: 999px; padding: 7px 10px; }
+    .stage { display: grid; grid-template-columns: minmax(330px, 430px) minmax(330px, 1fr); gap: 28px; align-items: start; }
+    .phone-wrap { display: grid; justify-items: center; gap: 12px; }
+    .caption { width: min(100%, var(--phone)); text-align: center; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .caption b { color: var(--text); }
+    .phone { width: min(100%, var(--phone)); height: 844px; border: 1px solid var(--border); border-radius: 36px; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; position: relative; }
+    .phone::before { content: ""; position: absolute; z-index: 8; top: 10px; left: 50%; transform: translateX(-50%); width: 88px; height: 24px; border-radius: 0 0 16px 16px; background: #0b0f14; }
+    .screen { height: 100%; display: flex; flex-direction: column; background: var(--bg); padding: 46px 0 8px; }
+    .topbar { height: 48px; display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; padding: 0 12px; flex: 0 0 auto; }
+    .icon { height: 38px; border: 0; background: transparent; color: var(--text); display: grid; place-items: center; font-size: 24px; }
+    .icon.more { color: var(--muted); font-size: 22px; }
+    .title { font-weight: 800; font-size: 18px; letter-spacing: -.015em; }
+    .content { flex: 1; overflow-y: auto; padding: 0 12px 10px; scrollbar-width: none; }
+    .content::-webkit-scrollbar { display: none; }
+
+    .hero-card { margin-top: 8px; border: 1px solid var(--border); border-radius: 24px; background: var(--surface); overflow: hidden; }
+    .cover { height: 66px; position: relative; background:
+      radial-gradient(circle at 18% 26%, rgba(255,255,255,.55), transparent 4rem),
+      linear-gradient(135deg, rgba(9,105,218,.96), rgba(31,136,61,.86)); }
+    .avatar { position: absolute; left: 16px; bottom: -34px; width: 76px; height: 76px; border-radius: 50%; border: 4px solid var(--surface); background: linear-gradient(180deg,#d7f4e2,#8bd5a5); overflow: hidden; z-index: 2; }
+    .avatar::before { content: ""; position: absolute; left: 15px; top: 16px; width: 18px; height: 29px; background: rgba(255,255,255,.9); box-shadow: 28px 0 rgba(255,255,255,.9); }
+    .avatar::after { content: ""; position: absolute; left: 32px; bottom: 13px; width: 13px; height: 17px; background: rgba(255,255,255,.92); }
+    .hero-body { padding: 41px 16px 15px; }
+    .identity { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .name { font-size: 22px; line-height: 1.1; font-weight: 860; letter-spacing: -.03em; }
+    .login { color: var(--muted); font-size: 14px; margin-top: 3px; }
+    .status-pill { border: 1px solid color-mix(in srgb, var(--green) 42%, var(--border)); background: color-mix(in srgb, var(--green) 10%, var(--surface)); color: var(--green); border-radius: 999px; padding: 5px 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .bio-box { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .bio-box.empty { border: 1px dashed var(--border); background: var(--surface-2); border-radius: 12px; padding: 9px 10px; color: var(--subtle); }
+    .meta-grid { margin-top: 10px; display: grid; gap: 6px; color: var(--subtle); font-size: 12px; }
+    .meta-item { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .meta-ico { width: 17px; text-align: center; color: var(--muted); }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 13px; }
+    .btn { height: 36px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); display: grid; place-items: center; font-size: 13px; font-weight: 740; }
+    .btn.primary { background: var(--text); color: var(--surface); border-color: var(--text); }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 13px; }
+    .stat { border: 1px solid var(--border-2); background: var(--surface-2); border-radius: 14px; padding: 10px 7px; text-align: center; }
+    .stat b { display: block; font-size: 18px; letter-spacing: -.02em; }
+    .stat span { display: block; color: var(--muted); font-size: 11px; margin-top: 1px; }
+
+    .section { margin-top: 12px; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); overflow: hidden; }
+    .section.pad { padding: 15px; }
+    .section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 15px 15px 0; }
+    .section-title { font-size: 18px; font-weight: 850; letter-spacing: -.025em; }
+    .section-sub { margin-top: 4px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+    .link { color: var(--blue); font-size: 12px; font-weight: 720; white-space: nowrap; }
+
+    .overview-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 13px; }
+    .overview-tile { border: 1px solid var(--border-2); border-radius: 14px; background: var(--surface-2); padding: 11px; min-width: 0; position: relative; overflow: hidden; }
+    .overview-tile::after { content:""; position:absolute; right:-18px; top:-18px; width:48px; height:48px; border-radius:50%; background: color-mix(in srgb, var(--blue) 8%, transparent); }
+    .overview-tile.green::after { background: color-mix(in srgb, var(--green) 10%, transparent); }
+    .overview-tile.purple::after { background: color-mix(in srgb, var(--purple) 10%, transparent); }
+    .overview-label { color: var(--muted); font-size: 11px; }
+    .overview-value { margin-top: 4px; font-size: 18px; font-weight: 850; letter-spacing: -.02em; }
+    .overview-hint { margin-top: 2px; color: var(--subtle); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lang-block { margin-top: 13px; border: 1px solid var(--border-2); background: var(--surface-2); border-radius: 15px; padding: 12px; }
+    .lang-title { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12px; }
+    .lang-title b { color: var(--text); }
+    .lang-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--border-2); margin-top: 10px; }
+    .lang-bar i:nth-child(1){width:38%;background:#a371f7}.lang-bar i:nth-child(2){width:38%;background:#89e051}.lang-bar i:nth-child(3){width:7%;background:#555}.lang-bar i:nth-child(4){width:7%;background:#3572a5}.lang-bar i:nth-child(5){flex:1;background:#d0d7de}
+    .lang-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .lang-chip { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 6px 8px; font-size: 11.5px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    .heat-shell { margin: 12px 15px 10px; padding: 10px 10px 8px; border: 1px solid var(--border-2); border-radius: 16px; background: var(--surface-2); overflow: hidden; }
+    .months { display: grid; grid-template-columns: repeat(5,1fr); padding: 0 16px 5px; color: var(--muted); font-size: 10px; }
+    .heatmap { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7,10px); grid-auto-columns: 10px; gap: 4px; }
+    .c { width: 10px; height: 10px; border-radius: 3px; background: #ebedf0; }
+    @media (prefers-color-scheme: dark){.c{background:#161b22}}
+    .l1{background:#9be9a8}.l2{background:#40c463}.l3{background:#30a14e}.l4{background:#216e39}
+    @media (prefers-color-scheme: dark){.l1{background:#0e4429}.l2{background:#006d32}.l3{background:#26a641}.l4{background:#39d353}}
+    .legend { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 11px; padding: 0 15px 14px; }
+    .legend span:last-child { display: flex; align-items: center; gap: 4px; }
+    .mini { width: 9px; height: 9px; border-radius: 2px; background: #ebedf0; }
+    @media (prefers-color-scheme: dark){.mini{background:#161b22}}
+    .activity { padding: 0 15px 14px; }
+    .activity-fill { display: grid; grid-template-columns: 62px 1fr; gap: 12px; align-items: center; border: 1px solid var(--border-2); background: var(--surface-2); border-radius: 16px; padding: 12px; }
+    .ring { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; color: var(--green); font-size: 11px; font-weight: 850; background: conic-gradient(var(--green) 0 100%, var(--border-2) 0); position: relative; }
+    .ring::after { content:""; position:absolute; inset:7px; border-radius:50%; background: var(--surface-2); }
+    .ring span { position: relative; z-index: 1; }
+    .activity-text { min-width: 0; }
+    .activity-text b { display: block; font-size: 13px; }
+    .activity-text p { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .activity-mini { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 8px; }
+    .mini-stat { border: 1px solid var(--border-2); background: var(--surface); border-radius: 11px; padding: 7px 4px; text-align: center; }
+    .mini-stat b { display: block; font-size: 13px; }.mini-stat span { color: var(--muted); font-size: 10px; }
+
+    .repo-list { padding-top: 7px; }
+    .repo { padding: 13px 15px 14px; border-top: 1px solid var(--border-2); }
+    .repo:first-child { border-top: 0; }
+    .repo-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+    .repo-name { min-width: 0; color: var(--blue); font-size: 14.5px; line-height: 1.25; font-weight: 850; overflow-wrap: anywhere; }
+    .repo-name span { color: var(--muted); font-weight: 650; }
+    .repo-pill { flex: 0 0 auto; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); border-radius: 999px; padding: 2px 7px; font-size: 10px; }
+    .repo-desc { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .repo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 9px; color: var(--muted); font-size: 11px; }
+    .repo-lang { width: 8px; height: 8px; border-radius: 50%; background: #89e051; }
+
+    .bottom-nav { flex: 0 0 auto; height: 64px; margin: 8px 8px 0; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 96%, transparent); border-radius: 24px; display: grid; grid-template-columns: repeat(4,1fr); }
+    .nav { display: grid; place-items: center; align-content: center; gap: 2px; color: var(--text); font-size: 11px; }
+    .nav.active { color: var(--blue); font-weight: 760; }
+    .nav i { font-style: normal; font-size: 20px; line-height: 1; }
+
+    .fill-panel { border: 1px solid var(--border-2); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); padding: 20px; }
+    .fill-panel h2 { font-size: 24px; letter-spacing: -.03em; margin-bottom: 14px; }
+    .fill-grid { display: grid; gap: 12px; }
+    .fill-item { border: 1px solid var(--border); background: var(--surface-2); border-radius: 16px; padding: 14px; }
+    .fill-item b { display: block; margin-bottom: 5px; }
+    .fill-item p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .mock-row { display: grid; grid-template-columns: 42px 1fr auto; gap: 10px; align-items: center; margin-top: 10px; }
+    .mock-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(180deg,#d7f4e2,#8bd5a5); }
+    .skeleton { height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--border-2), color-mix(in srgb, var(--border-2) 45%, var(--surface)), var(--border-2)); }
+    .skeleton.short { width: 54%; margin-top: 7px; }
+    .empty-preview { margin-top: 10px; border: 1px dashed var(--border); border-radius: 14px; padding: 12px; color: var(--subtle); font-size: 13px; background: var(--surface); }
+
+    @media (max-width: 880px) { .stage { grid-template-columns: 1fr; } .page { padding: 18px 14px 56px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="top-note">
+      <span class="chip-note"><b>Profile V4</b>：去除重复的大说明板块</span>
+      <span class="chip-note">优化空数据 / 缓存 / 加载填充渲染</span>
+      <span class="chip-note">主方案仍基于 C 版 Hero</span>
+    </div>
+
+    <section class="stage">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="topbar"><button class="icon">‹</button><div class="title">个人资料</div><button class="icon more">⋯</button></div>
+            <div class="content">
+              <section class="hero-card">
+                <div class="cover"><div class="avatar"></div></div>
+                <div class="hero-body">
+                  <div class="identity"><div><div class="name">SunsetRNE</div><div class="login">@SunsetRNE</div></div><span class="status-pill">已缓存</span></div>
+                  <p class="bio-box empty">这个用户还没有填写个人简介。</p>
+                  <div class="meta-grid">
+                    <div class="meta-item"><span class="meta-ico">⌁</span><span>暂无个人资料信息</span></div>
+                    <div class="meta-item"><span class="meta-ico">◷</span><span>加入 2024-08-16 · 更新 2026-06-30 · 缓存 09:57</span></div>
+                  </div>
+                  <div class="actions"><div class="btn primary">打开 GitHub</div><div class="btn">刷新资料</div></div>
+                  <div class="stats"><div class="stat"><b>0</b><span>关注者</span></div><div class="stat"><b>0</b><span>正在关注</span></div><div class="stat"><b>32</b><span>仓库</span></div></div>
+                </div>
+              </section>
+
+              <section class="section pad">
+                <div class="section-title">概览</div>
+                <p class="section-sub">将账号指标和语言合并，减少重复卡片。</p>
+                <div class="overview-row">
+                  <div class="overview-tile"><div class="overview-label">公开仓库</div><div class="overview-value">32</div><div class="overview-hint">3 source · 26 fork</div></div>
+                  <div class="overview-tile green"><div class="overview-label">贡献</div><div class="overview-value">812</div><div class="overview-hint">过去一年</div></div>
+                  <div class="overview-tile purple"><div class="overview-label">主要语言</div><div class="overview-value">Kotlin</div><div class="overview-hint">38% · 5 个仓库</div></div>
+                  <div class="overview-tile"><div class="overview-label">Issues</div><div class="overview-value">0</div><div class="overview-hint">公开打开项</div></div>
+                </div>
+                <div class="lang-block">
+                  <div class="lang-title"><b>语言分布</b><span>12 个仓库有语言数据</span></div>
+                  <div class="lang-bar"><i></i><i></i><i></i><i></i><i></i></div>
+                  <div class="lang-chips"><span class="lang-chip"><i class="dot" style="background:#a371f7"></i>Kotlin 38%</span><span class="lang-chip"><i class="dot" style="background:#89e051"></i>Shell 38%</span><span class="lang-chip"><i class="dot" style="background:#555"></i>C 7%</span><span class="lang-chip"><i class="dot" style="background:#3572a5"></i>Python 7%</span></div>
+                </div>
+              </section>
+
+              <section class="section">
+                <div class="section-head"><div><div class="section-title">贡献</div><p class="section-sub">过去一年有 812 次贡献</p></div><span class="link">设置</span></div>
+                <div class="heat-shell"><div class="months"><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div><div class="heatmap" id="heat"></div></div>
+                <div class="legend"><span>了解贡献的计算方式</span><span>少 <i class="mini"></i><i class="mini l1"></i><i class="mini l2"></i><i class="mini l3"></i><i class="mini l4"></i> 多</span></div>
+                <div class="activity">
+                  <div class="activity-fill"><div class="ring"><span>100%</span></div><div class="activity-text"><b>本期主要为代码提交</b><p>参与 InstallerX_Zsunset、SunsetGitHub、Cerberus-Ultra 等仓库。</p></div></div>
+                  <div class="activity-mini"><div class="mini-stat"><b>19</b><span>提交</span></div><div class="mini-stat"><b>0</b><span>议题</span></div><div class="mini-stat"><b>0</b><span>PR</span></div><div class="mini-stat"><b>0</b><span>审查</span></div></div>
+                </div>
+              </section>
+
+              <section class="section">
+                <div class="section-head"><div><div class="section-title">活跃仓库</div><p class="section-sub">优先展示最近活跃和最可点击的项目。</p></div><span class="link">全部</span></div>
+                <div class="repo-list">
+                  <article class="repo"><div class="repo-top"><div class="repo-name"><span>SunsetRNE /</span> oppo_oplus_realme_sm8650</div><span class="repo-pill">Fork</span></div><p class="repo-desc">An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8650 series in a completely new way.</p><div class="repo-meta"><i class="repo-lang"></i><span>Shell</span><span>★ 5</span><span>Fork 1</span></div></article>
+                  <article class="repo"><div class="repo-top"><div class="repo-name"><span>SunsetRNE /</span> CPA-Codex-Manager</div><span class="repo-pill">Fork</span></div><p class="repo-desc">高性能管理面板，集成全自动批量注册、CLIProxyAPI 平台账号池实时监控等功能。</p><div class="repo-meta"><i class="repo-lang" style="background:#3572a5"></i><span>Python</span><span>★ 4</span><span>Fork 2</span></div></article>
+                  <article class="repo"><div class="repo-top"><div class="repo-name"><span>SunsetRNE /</span> SunsetGitHub</div><span class="repo-pill">Source</span></div><p class="repo-desc">移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、Issues 和个人资料页。</p><div class="repo-meta"><i class="repo-lang" style="background:#a371f7"></i><span>Kotlin</span><span>★ 0</span></div></article>
+                </div>
+              </section>
+            </div>
+            <nav class="bottom-nav"><div class="nav active"><i>⌂</i>首页</div><div class="nav"><i>▦</i>仓库</div><div class="nav"><i>♟</i>通知</div><div class="nav"><i>⚙</i>设置</div></nav>
+          </div>
+        </div>
+        <div class="caption"><b>V4 主页面。</b>去掉重复说明大板块后，直接展示页面方案；首屏更干净，空简介、缓存状态、语言和贡献填充都更明确。</div>
+      </div>
+
+      <aside class="fill-panel">
+        <h2>填充渲染优化点</h2>
+        <div class="fill-grid">
+          <div class="fill-item"><b>1. 空字段不再显示“暂无个人资料信息”长串堆叠</b><p>Bio 使用虚线空态盒；location/company/blog 等元信息用逐行 icon 文案，有值才显示，无值只保留一条概括。</p><div class="empty-preview">这个用户还没有填写个人简介。</div></div>
+          <div class="fill-item"><b>2. 加载态建议用骨架屏填充</b><p>首屏加载时不要只显示一行“正在加载个人页面……”，改为头像、标题、统计卡的 skeleton，减少跳变。</p><div class="mock-row"><div class="mock-avatar"></div><div><div class="skeleton"></div><div class="skeleton short"></div></div><span class="chip-note">loading</span></div></div>
+          <div class="fill-item"><b>3. 指标填充改成语义卡片</b><p>把公开仓库、贡献、主要语言、Issues 做成 2×2 tile，比 4 个窄格更稳，数字和解释同时存在。</p></div>
+          <div class="fill-item"><b>4. 贡献区填充更聚合</b><p>保留热力图；活动概览改为“环形摘要 + 4 个小指标”，避免当前长横线图在移动端显得空。</p></div>
+          <div class="fill-item"><b>5. 仓库条目填充更接近 GitHub</b><p>Owner 弱化、仓库名蓝色、描述最多两行、底部语言/Star/Fork 一行展示，长仓库名自动换行。</p></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <script>
+    const pattern=[2,3,1,2,3,2,0,3,2,1,3,2,0,1,2,4,2,1,0,0,1,0,0,1,0,2,0,0,1,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1,0,3,0,0,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,0,4,0,0,0,0,0,1];
+    const heat=document.getElementById('heat');
+    pattern.forEach(n=>{const c=document.createElement('i');c.className='c'+(n?' l'+n:'');heat.appendChild(c);});
+  </script>
+</body>
+</html>

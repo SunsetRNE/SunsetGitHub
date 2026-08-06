@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Navigation Bar Variant Combination Matrix v7</title>
+  <style>
+    :root{--bg:#f6f8fa;--text:#1f2328;--muted:#57606a;--subtle:#6e7781;--line:rgba(31,35,40,.12);--blue:#0969da;--blueSoft:#ddf4ff;--green:#1a7f37;--greenSoft:#dafbe1;--purple:#8250df;--purpleSoft:#f0e7ff;--orange:#bc4c00;--orangeSoft:#fff1e5;--red:#cf222e;--redSoft:#ffebe9;--shadow:0 14px 38px rgba(31,35,40,.1);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef6ff,#f6f8fa 420px),var(--bg);color:var(--text);line-height:1.5}.page{max-width:1320px;margin:0 auto;padding:30px 18px 80px}.hero,.panel{background:rgba(255,255,255,.86);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.hero{padding:30px;margin-bottom:20px}.eyebrow{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--blueSoft);color:#0550ae;font-size:12px;font-weight:850;margin-bottom:14px}h1{font-size:clamp(32px,5vw,58px);line-height:1.03;letter-spacing:-1.5px;margin:0 0 14px}h2{font-size:26px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}p{margin:0 0 12px;color:var(--muted)}strong{color:var(--text)}.panel{padding:22px;margin-top:20px}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;min-height:34px;padding:0 12px;font-weight:800;color:var(--text);cursor:pointer}.chip.active{background:var(--blueSoft);border-color:rgba(9,105,218,.4);color:#0550ae}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.combo{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 8px 24px rgba(31,35,40,.06)}.combo.disabled{opacity:.55;background:#f6f8fa}.combo-title{display:flex;justify-content:space-between;gap:8px;align-items:start;margin-bottom:8px}.combo-title strong{font-size:14px}.badge{display:inline-flex;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:900;background:var(--greenSoft);color:#116329;white-space:nowrap}.badge.warn{background:var(--orangeSoft);color:#9a3412}.badge.no{background:var(--redSoft);color:#a40e26}.screen{position:relative;height:190px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#fff,#f6f8fa);margin-top:10px}.screen.dark{background:linear-gradient(180deg,#0d1117,#161b22);border-color:rgba(240,246,252,.12)}.body{padding:10px;display:grid;gap:7px}.row{height:28px;border-radius:10px;background:#d8dee4}.screen.dark .row{background:#30363d}.nav{position:absolute;display:grid;grid-template-columns:repeat(var(--items),1fr);gap:2px;align-items:center;padding:5px;overflow:hidden}.dock{left:0;right:0;bottom:0;height:48px;border-top:1px solid var(--stroke);border-radius:0}.float{left:10px;right:10px;bottom:10px;height:48px;border:1px solid var(--stroke);border-radius:18px;box-shadow:0 12px 26px rgba(31,35,40,.16)}.compact{left:28px;right:28px;bottom:12px;height:38px;border:1px solid var(--stroke);border-radius:16px;box-shadow:0 10px 22px rgba(31,35,40,.14)}.hidden{display:none}.solid{background:var(--solid);--stroke:rgba(31,35,40,.12)}.dark .solid{--solid:#161b22;--stroke:rgba(240,246,252,.12)}.light .solid{--solid:#fff}.tonal{background:color-mix(in srgb,var(--accent) 13%,#fff);--stroke:color-mix(in srgb,var(--accent) 24%,transparent)}.dark .tonal{background:color-mix(in srgb,var(--accent) 20%,#161b22)}.frosted{background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(255,255,255,.52));--stroke:rgba(255,255,255,.72);backdrop-filter:blur(14px) saturate(1.25);-webkit-backdrop-filter:blur(14px) saturate(1.25)}.dark .frosted{background:linear-gradient(135deg,rgba(48,54,61,.82),rgba(22,27,34,.55));--stroke:rgba(240,246,252,.16)}.glass{background:radial-gradient(circle at 18% 0%,rgba(255,255,255,.88),rgba(255,255,255,0) 45%),linear-gradient(135deg,rgba(255,255,255,.78),rgba(255,255,255,.34));--stroke:rgba(255,255,255,.78);box-shadow:0 14px 32px rgba(31,35,40,.2),inset 0 1px 0 rgba(255,255,255,.82);backdrop-filter:blur(22px) saturate(1.55);-webkit-backdrop-filter:blur(22px) saturate(1.55)}.dark .glass{background:radial-gradient(circle at 18% 0%,rgba(240,246,252,.15),rgba(240,246,252,0) 45%),linear-gradient(135deg,rgba(48,54,61,.72),rgba(13,17,23,.42));--stroke:rgba(240,246,252,.2)}.acrylic{background:linear-gradient(135deg,rgba(255,255,255,.56),rgba(255,255,255,.34)),repeating-linear-gradient(45deg,rgba(9,105,218,.04) 0 2px,transparent 2px 5px);--stroke:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(1.8);-webkit-backdrop-filter:blur(26px) saturate(1.8)}.dark .acrylic{background:linear-gradient(135deg,rgba(48,54,61,.58),rgba(13,17,23,.36)),repeating-linear-gradient(45deg,rgba(88,166,255,.05) 0 2px,transparent 2px 5px);--stroke:rgba(240,246,252,.16)}.item{display:grid;place-items:center;align-content:center;min-width:0;height:100%;border-radius:12px;font-size:9px;font-weight:850;color:var(--muted)}.dark .item{color:#8b949e}.item .ico{font-size:16px;line-height:1}.iconOnly .txt{display:none}.large .txt{font-size:10px}.activeItem{color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent)}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.meta span{font-size:10px;font-weight:850;color:var(--subtle);background:#f6f8fa;border:1px solid var(--line);border-radius:999px;padding:3px 7px}.matrix{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}.matrix th,.matrix td{padding:12px 13px;border-bottom:1px solid rgba(31,35,40,.08);font-size:13.5px;text-align:left;vertical-align:top}.matrix th{background:#f6f8fa;font-size:12px}.matrix tr:last-child td{border-bottom:0}.footer{text-align:center;color:var(--subtle);font-size:13px;margin-top:28px}@media(max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.grid{grid-template-columns:1fr}.hero{padding:22px}}
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Spec v7 · Complete Combination Matrix</div>
+    <h1>导航栏渲染组合矩阵</h1>
+    <p>这一版把变体组合系统摊开：不是单个演示，而是按 <strong>Placement × Material × Density × Menu × Surface</strong> 批量生成组合卡片，并标出推荐、可用、降级和不建议组合。</p>
+    <p>默认展示推荐组合。可以切换查看全部组合、玻璃组合、紧凑组合、深色组合和不建议组合。</p>
+    <div class="toolbar" id="filters">
+      <button class="chip active" data-filter="recommended">推荐组合</button>
+      <button class="chip" data-filter="all">全部核心组合</button>
+      <button class="chip" data-filter="glass">玻璃族</button>
+      <button class="chip" data-filter="compact">紧凑族</button>
+      <button class="chip" data-filter="dark">深色族</button>
+      <button class="chip" data-filter="fallback">降级/不建议</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 id="sectionTitle">推荐组合</h2>
+    <div class="grid" id="gallery"></div>
+  </section>
+
+  <section class="panel">
+    <h2>组合规则</h2>
+    <table class="matrix">
+      <thead><tr><th>组合</th><th>处理</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td>Docked + Glass / Acrylic</td><td>可用但不推荐，优先降级到 Solid 或 Tonal</td><td>Docked 是占位 surface，强玻璃容易造成底色断层和视觉噪音</td></tr>
+        <tr><td>Floating + Solid</td><td>可用，作为低端或高对比 fallback</td><td>没有玻璃质感，但层级稳定</td></tr>
+        <tr><td>Compact + Large density</td><td>冲突，Compact placement 强制 IconOnly 或 IconLabel</td><td>高度不足，label 容易裁切</td></tr>
+        <tr><td>Dark + Glass</td><td>独立 token，不复用浅色透明度</td><td>深色玻璃需要更弱高光、更强边界</td></tr>
+        <tr><td>RepositoryTemp + Main menu</td><td>无效组合</td><td>临时分区只属于仓库菜单</td></tr>
+        <tr><td>Hidden + 任意 material/menu</td><td>不渲染 material，不发布 inset</td><td>隐藏态不应该保留视觉副作用</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>第一轮建议实现的组合</h2>
+    <table class="matrix">
+      <thead><tr><th>优先级</th><th>组合</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>P0</td><td>Docked + Solid + IconLabel + Main + Light/Dark</td><td>当前主导航默认行为等价迁移</td></tr>
+        <tr><td>P0</td><td>Docked + Solid + IconLabel + Repository + Light/Dark</td><td>当前仓库分区导航等价迁移</td></tr>
+        <tr><td>P1</td><td>Floating + Frosted/Glass + IconLabel + Main</td><td>悬浮主导航目标态</td></tr>
+        <tr><td>P1</td><td>Floating + Frosted/Glass + IconLabel + RepositoryTemp</td><td>仓库未钉选分区临时高亮目标态</td></tr>
+        <tr><td>P1</td><td>CompactFloating + Frosted + IconOnly + Repository</td><td>键盘、横屏、低高度场景</td></tr>
+        <tr><td>P2</td><td>Floating + Tonal + IconLabel + Main/Repository</td><td>高对比或禁用玻璃时的品牌化 fallback</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="footer">生成文件：docs/navigation-bar-component-combination-matrix-v7.html</div>
+</main>
+<script>
+const placements=[
+  {id:'dock',label:'Docked',cls:'dock'},
+  {id:'float',label:'Floating',cls:'float'},
+  {id:'compact',label:'CompactFloating',cls:'compact'},
+  {id:'hidden',label:'Hidden',cls:'hidden'}
+];
+const materials=[
+  {id:'solid',label:'Solid',cls:'solid'},
+  {id:'tonal',label:'Tonal',cls:'tonal'},
+  {id:'frosted',label:'Frosted',cls:'frosted'},
+  {id:'glass',label:'Glass',cls:'glass'},
+  {id:'acrylic',label:'Acrylic',cls:'acrylic'}
+];
+const densities=[
+  {id:'iconLabel',label:'IconLabel',cls:''},
+  {id:'iconOnly',label:'IconOnly',cls:'iconOnly'},
+  {id:'large',label:'Large',cls:'large'}
+];
+const menus=[
+  {id:'main',label:'Main',items:[['⌂','Home'],['▦','Repos'],['●','Inbox'],['⚙','Settings']]},
+  {id:'repo',label:'Repository',items:[['⌘','Code'],['●','Issues'],['↻','Actions'],['⚙','Settings'],['⋯','More']]},
+  {id:'repoTemp',label:'RepositoryTemp',items:[['⌘','Code'],['●','Issues'],['⑂','Pulls'],['↻','Actions'],['⋯','More']]}
+];
+const surfaces=[
+  {id:'light',label:'Light',cls:'light',accent:'#0969da'},
+  {id:'dark',label:'Dark',cls:'dark',accent:'#58a6ff'},
+  {id:'green',label:'Green',cls:'light',accent:'#1a7f37'},
+  {id:'purple',label:'Purple',cls:'light',accent:'#8250df'}
+];
+const combos=[
+  ['dock','solid','iconLabel','main','light'],['dock','solid','iconLabel','main','dark'],['dock','solid','iconLabel','repo','light'],['dock','solid','iconLabel','repo','dark'],
+  ['float','glass','iconLabel','main','light'],['float','glass','iconLabel','main','dark'],['float','glass','iconLabel','repo','light'],['float','glass','iconLabel','repo','dark'],
+  ['float','glass','iconLabel','repoTemp','light'],['float','frosted','iconLabel','repoTemp','dark'],['compact','frosted','iconOnly','repo','light'],['compact','frosted','iconOnly','repo','dark'],
+  ['float','tonal','iconLabel','main','green'],['float','tonal','iconLabel','repo','purple'],['float','solid','iconLabel','main','light'],['float','solid','iconLabel','repo','dark'],
+  ['dock','glass','iconLabel','main','light'],['dock','acrylic','iconLabel','repo','light'],['compact','glass','large','repo','light'],['hidden','glass','iconLabel','repo','light'],
+  ['float','acrylic','iconLabel','repo','light'],['float','acrylic','iconLabel','repo','dark'],['compact','glass','iconOnly','repoTemp','light'],['compact','tonal','iconOnly','main','green']
+];
+function get(list,id){return list.find(x=>x.id===id)}
+function classify(c){const [p,m,d,menu,s]=c;if(p==='hidden')return ['fallback','no','Hidden'];if(p==='dock'&&(m==='glass'||m==='acrylic'))return ['fallback','warn','降级'];if(p==='compact'&&d==='large')return ['fallback','no','冲突'];if(m==='glass'||m==='frosted'||m==='acrylic')return ['glass','ok','推荐'];if(p==='compact')return ['compact','ok','推荐'];if(s==='dark')return ['dark','ok','可用'];return ['recommended','ok','推荐']}
+function card(c){const [pid,mid,did,menuid,sid]=c;const p=get(placements,pid),m=get(materials,mid),d=get(densities,did),menu=get(menus,menuid),s=get(surfaces,sid);const [group,status,label]=classify(c);const disabled=status==='no'||status==='warn';return `<article class="combo ${disabled?'disabled':''}" data-groups="${group} ${mid} ${pid} ${sid} ${did}">
+  <div class="combo-title"><strong>${p.label} / ${m.label}</strong><span class="badge ${status==='warn'?'warn':status==='no'?'no':''}">${label}</span></div>
+  <div class="screen ${s.cls}" style="--accent:${s.accent}"><div class="body"><div class="row"></div><div class="row" style="width:72%"></div><div class="row" style="width:86%"></div></div>
+    <nav class="nav ${p.cls} ${m.cls} ${d.cls}" style="--items:${menu.items.length};--accent:${s.accent}">${menu.items.map((it,i)=>`<div class="item ${i===0?'activeItem':''}"><span class="ico">${it[0]}</span><span class="txt">${it[1]}</span></div>`).join('')}</nav>
+  </div>
+  <div class="meta"><span>${d.label}</span><span>${menu.label}</span><span>${s.label}</span></div>
+</article>`}
+const gallery=document.getElementById('gallery');
+const title=document.getElementById('sectionTitle');
+function render(filter){let list=combos;if(filter==='recommended')list=combos.filter(c=>{const [g,st]=classify(c);return st==='ok'&&(g==='recommended'||g==='glass'||g==='compact')}).slice(0,14);else if(filter==='glass')list=combos.filter(c=>['glass','frosted','acrylic'].includes(c[1]));else if(filter==='compact')list=combos.filter(c=>c[0]==='compact');else if(filter==='dark')list=combos.filter(c=>c[4]==='dark');else if(filter==='fallback')list=combos.filter(c=>classify(c)[1]!=='ok');
+ gallery.innerHTML=list.map(card).join('');title.textContent={recommended:'推荐组合',all:'全部核心组合',glass:'玻璃族组合',compact:'紧凑族组合',dark:'深色族组合',fallback:'降级 / 不建议组合'}[filter]||'组合';}
+document.querySelectorAll('.chip').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(btn.dataset.filter)}));
+render('recommended');
+</script>
+</body>
+</html>

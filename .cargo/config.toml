@@ -1,0 +1,15 @@
+# Android 交叉编译配置（cargo-ndk）
+# 安装：cargo install cargo-ndk
+# 构建：cargo ndk -t arm64-v8a -o ../app/src/main/jniLibs build -p sunset-ffi --release
+
+[build]
+# 离线环境不需要额外配置；网络可用时 cargo 自动下载依赖。
+
+[target.aarch64-linux-android]
+linker = "aarch64-linux-android26-clang"
+
+[target.armv7-linux-androideabi]
+linker = "armv7a-linux-androideabi26-clang"
+
+[target.x86_64-linux-android]
+linker = "x86_64-linux-android26-clang"

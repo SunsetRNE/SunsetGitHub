@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Bar Integrated Design Spec</title>
+  <style>
+    :root {
+      --page: #f6f8fa;
+      --canvas: #ffffff;
+      --surface: #ffffff;
+      --border: #d0d7de;
+      --divider: #d8dee4;
+      --text: #24292f;
+      --secondary: #57606a;
+      --muted: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf4ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --attention: #bc4c00;
+      --attention-soft: #fff1e5;
+      --danger: #cf222e;
+      --danger-soft: #ffebe9;
+      --shadow: 0 14px 36px rgba(31,35,40,.10);
+      --floating-bg: rgba(255,255,255,.92);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, #eef6ff 0, #f6f8fa 390px),
+        var(--page);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .page { max-width: 1320px; margin: 0 auto; padding: 30px 18px 84px; }
+    .hero, .panel, .card {
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(31,35,40,.12);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .hero { padding: 30px; margin-bottom: 20px; }
+    .eyebrow { display: inline-flex; padding: 6px 10px; border-radius: 999px; background: var(--accent-soft); color: #0550ae; font-size: 12px; font-weight: 850; margin-bottom: 14px; }
+    h1 { font-size: clamp(32px, 5vw, 58px); line-height: 1.04; letter-spacing: -1.3px; margin: 0 0 14px; }
+    h2 { font-size: 26px; margin: 0 0 12px; }
+    h3 { font-size: 16px; margin: 0 0 8px; }
+    p { margin: 0 0 12px; color: var(--secondary); }
+    strong { color: inherit; }
+    .navlinks { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .navlinks a { text-decoration: none; color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; font-weight: 850; font-size: 13px; }
+    .navlinks a:first-child { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .panel { padding: 24px; margin-top: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .card { padding: 14px; box-shadow: 0 8px 24px rgba(31,35,40,.06); }
+
+    .screen {
+      position: relative;
+      height: 380px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--canvas);
+      color: var(--text);
+    }
+    .screen.dark {
+      --canvas: #0d1117;
+      --surface: #161b22;
+      --surface-2: #21262d;
+      --border: #30363d;
+      --divider: #21262d;
+      --text: #e6edf3;
+      --secondary: #8b949e;
+      --muted: #7d8590;
+      --accent: #58a6ff;
+      --accent-soft: rgba(56,139,253,.18);
+      --floating-bg: rgba(22,27,34,.92);
+      background: var(--canvas);
+      color: var(--text);
+    }
+    .screen.bright-dark {
+      --canvas: #111821;
+      --surface: #1b2330;
+      --surface-2: #263142;
+      --border: #3b4658;
+      --divider: #263142;
+      --text: #f0f6fc;
+      --secondary: #b7c0cc;
+      --muted: #9ba7b4;
+      --accent: #79c0ff;
+      --accent-soft: rgba(88,166,255,.22);
+      --floating-bg: rgba(27,35,48,.94);
+    }
+    .screen.too-dark {
+      --canvas: #070b11;
+      --surface: #0d1117;
+      --surface-2: #11161f;
+      --border: #1b222d;
+      --divider: #11161f;
+      --text: #30363d;
+      --secondary: #000000;
+      --muted: #000000;
+      --accent: #1f6feb;
+      --accent-soft: rgba(31,111,235,.20);
+      --floating-bg: rgba(13,17,23,.92);
+    }
+    .top { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--surface); border-bottom: 1px solid var(--border); font-weight: 850; }
+    .content { position: absolute; inset: 56px 0 0; padding: 14px 14px 106px; overflow: hidden; }
+    .repo { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 12px; margin-bottom: 10px; color: var(--text); }
+    .repo .sub { color: var(--secondary); font-size: 13px; margin-top: 6px; }
+    .line { height: 8px; border-radius: 999px; background: var(--divider); margin-top: 9px; }
+
+    .nav { position: absolute; display: grid; grid-template-columns: repeat(var(--items, 5), 1fr); gap: 2px; align-items: center; padding: 7px; overflow: hidden; }
+    .docked { left: 0; right: 0; bottom: 0; height: 72px; background: var(--surface); border-top: 1px solid var(--border); }
+    .floating { left: 12px; right: 12px; bottom: 14px; height: 72px; border-radius: 24px; background: var(--floating-bg); border: 1px solid var(--border); box-shadow: 0 18px 42px rgba(31,35,40,.16); backdrop-filter: blur(18px) saturate(1.25); -webkit-backdrop-filter: blur(18px) saturate(1.25); }
+    .glass { left: 12px; right: 12px; bottom: 14px; height: 72px; border-radius: 24px; background: linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.52)); border: 1px solid rgba(255,255,255,.74); box-shadow: 0 18px 44px rgba(31,35,40,.20), inset 0 1px 0 rgba(255,255,255,.84); backdrop-filter: blur(24px) saturate(1.55); -webkit-backdrop-filter: blur(24px) saturate(1.55); }
+    .dark .glass { background: linear-gradient(135deg, rgba(48,54,61,.76), rgba(22,27,34,.54)); border-color: rgba(240,246,252,.18); box-shadow: 0 18px 44px rgba(1,4,9,.36), inset 0 1px 0 rgba(240,246,252,.14); }
+    .bright-dark .glass { background: linear-gradient(135deg, rgba(61,73,90,.82), rgba(27,35,48,.62)); border-color: rgba(240,246,252,.24); box-shadow: 0 18px 44px rgba(1,4,9,.30), inset 0 1px 0 rgba(240,246,252,.20); }
+    .too-dark .glass { background: linear-gradient(135deg, rgba(13,17,23,.74), rgba(7,11,17,.48)); border-color: rgba(240,246,252,.08); }
+    .compact { left: 34px; right: 34px; bottom: 16px; height: 52px; border-radius: 18px; background: var(--floating-bg); border: 1px solid var(--border); box-shadow: 0 14px 30px rgba(31,35,40,.16); padding: 5px; }
+    .compact .txt { display: none; }
+    .item { height: 100%; min-width: 0; border-radius: 16px; display: grid; place-items: center; align-content: center; gap: 2px; color: var(--secondary); font-size: 10px; font-weight: 850; white-space: nowrap; }
+    .item .ico { font-size: 18px; line-height: 1; }
+    .item.active { color: var(--accent); background: var(--accent-soft); }
+    .item.disabled { opacity: .42; }
+    .bad-tint .item { color: #000; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .meta span { font-size: 10px; color: #57606a; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 999px; padding: 3px 7px; font-weight: 850; }
+
+    .table { width: 100%; border-collapse: collapse; border: 1px solid rgba(31,35,40,.12); border-radius: 14px; overflow: hidden; background: #fff; }
+    .table th, .table td { padding: 12px 13px; border-bottom: 1px solid rgba(31,35,40,.08); font-size: 13.5px; text-align: left; vertical-align: top; }
+    .table th { background: #f6f8fa; font-size: 12px; }
+    .table tr:last-child td { border-bottom: 0; }
+    .callout { padding: 16px; border-radius: 14px; background: #ddf4ff; border: 1px solid #add5ff; margin-top: 14px; }
+    .ok { background: #dafbe1; border-color: #aceebb; }
+    .warn { background: #fff1e5; border-color: #ffd8b5; }
+    .danger { background: #ffebe9; border-color: #ffcecb; }
+    .footer { text-align: center; color: #6e7781; font-size: 13px; margin-top: 28px; }
+
+    @media(max-width: 1040px) { .grid, .grid2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Integrated Spec · Navigation Rendering + Follow-up Plan</div>
+    <h1>SunsetGitHub 导航栏组件整合设计稿</h1>
+    <p>这份文档整合前面所有探索：现有设计方案、玻璃效果候选、修正版暗色渲染、设计细节、资源层建议，以及后续实现计划。目标是把导航栏从 Activity 附属视图推进为独立、可变体渲染、可调试的物理组件。</p>
+    <div class="navlinks">
+      <a href="#renders">渲染方案</a>
+      <a href="#details">设计细节</a>
+      <a href="#resources">资源建议</a>
+      <a href="#plan">后续计划</a>
+    </div>
+  </section>
+
+  <section class="panel" id="renders">
+    <h2>一、核心渲染方案</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>现有方案 / Docked Solid</h3>
+        <div class="screen"><div class="top"><span>SunsetGitHub</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Home</strong><div class="sub">当前默认底栏，稳定、低风险。</div><div class="line" style="width:72%"></div></div><div class="repo"><strong>Repository list</strong><div class="line" style="width:84%"></div></div></div><nav class="nav docked" style="--items:4"><div class="item active"><span class="ico">⌂</span><span class="txt">Home</span></div><div class="item"><span class="ico">▦</span><span class="txt">Repos</span></div><div class="item"><span class="ico">●</span><span class="txt">Inbox</span></div><div class="item"><span class="ico">⚙</span><span class="txt">Settings</span></div></nav></div>
+        <div class="meta"><span>bg_bottom_nav_docked</span><span>baseline</span></div>
+      </article>
+
+      <article class="card">
+        <h3>现有悬浮 / Floating Frosted</h3>
+        <div class="screen"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Code section</strong><div class="sub">基于现有 floating 背景，轻透明。</div><div class="line" style="width:78%"></div></div><div class="repo"><strong>Issues and Actions</strong><div class="line" style="width:64%"></div></div></div><nav class="nav floating" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div>
+        <div class="meta"><span>github_floating_nav_background</span><span>P1</span></div>
+      </article>
+
+      <article class="card">
+        <h3>玻璃候选 / Light Glass</h3>
+        <div class="screen"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Backdrop continuity</strong><div class="sub">轻玻璃，不走花哨 acrylic。</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Temporary section slot</strong><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item active"><span class="ico">⑂</span><span>Pulls</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div>
+        <div class="meta"><span>glass candidate</span><span>repository temp</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>二、暗色渲染修正</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>过暗反例 / Reject</h3>
+        <div class="screen dark too-dark"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Dark glass token</strong><div class="sub">文本和未选中项被画布吞掉。</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Too little contrast</strong><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div>
+        <div class="meta"><span>do not use</span><span>too dark</span></div>
+      </article>
+
+      <article class="card">
+        <h3>推荐暗色 / GitHub Dark</h3>
+        <div class="screen dark"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Readable dark surface</strong><div class="sub">未选中项使用 secondary text。</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Separate glass alpha</strong><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div>
+        <div class="meta"><span>#0D1117 / #161B22</span><span>recommended</span></div>
+      </article>
+
+      <article class="card">
+        <h3>提亮候选 / Bright Dark</h3>
+        <div class="screen dark bright-dark"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Mobile readability</strong><div class="sub">真机压暗时可采用。</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Lifted border and surface</strong><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div>
+        <div class="meta"><span>fallback candidate</span><span>brighter</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="details">
+    <h2>三、设计细节</h2>
+    <table class="table">
+      <thead><tr><th>细节</th><th>决策</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td>视觉语言</td><td>GitHub native 低饱和，不使用彩色 acrylic 作为主方案</td><td>项目现有资源是 canvas/surface/border/accent 体系</td></tr>
+        <tr><td>默认态</td><td>Docked Solid 保留为 baseline</td><td>用于等价迁移、低风险 fallback、高对比场景</td></tr>
+        <tr><td>悬浮态</td><td>Floating Frosted 先落地，Glass 作为增强 material renderer</td><td>先解决底色连续和组件边界，再做更重的玻璃</td></tr>
+        <tr><td>暗色态</td><td>暗色玻璃单独 token，不能复用浅色 alpha</td><td>暗色下透明和高光的视觉权重完全不同</td></tr>
+        <tr><td>未选中项</td><td>使用 github_text_secondary，禁用使用 github_text_muted</td><td>避免夜间黑色图标/文字不可读</td></tr>
+        <tr><td>仓库临时分区</td><td>从 More 打开的未钉选分区临时占用一个快捷槽</td><td>保证当前分区可见、可高亮</td></tr>
+        <tr><td>紧凑态</td><td>Compact 使用 icon only，作为键盘/低高度场景</td><td>防止 label 裁切和触摸区域不足</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel" id="resources">
+    <h2>四、资源层建议</h2>
+    <table class="table">
+      <thead><tr><th>资源 / Token</th><th>当前状态</th><th>建议动作</th></tr></thead>
+      <tbody>
+        <tr><td>bg_bottom_nav_docked.xml</td><td>solid = github_surface</td><td>保留，映射为 Docked Solid material</td></tr>
+        <tr><td>bg_bottom_nav_floating.xml</td><td>github_floating_nav_background + border + radius</td><td>保留，映射为 Floating Frosted 基础 material</td></tr>
+        <tr><td>nav_item_tint.xml</td><td>default/disabled 使用 black</td><td>改为 token 化：checked=github_accent，default=github_text_secondary，disabled=github_text_muted</td></tr>
+        <tr><td>values-night/nav_item_tint.xml</td><td>建议新增</td><td>确保夜间未选中项不再是黑色</td></tr>
+        <tr><td>dark glass token</td><td>尚未存在</td><td>在组件 renderer 内定义，不急于新增 drawable</td></tr>
+        <tr><td>RenderEffect glass</td><td>尚未实现</td><td>作为后续增强，第一轮不用真 blur</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn"><strong>优先级最高：</strong>先修复 nav item tint 的夜间可读性，再谈玻璃材质，否则暗色导航栏会一直不可信。</div>
+  </section>
+
+  <section class="panel" id="plan">
+    <h2>五、后续跟进计划</h2>
+    <table class="table">
+      <thead><tr><th>阶段</th><th>目标</th><th>交付物</th><th>验证</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>资源修正</td><td>修复 nav_item_tint，新增 night tint</td><td>暗色 Docked 底栏未选中项清晰可读</td></tr>
+        <tr><td>2</td><td>组件壳</td><td>AppNavigationBarLayout，内部先复用 BottomNavigationView</td><td>Docked Solid 与当前行为一致</td></tr>
+        <tr><td>3</td><td>RenderPlan</td><td>State -> RenderPlan -> commit 管线</td><td>主导航和仓库导航切换不回退</td></tr>
+        <tr><td>4</td><td>Floating Frosted</td><td>迁移现有 floating 背景为组件 material</td><td>底色连续，内容不被遮挡</td></tr>
+        <tr><td>5</td><td>Repository Temp</td><td>未钉选分区临时入栏规则</td><td>从 More 打开 Pull Requests 能高亮</td></tr>
+        <tr><td>6</td><td>Dark Glass Candidate</td><td>暗色专用 glass token</td><td>真机截图确认不过暗</td></tr>
+        <tr><td>7</td><td>正式化文档</td><td>ADR + issue 切片 + 测试清单</td><td>后续维护者能按阶段接手</td></tr>
+      </tbody>
+    </table>
+    <div class="callout ok"><strong>最小成功标准：</strong>MainActivity 变薄，导航栏成为独立组件；现有 Docked/Floating 行为不回退；暗色可读；仓库临时分区可高亮；玻璃效果作为可选 material，而不是散落在 Activity 和 Fragment 里。</div>
+  </section>
+
+  <div class="footer">生成文件：docs/navigation-bar-integrated-design-spec.html</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_create_repository"
+        android:icon="@drawable/ic_add_24"
+        android:title="@string/repository_create_action"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_refresh_repositories"
+        android:icon="@drawable/ic_refresh_24"
+        android:title="@string/dashboard_refresh_repositories"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_submit_issue"
+        android:title="@string/repository_issues_create_submit"
+        app:actionLayout="@layout/view_top_app_bar_submit_issue"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_repository_workflows"
+        android:icon="@drawable/ic_workflows_24"
+        android:title="@string/repository_actions_workflow_title"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_repository_action_run_developer_info"
+        android:icon="@drawable/ic_info_24"
+        android:title="@string/title_repository_action_run_developer_info"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_open_file_manager"
+        android:title="@string/local_file_manager_title"
+        app:actionLayout="@layout/view_top_app_bar_file_manager"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_open_profile"
+        android:title="@string/profile_entry_action"
+        app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/action_profile_open_github"
+        android:title="@string/profile_open_github_action"
+        app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/action_profile_refresh"
+        android:icon="@drawable/ic_refresh_24"
+        android:title="@string/profile_refresh_action"
+        app:showAsAction="always" />
+
+</menu>

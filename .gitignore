@@ -1,0 +1,51 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Kotlin / Android build sessions
+.kotlin/
+*.salive
+
+# Local Android SDK / machine config
+local.properties
+local.properties.bak
+*.bak
+*.backup
+.backup/
+*.jks
+*.keystore
+
+# IDE / editor
+.idea/
+*.iml
+.acside/
+.vscode/
+
+# Android / generated outputs
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+# Logs / OS
+*.log
+.DS_Store
+Thumbs.db
+
+# Rust
+target/
+**/target/
+Cargo.lock.orig
+*.profraw
+
+# 平台/本地状态（不提交）
+.operit/
+
+# 本地调试素材（不提交）
+Image/
+
+# 逆向分析工作资料（382MB，含 MT 管理器素材，红线不复用）
+reverse_engineering/
+

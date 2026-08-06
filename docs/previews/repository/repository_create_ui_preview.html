@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub - 新建仓库 UI 优化预览</title>
+  <style>
+    :root {
+      --canvas: #f7f8fa;
+      --surface: #ffffff;
+      --surface-strong: #fdfdfd;
+      --black: #0d1117;
+      --black-soft: #161b22;
+      --text: #0d1117;
+      --text-secondary: #24292f;
+      --muted: #57606a;
+      --border: #d0d7de;
+      --border-strong: #8c959f;
+      --accent: #0969da;
+      --success: #1a7f37;
+      --danger: #cf222e;
+      --shadow: 0 18px 45px rgba(13, 17, 23, .16);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 9px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(9, 105, 218, .10), transparent 34rem),
+        linear-gradient(135deg, #eef2f6 0%, #fbfbfc 52%, #f3f4f6 100%);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 28px 14px;
+    }
+
+    .preview-board {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: 430px minmax(300px, 1fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    .phone {
+      width: 430px;
+      max-width: 100%;
+      margin: 0 auto;
+      border: 1px solid rgba(13, 17, 23, .12);
+      border-radius: 34px;
+      background: var(--black);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .screen {
+      height: 852px;
+      overflow: hidden;
+      border-radius: 26px;
+      background: var(--canvas);
+      position: relative;
+    }
+
+    .topbar {
+      height: 58px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, .94);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .back {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--black);
+      color: white;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .topbar-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      color: var(--black);
+    }
+
+    .content {
+      height: calc(100% - 58px);
+      overflow: auto;
+      padding: 14px 14px 18px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--black) 0%, #20262d 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      box-shadow: 0 12px 28px rgba(13, 17, 23, .20);
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .10);
+      color: rgba(255, 255, 255, .82);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      margin: 10px 0 6px;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -.035em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, .78);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .status-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, .18);
+    }
+
+    .pill.secondary {
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+    }
+
+    .form-shell {
+      margin-top: 12px;
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 24px rgba(13, 17, 23, .06);
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 13px 14px;
+      border-bottom: 1px solid #eaeef2;
+    }
+
+    .section:last-child { border-bottom: 0; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .section-title .hint {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .field {
+      margin-top: 8px;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      height: 38px;
+      border: 1.4px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      background: #fff;
+      padding: 0 12px;
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .input.placeholder,
+    .select span {
+      color: #2f363d;
+      font-weight: 600;
+    }
+
+    .textarea {
+      min-height: 54px;
+      padding-top: 10px;
+      align-items: flex-start;
+      line-height: 1.35;
+    }
+
+    .caption {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .option-card {
+      min-height: 62px;
+      border: 1.4px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 10px;
+      background: var(--surface-strong);
+    }
+
+    .option-card.active {
+      border-color: var(--black);
+      box-shadow: inset 0 0 0 1px var(--black);
+    }
+
+    .option-head {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--black);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .radio-dot,
+    .check-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--black);
+      display: inline-grid;
+      place-items: center;
+      flex: none;
+    }
+
+    .radio-dot::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--black);
+    }
+
+    .check-dot {
+      border-radius: 5px;
+      background: var(--black);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .option-desc {
+      margin-top: 4px;
+      padding-left: 23px;
+      color: var(--muted);
+      font-size: 10.8px;
+      line-height: 1.35;
+    }
+
+    .compact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 7px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 7px 8px;
+      background: #fff;
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .submit-bar {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 12px 14px 14px;
+      background: linear-gradient(to top, rgba(247, 248, 250, 1), rgba(247, 248, 250, .88));
+      border-top: 1px solid rgba(208, 215, 222, .72);
+    }
+
+    .primary-btn {
+      height: 44px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--black);
+      color: #fff;
+      font-weight: 900;
+      font-size: 14px;
+      box-shadow: 0 8px 18px rgba(13, 17, 23, .18);
+    }
+
+    .notes {
+      background: rgba(255, 255, 255, .72);
+      border: 1px solid rgba(208, 215, 222, .9);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 10px 32px rgba(13, 17, 23, .08);
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      color: var(--black);
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+
+    .notes p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 8px 0 16px;
+    }
+
+    .change-list {
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .change-list li {
+      padding: 12px 13px;
+      border-radius: 15px;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .change-list strong { color: var(--black); }
+
+    .dialog-stage {
+      margin-top: 20px;
+      min-height: 330px;
+      border-radius: 24px;
+      background:
+        linear-gradient(rgba(13,17,23,.58), rgba(13,17,23,.58)),
+        linear-gradient(135deg, #f7f8fa, #ffffff);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .dialog {
+      width: min(360px, 100%);
+      border-radius: 24px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 26px 70px rgba(0,0,0,.32);
+      border: 1px solid rgba(255,255,255,.8);
+    }
+
+    .dialog-header {
+      padding: 18px 18px 10px;
+      background: linear-gradient(135deg, var(--black), #222932);
+      color: #fff;
+    }
+
+    .dialog-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.13);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+
+    .dialog-body {
+      padding: 14px 18px 4px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 14px 15px;
+    }
+
+    .text-btn,
+    .danger-btn {
+      min-width: 86px;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 12px;
+      font-weight: 850;
+      border: 1px solid transparent;
+      background: transparent;
+    }
+
+    .text-btn {
+      color: var(--black);
+      border-color: var(--border);
+      background: #fff;
+    }
+
+    .danger-btn {
+      color: #fff;
+      background: var(--black);
+      box-shadow: 0 8px 16px rgba(13,17,23,.18);
+    }
+
+    @media (max-width: 900px) {
+      .preview-board { grid-template-columns: 1fr; }
+      .phone { width: min(430px, 100%); }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-board">
+    <section class="phone" aria-label="新建仓库页面手机预览">
+      <div class="screen">
+        <header class="topbar">
+          <div class="back">‹</div>
+          <div class="topbar-title">新建仓库</div>
+        </header>
+
+        <div class="content">
+          <section class="hero">
+            <span class="hero-kicker">● 当前登录账号 · Owner</span>
+            <h1>创建新的仓库</h1>
+            <p>仓库包含项目文件、修订历史和协作设置。信息分组后更紧凑，关键操作使用黑色主视觉。</p>
+            <div class="status-row">
+              <span class="pill">必填：仓库名称</span>
+              <span class="pill secondary">准备创建</span>
+            </div>
+          </section>
+
+          <section class="form-shell">
+            <div class="section">
+              <div class="section-title">基础信息 <span class="hint">Required</span></div>
+              <div class="field">
+                <label class="label">仓库名称 *</label>
+                <div class="input placeholder">sunset-demo</div>
+              </div>
+              <div class="field">
+                <label class="label">描述</label>
+                <div class="input textarea placeholder">一个移动端 GitHub 仓库浏览与管理示例项目</div>
+              </div>
+              <div class="field">
+                <label class="label">主页地址</label>
+                <div class="input placeholder">https://example.com</div>
+                <div class="caption">可填写项目文档、演示站点或发布页链接。</div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">可见性</div>
+              <div class="segmented">
+                <div class="option-card active">
+                  <div class="option-head"><span class="radio-dot"></span>公开</div>
+                  <div class="option-desc">任何人都可以看到这个仓库。</div>
+                </div>
+                <div class="option-card">
+                  <div class="option-head"><span class="radio-dot" style="border-color:#8c959f"></span>私有</div>
+                  <div class="option-desc">只有授权成员可见和提交。</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">初始化仓库 <span class="hint">更紧凑的双列配置</span></div>
+              <div class="feature" style="margin-bottom:8px"><span class="check-dot">✓</span>添加 README 文件</div>
+              <div class="compact-grid">
+                <div class="field" style="margin-top:0">
+                  <label class="label">.gitignore 模板</label>
+                  <div class="select"><span>Android</span><b>⌄</b></div>
+                </div>
+                <div class="field" style="margin-top:0">
+                  <label class="label">许可证</label>
+                  <div class="select"><span>MIT License</span><b>⌄</b></div>
+                </div>
+              </div>
+              <div class="caption">创建完成后可直接进入 README/自述文件内容上传页面。</div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">仓库功能</div>
+              <div class="feature-list">
+                <div class="feature"><span class="check-dot">✓</span>Issues</div>
+                <div class="feature"><span class="check-dot">✓</span>Projects</div>
+                <div class="feature"><span class="check-dot">✓</span>Wiki</div>
+              </div>
+              <div class="caption">这些设置创建后仍可在 GitHub 仓库设置中修改。</div>
+            </div>
+          </section>
+
+          <div class="submit-bar">
+            <button class="primary-btn">创建仓库</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="notes">
+      <h2>新建仓库 UI 包裹与弹窗效果预览</h2>
+      <p>此文件用于预览“新建仓库”页面的视觉方向：减少灰色弱对比区域，改用黑色作为主按钮、强调边框、顶部包裹和弹窗头部；同时通过分组卡片、双列配置、紧凑控件减少页面纵向长度。</p>
+      <ul class="change-list">
+        <li><strong>页面包裹：</strong>顶部说明区改为黑色渐变 Hero 卡片，表单统一放入圆角白色容器，外层保留轻阴影与细边框。</li>
+        <li><strong>灰色转黑色：</strong>主操作按钮、选中态边框、返回按钮、勾选态、弹窗确认按钮均使用 <code>#0d1117</code> 黑色渲染，提升决策焦点。</li>
+        <li><strong>结构紧凑：</strong>将可见性改为左右分段卡片，将 gitignore / license 改为双列，Issues / Projects / Wiki 改为三列 chip 式选择。</li>
+        <li><strong>弹窗效果：</strong>增加半透明黑色遮罩、圆角白色对话框、黑色标题头、阴影抬升与黑色确认按钮，视觉上更像独立浮层。</li>
+      </ul>
+
+      <div class="dialog-stage" aria-label="放弃创建仓库弹窗预览">
+        <div class="dialog">
+          <div class="dialog-header">
+            <div class="dialog-icon">↩</div>
+            <h3 class="dialog-title">放弃创建仓库？</h3>
+          </div>
+          <div class="dialog-body">
+            当前填写的仓库信息还没有提交，离开后将丢失。弹窗使用黑色包裹标题区，突出风险确认层级。
+          </div>
+          <div class="dialog-actions">
+            <button class="text-btn">继续编辑</button>
+            <button class="danger-btn">放弃</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>

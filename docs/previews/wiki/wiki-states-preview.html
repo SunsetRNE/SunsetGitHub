@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Repository Wiki 状态页预览</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #f6f8fa;
+      --surface: #ffffff;
+      --border: #d0d7de;
+      --border-soft: #d8dee4;
+      --text: #24292f;
+      --secondary: #57606a;
+      --muted: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf4ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --attention: #bc4c00;
+      --attention-soft: #fff1e5;
+      --danger: #cf222e;
+      --danger-soft: #ffebe9;
+      --shadow: 0 16px 36px rgba(27, 31, 36, 0.08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "PingFang SC", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #ffffff 0, var(--canvas) 280px, var(--canvas) 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1.06;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0;
+      color: var(--secondary);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .preview-shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .state-nav {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255,255,255,.86);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .state-nav button {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: transparent;
+      color: var(--secondary);
+      text-align: left;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .state-nav button small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .state-nav button.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+
+    .canvas {
+      min-height: 760px;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      background: #f6f8fa;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .phone-top {
+      height: 88px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 26px;
+      background: #fff;
+      border-bottom: 1px solid #edf1f4;
+    }
+
+    .back {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .back::before,
+    .back::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 13px;
+      width: 24px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--secondary);
+      transform-origin: left center;
+    }
+    .back::before { transform: rotate(45deg); }
+    .back::after { transform: rotate(-45deg); }
+
+    .phone-title {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .phone-content {
+      padding: 20px 20px 110px;
+    }
+
+    .wiki-view { display: none; }
+    .wiki-view.active { display: block; }
+
+    .center-stage {
+      min-height: 600px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px;
+    }
+
+    .center-stack {
+      width: min(100%, 520px);
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+    }
+
+    .book-icon {
+      width: 36px;
+      height: 36px;
+      color: var(--secondary);
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 4px solid #d8e8ff;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .welcome-title {
+      margin: 0;
+      max-width: 340px;
+      font-size: 30px;
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      white-space: pre-line;
+    }
+
+    .welcome-copy {
+      margin: 0;
+      max-width: 480px;
+      color: var(--secondary);
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    .primary-button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 18px;
+      background: var(--success);
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      cursor: default;
+    }
+
+    .subtle-button {
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0 16px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .header-card {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .owner {
+      color: var(--secondary);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-row h2 {
+      flex: 1;
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .chip.success { color: var(--success); background: var(--success-soft); border: 1px solid #aceebb; }
+    .chip.warning { color: var(--attention); background: var(--attention-soft); border: 1px solid #ffd8b5; }
+    .chip.danger { color: var(--danger); background: var(--danger-soft); border: 1px solid #ffcecb; }
+
+    .summary {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .quick-tile {
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      background: #f6f8fa;
+      padding: 12px;
+    }
+
+    .quick-value {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .quick-label {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .segments {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 14px 0;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .segments::-webkit-scrollbar { display: none; }
+
+    .segment {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: #fff;
+      color: var(--secondary);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .segment.active {
+      border-color: var(--text);
+      background: var(--text);
+      color: #fff;
+    }
+
+    .section-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 12px;
+      padding: 9px 0;
+      border-top: 1px solid #edf1f4;
+      font-size: 14px;
+    }
+    .metric-row:first-of-type { border-top: 0; }
+    .metric-row span:first-child { color: var(--secondary); }
+    .metric-row span:last-child { text-align: right; font-weight: 650; }
+
+    .notice-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--secondary);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .create-page {
+      padding: 28px 0 4px;
+      background: transparent;
+    }
+
+    .create-page h2 {
+      margin: 0 0 24px;
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -0.05em;
+    }
+
+    .form-label {
+      display: block;
+      margin: 22px 0 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .input, .select, .textarea, .preview-box {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .input {
+      height: 58px;
+      padding: 0 14px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .editor-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .editor-tab {
+      min-width: 94px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px 7px 0 0;
+      color: var(--secondary);
+      font-weight: 700;
+    }
+    .editor-tab.active {
+      border: 1px solid var(--border);
+      border-bottom-color: #fff;
+      color: var(--text);
+      background: #fff;
+      font-weight: 800;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-top: 20px;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .toolbar::-webkit-scrollbar { display: none; }
+
+    .tool {
+      min-width: 52px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #f6f8fa;
+      font-weight: 800;
+    }
+
+    .edit-mode {
+      display: grid;
+      grid-template-columns: .75fr 1.75fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 18px;
+    }
+    .edit-mode strong { color: var(--secondary); }
+
+    .select {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-size: 17px;
+    }
+
+    .textarea {
+      min-height: 340px;
+      padding: 14px;
+      font: 19px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+    }
+
+    .preview-box {
+      min-height: 280px;
+      padding: 18px;
+      line-height: 1.6;
+    }
+
+    .error-state {
+      min-height: 480px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .error-box {
+      width: min(100%, 520px);
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      padding: 32px 24px;
+    }
+
+    .bottom-nav {
+      position: sticky;
+      bottom: 16px;
+      width: calc(100% - 34px);
+      margin: 40px auto 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 12px 26px rgba(27,31,36,.10);
+      padding: 8px 10px;
+    }
+
+    .nav-item {
+      text-align: center;
+      color: #000;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .nav-item.active { color: var(--accent); }
+    .nav-ico { display: block; font-size: 26px; font-weight: 800; }
+
+    @media (max-width: 860px) {
+      .preview-shell { grid-template-columns: 1fr; }
+      .state-nav { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .canvas { border-radius: 22px; }
+      .phone-title { font-size: 30px; }
+    }
+
+    @media (max-width: 520px) {
+      .page { padding: 22px 10px 36px; }
+      .state-nav { grid-template-columns: 1fr; }
+      .phone-content { padding-inline: 12px; }
+      .welcome-title { font-size: 26px; }
+      .welcome-copy { font-size: 18px; }
+      .create-page h2 { font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">SunsetGitHub · Repository Wiki</div>
+      <h1>Wiki 各状态页面预览</h1>
+      <p>该文件用于预览当前移动端 Wiki 页的加载、空态、新建、阅读、页面、历史、状态、离线和错误等主要状态。样式参考 GitHub 官方移动端 Wiki 页面，并保持与当前 Kotlin 渲染逻辑一致。</p>
+    </section>
+
+    <section class="preview-shell">
+      <nav class="state-nav" aria-label="Wiki state previews">
+        <button class="active" data-target="loading">加载中 <small>初始请求状态</small></button>
+        <button data-target="empty">空 Wiki <small>官方欢迎空态</small></button>
+        <button data-target="create-write">新建 · Write <small>标题、工具栏、正文编辑</small></button>
+        <button data-target="create-preview">新建 · Preview <small>Markdown 预览态</small></button>
+        <button data-target="read">阅读 <small>已有 Wiki 首页</small></button>
+        <button data-target="pages">页面 <small>页面索引 / 管理入口</small></button>
+        <button data-target="history">历史 <small>版本记录占位</small></button>
+        <button data-target="status">状态 <small>解析与权限诊断</small></button>
+        <button data-target="offline">离线 <small>缓存与外部打开兜底</small></button>
+        <button data-target="error">错误 <small>无权限 / 获取失败</small></button>
+      </nav>
+
+      <div class="canvas">
+        <header class="phone-top">
+          <span class="back" aria-hidden="true"></span>
+          <span class="phone-title">Wiki</span>
+        </header>
+
+        <div class="phone-content">
+          <section id="loading" class="wiki-view active">
+            <div class="center-stage">
+              <div class="center-stack">
+                <div class="spinner" aria-hidden="true"></div>
+                <h2 class="welcome-title">正在加载 Wiki</h2>
+                <p class="welcome-copy">正在加载仓库Wiki…</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="empty" class="wiki-view">
+            <div class="center-stage">
+              <div class="center-stack">
+                <svg class="book-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 5.5v16"/><path d="M8 7h8"/><path d="M8 10h7"/></svg>
+                <h2 class="welcome-title">Welcome to the
+SunsetGitHub
+wiki!</h2>
+                <p class="welcome-copy">Wikis provide a place in your repository to lay out the roadmap of your project, show the current status, and document software better, together.</p>
+                <button class="primary-button">Create the first page</button>
+              </div>
+            </div>
+          </section>
+
+          <section id="create-write" class="wiki-view">
+            <div class="create-page">
+              <h2>Create new page</h2>
+              <label class="form-label">Title *</label>
+              <div class="input">Home</div>
+              <div class="editor-tabs"><div class="editor-tab active">Write</div><div class="editor-tab">Preview</div></div>
+              <div class="toolbar"><div class="tool">h1</div><div class="tool">h2</div><div class="tool">h3</div><div class="tool">🔗</div><div class="tool">▧</div><div class="tool">B</div><div class="tool">i</div><div class="tool">&lt;&gt;</div><div class="tool">☷</div></div>
+              <div class="edit-mode"><strong>Edit mode:</strong><div class="select"><span>Markdown</span><span>▾</span></div></div>
+              <label class="form-label">Page content *</label>
+              <div class="textarea">Welcome to the
+SunsetGitHub wiki!</div>
+            </div>
+          </section>
+
+          <section id="create-preview" class="wiki-view">
+            <div class="create-page">
+              <h2>Create new page</h2>
+              <label class="form-label">Title *</label>
+              <div class="input">Home</div>
+              <div class="editor-tabs"><div class="editor-tab">Write</div><div class="editor-tab active">Preview</div></div>
+              <label class="form-label">Preview</label>
+              <div class="preview-box">
+                <h2 style="margin-top:0">Welcome to the</h2>
+                <p>SunsetGitHub wiki!</p>
+                <p style="color:var(--secondary)">这里展示 Markdown 预览。当前应用内为轻量预览，完整渲染仍可进入 GitHub 页面。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="read" class="wiki-view">
+            <div class="header-card card">
+              <div class="owner">Sunset / SunsetGitHub</div>
+              <div class="title-row"><h2>Wiki</h2><span class="chip success">已同步</span></div>
+              <p class="summary">手机端保留 GitHub Wiki 阅读、页面索引、状态诊断和 GitHub 兜底打开能力。</p>
+              <div class="quick-grid">
+                <div class="quick-tile"><div class="quick-value">3</div><div class="quick-label">页面</div></div>
+                <div class="quick-tile"><div class="quick-value">良好</div><div class="quick-label">状态</div></div>
+                <div class="quick-tile"><div class="quick-value">Read</div><div class="quick-label">权限</div></div>
+                <div class="quick-tile"><div class="quick-value">查看</div><div class="quick-label">Home.md</div></div>
+              </div>
+            </div>
+            <div class="segments"><span class="segment active">阅读</span><span class="segment">页面</span><span class="segment">历史</span><span class="segment">状态</span><span class="segment">离线</span><span class="segment">空态</span><span class="segment">新建</span></div>
+            <div class="section-grid">
+              <div class="card"><h3 class="section-title">阅读 · Home.md</h3><div class="metric-row"><span>数据来源</span><span>GitHub Wiki</span></div><div class="metric-row"><span>Wiki</span><span>已启用</span></div><div class="metric-row"><span>默认分支</span><span>main</span></div></div>
+              <div class="card"><h3 class="section-title">页面</h3><div class="metric-row"><span>页面样本数</span><span>3</span></div></div>
+              <div class="card"><h3 class="section-title">提示</h3><ul class="notice-list"><li>页面 Home.md</li><li>Clone this wiki locally</li></ul></div>
+            </div>
+          </section>
+
+          <section id="pages" class="wiki-view">
+            <div class="header-card card"><div class="owner">Sunset / SunsetGitHub</div><div class="title-row"><h2>Wiki</h2><span class="chip success">已同步</span></div><p class="summary">页面管理保留可解析页面样本与 GitHub 初始化入口。</p></div>
+            <div class="segments"><span class="segment">阅读</span><span class="segment active">页面</span><span class="segment">历史</span><span class="segment">状态</span><span class="segment">离线</span></div>
+            <div class="section-grid"><div class="card"><h3 class="section-title">页面管理</h3><div class="metric-row"><span>页面样本数</span><span>3</span></div></div><div class="card"><h3 class="section-title">页面入口</h3><ul class="notice-list"><li>Home.md</li><li>Roadmap.md</li><li>Release-notes.md</li></ul></div></div>
+          </section>
+
+          <section id="history" class="wiki-view">
+            <div class="header-card card"><div class="owner">Sunset / SunsetGitHub</div><div class="title-row"><h2>Wiki</h2><span class="chip warning">可恢复</span></div><p class="summary">历史记录为后续 wiki.git 能力预留入口。</p></div>
+            <div class="segments"><span class="segment">阅读</span><span class="segment">页面</span><span class="segment active">历史</span><span class="segment">状态</span><span class="segment">离线</span></div>
+            <div class="card"><h3 class="section-title">历史记录</h3><ul class="notice-list"><li>GitHub Wiki 历史需要进入 GitHub Wiki 或后续接入 wiki.git 后展示。</li><li>当前页面保留版本对比和恢复的入口位置。</li></ul></div>
+          </section>
+
+          <section id="status" class="wiki-view">
+            <div class="header-card card"><div class="owner">Sunset / SunsetGitHub</div><div class="title-row"><h2>Wiki</h2><span class="chip warning">可恢复</span></div><p class="summary">Wiki 已启用，但页面索引不完整；可重试或通过 GitHub 页面恢复完整内容。</p></div>
+            <div class="segments"><span class="segment">阅读</span><span class="segment">页面</span><span class="segment">历史</span><span class="segment active">状态</span><span class="segment">离线</span></div>
+            <div class="section-grid"><div class="card"><h3 class="section-title">状态恢复</h3><div class="metric-row"><span>数据来源</span><span>GitHub HTML</span></div><div class="metric-row"><span>Wiki</span><span>已识别结构</span></div><div class="metric-row"><span>页面样本数</span><span>0</span></div></div><div class="card"><h3 class="section-title">提示</h3><ul class="notice-list"><li>建议操作：重试解析或在 GitHub 中打开。</li><li>保留外部打开入口用于恢复完整内容。</li></ul></div></div>
+          </section>
+
+          <section id="offline" class="wiki-view">
+            <div class="header-card card"><div class="owner">Sunset / SunsetGitHub</div><div class="title-row"><h2>Wiki</h2><span class="chip success">已同步</span></div><p class="summary">离线页展示缓存策略与外部打开兜底说明。</p></div>
+            <div class="segments"><span class="segment">阅读</span><span class="segment">页面</span><span class="segment">历史</span><span class="segment">状态</span><span class="segment active">离线</span></div>
+            <div class="section-grid"><div class="card"><h3 class="section-title">离线缓存</h3><ul class="notice-list"><li>当前版本会保留 GitHub 外部打开兜底。</li><li>后续接入 wiki.git 后可缓存最近阅读页面。</li></ul></div><div class="card"><h3 class="section-title">提示</h3><ul class="notice-list"><li>缓存策略不改变当前仓库权限判断。</li></ul></div></div>
+          </section>
+
+          <section id="error" class="wiki-view">
+            <div class="error-state">
+              <div class="error-box">
+                <span class="chip danger">无权限</span>
+                <h2 style="margin:0">加载 Wiki 失败</h2>
+                <p class="summary" style="text-align:center">当前账号无法读取 Wiki 状态，请检查登录、Token 权限或仓库可见性。</p>
+                <button class="subtle-button">重试</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="bottom-nav" aria-label="mock repository nav">
+          <div class="nav-item active"><span class="nav-ico">‹›</span>代码</div>
+          <div class="nav-item"><span class="nav-ico">○</span>议题</div>
+          <div class="nav-item"><span class="nav-ico">↻</span>工作流</div>
+          <div class="nav-item"><span class="nav-ico">⚙</span>设置</div>
+          <div class="nav-item"><span class="nav-ico">☰</span>更多</div>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const buttons = [...document.querySelectorAll('.state-nav button')];
+    const views = [...document.querySelectorAll('.wiki-view')];
+    function activate(id) {
+      buttons.forEach(button => button.classList.toggle('active', button.dataset.target === id));
+      views.forEach(view => view.classList.toggle('active', view.id === id));
+      location.hash = id;
+    }
+    buttons.forEach(button => button.addEventListener('click', () => activate(button.dataset.target)));
+    const initial = location.hash.replace('#', '');
+    if (initial && document.getElementById(initial)) activate(initial);
+  </script>
+</body>
+</html>

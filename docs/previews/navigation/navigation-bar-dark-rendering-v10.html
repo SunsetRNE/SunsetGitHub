@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Bar Dark Rendering v10</title>
+  <style>
+    :root{--page:#f6f8fa;--canvas:#fff;--surface:#fff;--border:#d0d7de;--divider:#d8dee4;--text:#24292f;--secondary:#57606a;--muted:#6e7781;--accent:#0969da;--accentSoft:#ddf4ff;--floating:rgba(255,255,255,.92);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--page);color:#24292f;line-height:1.5}.page{max-width:1280px;margin:0 auto;padding:30px 18px 80px}.hero,.panel,.card{background:#fff;border:1px solid rgba(31,35,40,.12);border-radius:18px;box-shadow:0 12px 32px rgba(31,35,40,.08)}.hero,.panel{padding:24px;margin-bottom:20px}.eyebrow{display:inline-flex;padding:6px 10px;border-radius:999px;background:#ddf4ff;color:#0550ae;font-size:12px;font-weight:850;margin-bottom:14px}h1{font-size:clamp(32px,5vw,56px);line-height:1.04;letter-spacing:-1.3px;margin:0 0 14px}h2{font-size:26px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}p{margin:0 0 12px;color:#57606a}strong{color:inherit}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{padding:14px;box-shadow:0 8px 24px rgba(31,35,40,.06)}.screen{position:relative;height:380px;border-radius:18px;border:1px solid var(--border);overflow:hidden;background:var(--canvas);color:var(--text)}.screen.dark{--canvas:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--divider:#21262d;--text:#e6edf3;--secondary:#8b949e;--muted:#7d8590;--accent:#58a6ff;--accentSoft:rgba(56,139,253,.18);--floating:rgba(22,27,34,.92);background:var(--canvas);color:var(--text)}.screen.dark.bright{--canvas:#111821;--surface:#1b2330;--surface2:#263142;--border:#3b4658;--divider:#263142;--text:#f0f6fc;--secondary:#b7c0cc;--muted:#9ba7b4;--accent:#79c0ff;--accentSoft:rgba(88,166,255,.22);--floating:rgba(27,35,48,.94)}.screen.dark.too-dark{--canvas:#070b11;--surface:#0d1117;--surface2:#11161f;--border:#1b222d;--divider:#11161f;--text:#30363d;--secondary:#000;--muted:#000;--accent:#1f6feb;--accentSoft:rgba(31,111,235,.20);--floating:rgba(13,17,23,.92)}.top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border);font-weight:850}.content{position:absolute;inset:56px 0 0;padding:14px 14px 104px;overflow:hidden}.repo{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px;margin-bottom:10px;color:var(--text)}.repo .sub{color:var(--secondary);font-size:13px;margin-top:6px}.line{height:8px;border-radius:999px;background:var(--divider);margin-top:9px}.nav{position:absolute;left:12px;right:12px;bottom:14px;height:72px;border-radius:24px;display:grid;grid-template-columns:repeat(var(--items,5),1fr);gap:2px;align-items:center;padding:7px;overflow:hidden}.docked{left:0;right:0;bottom:0;border-radius:0;background:var(--surface);border-top:1px solid var(--border)}.floating{background:var(--floating);border:1px solid var(--border);box-shadow:0 18px 42px rgba(1,4,9,.26);backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25)}.glass{background:linear-gradient(135deg,rgba(48,54,61,.76),rgba(22,27,34,.54));border:1px solid rgba(240,246,252,.18);box-shadow:0 18px 44px rgba(1,4,9,.36),inset 0 1px 0 rgba(240,246,252,.14);backdrop-filter:blur(24px) saturate(1.45);-webkit-backdrop-filter:blur(24px) saturate(1.45)}.bright .glass{background:linear-gradient(135deg,rgba(61,73,90,.82),rgba(27,35,48,.62));border-color:rgba(240,246,252,.24);box-shadow:0 18px 44px rgba(1,4,9,.30),inset 0 1px 0 rgba(240,246,252,.20)}.too-dark .glass{background:linear-gradient(135deg,rgba(13,17,23,.74),rgba(7,11,17,.48));border-color:rgba(240,246,252,.08)}.item{height:100%;min-width:0;border-radius:16px;display:grid;place-items:center;align-content:center;gap:2px;color:var(--secondary);font-size:10px;font-weight:850;white-space:nowrap}.item .ico{font-size:18px;line-height:1}.item.active{color:var(--accent);background:var(--accentSoft)}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.meta span{font-size:10px;color:#57606a;background:#f6f8fa;border:1px solid #d0d7de;border-radius:999px;padding:3px 7px;font-weight:850}.table{width:100%;border-collapse:collapse;border:1px solid rgba(31,35,40,.12);border-radius:14px;overflow:hidden;background:#fff}.table th,.table td{padding:12px 13px;border-bottom:1px solid rgba(31,35,40,.08);font-size:13.5px;text-align:left;vertical-align:top}.table th{background:#f6f8fa;font-size:12px}.table tr:last-child td{border-bottom:0}.callout{padding:16px;border-radius:14px;background:#ddf4ff;border:1px solid #add5ff;margin-top:14px}.ok{background:#dafbe1;border-color:#aceebb}.warn{background:#fff1e5;border-color:#ffd8b5}.footer{text-align:center;color:#6e7781;font-size:13px;margin-top:28px}@media(max-width:980px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="eyebrow">Spec v10 · Dark Rendering Fix</div>
+    <h1>暗色导航栏亮度修正</h1>
+    <p>v9 的暗色预览确实太暗，尤其内容标题和未选中导航项几乎被吞掉。v10 调整为更接近 GitHub dark 的可读层级，并给出“过暗反例 / 当前推荐 / 提亮候选”的对比。</p>
+  </section>
+
+  <section class="panel">
+    <h2>暗色对比</h2>
+    <div class="grid">
+      <article class="card"><h3>Too Dark / 反例</h3><div class="screen dark too-dark"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Dark glass token</strong><div class="sub">Text and inactive items collapse into the canvas.</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Separate alpha required</strong><div class="sub">This is what the previous preview felt like.</div><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div><div class="meta"><span>reject</span><span>too little contrast</span></div></article>
+      <article class="card"><h3>GitHub Dark / 推荐</h3><div class="screen dark"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Dark glass token</strong><div class="sub">Readable text, restrained surface, GitHub-like contrast.</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Separate alpha required</strong><div class="sub">Unselected items use secondary text, not black.</div><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div><div class="meta"><span>recommended</span><span>#0d1117 / #161b22</span></div></article>
+      <article class="card"><h3>Bright Dark / 提亮候选</h3><div class="screen dark bright"><div class="top"><span>Repository</span><span>⋮</span></div><div class="content"><div class="repo"><strong>Dark glass token</strong><div class="sub">Slightly lifted canvas for mobile readability.</div><div class="line" style="width:82%"></div></div><div class="repo"><strong>Separate alpha required</strong><div class="sub">Good if the device panel crushes dark tones.</div><div class="line" style="width:70%"></div></div></div><nav class="nav glass" style="--items:5"><div class="item active"><span class="ico">⌘</span><span>Code</span></div><div class="item"><span class="ico">●</span><span>Issues</span></div><div class="item"><span class="ico">↻</span><span>Actions</span></div><div class="item"><span class="ico">⚙</span><span>Settings</span></div><div class="item"><span class="ico">⋯</span><span>More</span></div></nav></div><div class="meta"><span>candidate</span><span>mobile-friendly</span></div></article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>推荐暗色 token</h2>
+    <table class="table">
+      <thead><tr><th>Token</th><th>当前 GitHub 风格</th><th>提亮候选</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>canvas</td><td>#0D1117</td><td>#111821</td><td>如果手机屏幕暗部压得厉害，可略微抬高 canvas</td></tr>
+        <tr><td>surface</td><td>#161B22</td><td>#1B2330</td><td>卡片和 AppBar 的主要暗色表面</td></tr>
+        <tr><td>border</td><td>#30363D</td><td>#3B4658</td><td>提亮后边界更清楚，但别过亮</td></tr>
+        <tr><td>primary text</td><td>#E6EDF3</td><td>#F0F6FC</td><td>标题必须使用亮文本，不要继承浅色全局黑</td></tr>
+        <tr><td>secondary text</td><td>#8B949E</td><td>#B7C0CC</td><td>未选中导航项用 secondary，不要用 black</td></tr>
+        <tr><td>glass background</td><td>rgba(48,54,61,.72) -> rgba(13,17,23,.42)</td><td>rgba(61,73,90,.82) -> rgba(27,35,48,.62)</td><td>暗色玻璃需要单独 token</td></tr>
+      </tbody>
+    </table>
+    <div class="callout ok"><strong>建议：</strong>真实 Android 第一轮先采用 GitHub Dark 推荐 token。如果真机仍显得压暗，再切到 Bright Dark 候选，而不是上彩色玻璃。</div>
+    <div class="callout warn"><strong>同时修：</strong>为 `nav_item_tint.xml` 增加 night 版本，未选中用 `github_text_secondary`，禁用用 `github_text_muted`，选中用 `github_accent`。</div>
+  </section>
+
+  <div class="footer">生成文件：docs/navigation-bar-dark-rendering-v10.html</div>
+</main>
+</body>
+</html>

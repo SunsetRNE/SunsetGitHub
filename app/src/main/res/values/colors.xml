@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="github_canvas">#FFFFFFFF</color>
+    <color name="github_surface">#FFFFFFFF</color>
+    <color name="github_border">#FFD0D7DE</color>
+    <color name="github_black">#FF0D1117</color>
+    <color name="github_fork_action_black">#FF000000</color>
+    <color name="github_black_soft">#FF222932</color>
+    <color name="github_border_strong">#FF8C959F</color>
+    <color name="github_text_primary">#FF24292F</color>
+    <color name="github_text_secondary">#FF57606A</color>
+    <color name="github_text_muted">#FF6E7781</color>
+    <color name="github_accent">#FF0969DA</color>
+    <color name="github_header_tint">#FFFFFFFF</color>
+    <color name="github_badge_background">#FFFFFFFF</color>
+    <color name="github_success">#FF1A7F37</color>
+    <color name="github_success_soft">#FFDAFBE1</color>
+    <color name="github_success_soft_border">#FFACEEBB</color>
+    <color name="github_attention">#FFBC4C00</color>
+    <color name="github_attention_soft">#FFFFF1E5</color>
+    <color name="github_attention_soft_border">#FFFFD8B5</color>
+    <color name="github_danger">#FFCF222E</color>
+    <color name="github_danger_soft">#FFFFEBE9</color>
+    <color name="github_danger_soft_border">#FFFFCECB</color>
+    <color name="github_done">#FF8250DF</color>
+    <color name="github_done_soft">#FFFBEFFF</color>
+    <color name="github_done_soft_border">#FFECD8FF</color>
+    <color name="github_divider">#FFD8DEE4</color>
+    <color name="github_skeleton">#FFE6EAEF</color>
+    <color name="github_skeleton_highlight">#FFF0F3F6</color>
+    <!-- UI 重构新增：框选/分组填充色 -->
+    <color name="github_chip_background">#FFEFF2F5</color>
+    <color name="github_subtle_background">#FFFFFFFF</color>
+    <color name="github_file_preview_gutter_background">#FFF6F8FA</color>
+    <color name="github_file_preview_gutter_divider">#FFD8DEE4</color>
+    <color name="github_file_preview_gutter_text">#FF6E7781</color>
+    <color name="github_file_preview_top_bar_background">#FF2D2D2D</color>
+    <color name="github_file_preview_top_bar_text_primary">#FFFFFFFF</color>
+    <color name="github_file_preview_top_bar_text_secondary">#FFE6E6E6</color>
+    <color name="github_accent_soft">#FFDDF0FF</color>
+
+    <color name="github_accent_soft_border">#FFADD5FF</color>
+    <!-- 悬浮导航栏半透明背景 -->
+    <color name="github_floating_nav_background">#EBFFFFFF</color>
+    <color name="file_manager_bar">#FF2F2F2F</color>
+    <color name="file_manager_pane">#FFFFFFFF</color>
+    <color name="file_manager_bottom">#FFFAFAFA</color>
+    <color name="file_manager_bottom_icon">#FF5F6368</color>
+    <color name="file_manager_line">#FFE9E9E9</color>
+    <color name="file_manager_sheet_button">#FFF2F2F2</color>
+    <color name="file_manager_selected">#FFE8F2FF</color>
+    <color name="file_manager_muted">#FF70757A</color>
+    <!-- 语言占比条兜底色（未知语言 / Other 段） -->
+    <color name="github_language_other">#FFD0D7DE</color>
+    <!-- 搜索浮层遮罩：半透明黑，盖在底层之上营造覆盖/变暗观感 -->
+    <color name="github_search_scrim">#66000000</color>
+    <!-- 通知页：贴近 GitHub Inbox 的面板、筛选与状态 badge 层级 -->
+    <color name="github_notification_chip_background">#FFF6F8FA</color>
+    <color name="github_notification_chip_selected">#FFFFFFFF</color>
+    <color name="github_notification_chip_selected_border">#FFD0D7DE</color>
+    <color name="github_notification_chip_selected_text">#FF24292F</color>
+    <color name="github_notification_divider">#FFEAEFF4</color>
+    <color name="github_notification_row_pressed">#FFF6F8FA</color>
+    <color name="github_notification_badge_background">#FFF6F8FA</color>
+    <color name="github_notification_badge_border">#FFD8DEE4</color>
+    <color name="github_notification_empty_background">#FFFFFFFF</color>
+</resources>

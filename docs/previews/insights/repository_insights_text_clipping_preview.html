@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>洞察页文字遮挡问题修复方案预览</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-soft: #eef4fb;
+      --text: #1f2328;
+      --muted: #656d76;
+      --border: #d8dee4;
+      --accent: #0969da;
+      --accent-soft: #ddf4ff;
+      --success: #1a7f37;
+      --warning: #bf8700;
+      --danger: #cf222e;
+      --shadow: 0 16px 40px rgba(31, 35, 40, 0.10);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(9, 105, 218, 0.12), transparent 32rem),
+        linear-gradient(135deg, #f6f8fa 0%, #eef4fb 100%);
+    }
+
+    .app-shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.82);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.04;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .phone-card {
+      width: 232px;
+      padding: 14px;
+      border-radius: 34px;
+      background: #111827;
+      box-shadow: 0 18px 50px rgba(9, 105, 218, 0.2);
+    }
+
+    .phone-screen {
+      height: 426px;
+      overflow: hidden;
+      border-radius: 24px;
+      background: var(--bg);
+      padding: 14px 12px;
+    }
+
+    .phone-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .phone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .mini-stat, .mini-note, .mini-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #eef3f7;
+    }
+
+    .mini-stat { padding: 10px; min-height: 72px; }
+    .mini-stat span { display: block; color: var(--muted); font-size: 12px; }
+    .mini-stat b { display: block; margin-top: 10px; font-size: 28px; }
+
+    .mini-section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      font-weight: 800;
+    }
+
+    .mini-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--accent);
+      background: #ddf4ff;
+      border: 1px solid #b6e3ff;
+      font-weight: 900;
+    }
+
+    .mini-card {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 10px;
+      min-height: 86px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      position: relative;
+    }
+
+    .mini-card.is-clipped::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 26px;
+      border-radius: 0 0 18px 18px;
+      background: linear-gradient(to bottom, rgba(238,243,247,0), #eef3f7 70%);
+    }
+
+    .pager {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 22px 0;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.75);
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+      backdrop-filter: blur(16px);
+    }
+
+    .pager button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 180ms ease;
+    }
+
+    .pager button:hover { color: var(--accent); background: var(--accent-soft); }
+    .pager button.active { color: #fff; background: var(--accent); box-shadow: 0 8px 20px rgba(9,105,218,0.24); }
+
+    .page {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.88);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page.active { display: block; animation: fadeIn 220ms ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #ffffff, #f6f8fa);
+    }
+
+    .page-header h2 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 36px);
+      letter-spacing: -0.035em;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .page-body { padding: 26px 28px 30px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      padding: 18px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .card ul { margin: 0; padding-left: 20px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .tag.warning { color: var(--warning); background: #fff8c5; }
+    .tag.success { color: var(--success); background: #dafbe1; }
+    .tag.danger { color: var(--danger); background: #ffebe9; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .mock-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #eef3f7;
+    }
+
+    .mock-row .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: var(--accent);
+      background: #ddf4ff;
+      border: 1px solid #b6e3ff;
+      font-weight: 900;
+    }
+
+    .mock-row p { margin: 0; color: var(--muted); }
+
+    .mock-row.before {
+      max-height: 92px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mock-row.before::after {
+      content: "文字底部被裁剪";
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--danger);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .mock-row.after {
+      min-height: 92px;
+      overflow: visible;
+    }
+
+    .code {
+      margin: 12px 0 0;
+      padding: 14px;
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      color: #d6deeb;
+      background: #0d1117;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .step-num {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent);
+      font-weight: 900;
+    }
+
+    .step h3 { margin: 0 0 6px; font-size: 17px; }
+    .step p { margin: 0; color: var(--muted); line-height: 1.7; }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-actions button {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .footer-actions button.primary {
+      color: #fff;
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .phone-card { width: 100%; max-width: 320px; justify-self: center; }
+      .grid-2, .grid-3, .compare { grid-template-columns: 1fr; }
+      .pager { border-radius: 24px; }
+      .pager button { flex: 1 1 145px; }
+      .page-header, .page-body { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Repository Insights · 文本裁剪修复预览</span>
+        <h1>洞察页文字被挡住：原因与修复方案</h1>
+        <p>这个 HTML 把方案拆成多个页面：先还原现象，再解释根因，最后给出最小修复、增强方案与验证清单。目标是先确认改法方向，再动 Kotlin / XML。</p>
+      </div>
+      <aside class="phone-card" aria-label="问题预览">
+        <div class="phone-screen">
+          <div class="phone-title">← 洞察</div>
+          <div class="phone-grid">
+            <div class="mini-stat"><span>浏览量</span><b>37</b></div>
+            <div class="mini-stat"><span>克隆量</span><b>1</b></div>
+          </div>
+          <div class="mini-section-title"><span class="mini-icon">!</span>提示</div>
+          <div class="mini-card is-clipped"><span class="mini-icon">i</span><span>仓库简介：An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8750 series in a completely new way.</span></div>
+          <div class="mini-card is-clipped"><span class="mini-icon">i</span><span>最近发布：OPPO-OPlus-Realme-build-6.6.89-Zsunset_暮雨年秋冬-1-0410-2...</span></div>
+          <div class="mini-card is-clipped"><span class="mini-icon">i</span><span>安全探测：安全策略未启用，Dependabot alerts 未启用，Code scanning alerts 未启用。</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <nav class="pager" aria-label="页面导航">
+      <button class="active" data-page="0">1 现象</button>
+      <button data-page="1">2 根因</button>
+      <button data-page="2">3 最小修复</button>
+      <button data-page="3">4 增强方案</button>
+      <button data-page="4">5 验证清单</button>
+    </nav>
+
+    <section class="page active" data-page-panel="0">
+      <header class="page-header">
+        <h2>页面 1：问题现象</h2>
+        <p>截图中的遮挡不是外层 ScrollView 或底部导航直接盖住内容，而是部分卡片内部文本被裁剪或被主动限制。</p>
+      </header>
+      <div class="page-body">
+        <div class="compare">
+          <div class="card">
+            <span class="tag danger">当前表现</span>
+            <h3>长文本只露出上半截</h3>
+            <div class="mock-list">
+              <div class="mock-row before"><span class="icon">i</span><p>仓库简介：An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8750 series in a completely new way.</p></div>
+              <div class="mock-row before"><span class="icon">i</span><p>最近发布：OPPO-OPlus-Realme-build-6.6.89-Zsunset_暮雨年秋冬-1-0410-2...</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="tag success">期望表现</span>
+            <h3>卡片高度跟随文本展开</h3>
+            <div class="mock-list">
+              <div class="mock-row after"><span class="icon">i</span><p>仓库简介：An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8750 series in a completely new way.</p></div>
+              <div class="mock-row after"><span class="icon">i</span><p>最近发布：OPPO-OPlus-Realme-build-6.6.89-Zsunset_暮雨年秋冬-1-0410-2，长标题可以自然换行。</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-actions"><button data-prev>上一页</button><button class="primary" data-next>下一页：根因</button></div>
+      </div>
+    </section>
+
+    <section class="page" data-page-panel="1">
+      <header class="page-header">
+        <h2>页面 2：根因判断</h2>
+        <p>优先怀疑点集中在 RepositoryInsightsFragment 动态创建的 TextView，而不是 XML 顶层滚动容器。</p>
+      </header>
+      <div class="page-body">
+        <div class="grid-3">
+          <article class="card">
+            <span class="tag warning">原因 A</span>
+            <h3>简介被 maxLines 限制</h3>
+            <p>仓库简介使用 createBodyText(description).apply { maxLines = 3 }，长简介一定会被截断。这个属于主动摘要策略，但当前没有省略号提示，容易像“被挡住”。</p>
+          </article>
+          <article class="card">
+            <span class="tag warning">原因 B</span>
+            <h3>正文默认 selectable</h3>
+            <p>createBodyText 默认 setTextIsSelectable(true)。在动态卡片、圆角背景和紧凑布局中，可选择文本层可能导致测量/绘制边界异常，出现底部视觉裁剪。</p>
+          </article>
+          <article class="card">
+            <span class="tag">原因 C</span>
+            <h3>卡片布局比较紧</h3>
+            <p>提示卡片图标 + 文本横向排列，文本宽度被压缩，长英文、长版本名会制造更多换行，对高度测量更敏感。</p>
+          </article>
+        </div>
+        <pre class="code">// 当前高风险点：通用正文默认可选择
+private fun createBodyText(textValue: String): TextView = TextView(requireContext()).apply {
+    text = textValue
+    setTextAppearance(R.style.TextAppearance_SunsetGitHub_Material_Body)
+    setTextColor(ContextCompat.getColor(requireContext(), R.color.github_text_secondary))
+    setTextIsSelectable(true)
+}</pre>
+        <div class="footer-actions"><button data-prev>上一页：现象</button><button class="primary" data-next>下一页：最小修复</button></div>
+      </div>
+    </section>
+
+    <section class="page" data-page-panel="2">
+      <header class="page-header">
+        <h2>页面 3：最小修复方案</h2>
+        <p>不大改页面结构，只把“可选择文本”变成按场景开启，并给被限制的简介加明确省略行为。</p>
+      </header>
+      <div class="page-body">
+        <div class="grid-2">
+          <div class="card">
+            <span class="tag success">推荐先做</span>
+            <h3>正文选择能力参数化</h3>
+            <p>把 createBodyText 增加 selectable 参数，默认 false。只有确实需要复制的 debug/原文区域再显式 true。</p>
+            <pre class="code">private fun createBodyText(
+    textValue: String,
+    selectable: Boolean = false
+): TextView = TextView(requireContext()).apply {
+    text = textValue
+    setTextAppearance(R.style.TextAppearance_SunsetGitHub_Material_Body)
+    setTextColor(ContextCompat.getColor(requireContext(), R.color.github_text_secondary))
+    setTextIsSelectable(selectable)
+}</pre>
+          </div>
+          <div class="card">
+            <span class="tag success">推荐同步做</span>
+            <h3>简介截断显式化</h3>
+            <p>如果简介仍保留 3 行摘要，就加 ellipsize = END；如果希望完整展示，就移除 maxLines。</p>
+            <pre class="code">addView(createBodyText(description).apply {
+    maxLines = 3
+    ellipsize = TextUtils.TruncateAt.END
+})</pre>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>影响范围</h3>
+          <ul>
+            <li>改动集中在 RepositoryInsightsFragment，风险较低。</li>
+            <li>不会影响 GitHub API、缓存、导航和 XML 顶层结构。</li>
+            <li>可复制文本能力会从“所有正文默认可复制”变成“需要复制的地方显式开启”。</li>
+          </ul>
+        </div>
+        <div class="footer-actions"><button data-prev>上一页：根因</button><button class="primary" data-next>下一页：增强方案</button></div>
+      </div>
+    </section>
+
+    <section class="page" data-page-panel="3">
+      <header class="page-header">
+        <h2>页面 4：增强方案</h2>
+        <p>如果想顺手提高这个页面的观感，可以把提示卡片和指标卡片的文本策略拆得更清楚。</p>
+      </header>
+      <div class="page-body">
+        <div class="timeline">
+          <div class="step"><div class="step-num">1</div><div><h3>区分摘要文本与完整文本</h3><p>简介类内容可使用 3 行摘要 + “查看更多”；提示/安全探测类内容默认完整展示，避免误解为数据丢失。</p></div></div>
+          <div class="step"><div class="step-num">2</div><div><h3>给长 token 留更稳定的换行策略</h3><p>版本号、Release 名、英文长句容易撑布局，可考虑 breakStrategy、hyphenationFrequency 或给 TextView 设置更友好的换行策略。</p></div></div>
+          <div class="step"><div class="step-num">3</div><div><h3>卡片增加最小高度而不是固定高度</h3><p>保持视觉统一，但让内容自然撑开。所有提示卡都用 WRAP_CONTENT，高度不要硬编码。</p></div></div>
+          <div class="step"><div class="step-num">4</div><div><h3>只在详情/Debug 处开启 selectable</h3><p>普通移动端卡片以阅读优先，复制能力放到详情页或长按菜单，减少 TextView 选择层副作用。</p></div></div>
+        </div>
+        <div class="footer-actions"><button data-prev>上一页：最小修复</button><button class="primary" data-next>下一页：验证清单</button></div>
+      </div>
+    </section>
+
+    <section class="page" data-page-panel="4">
+      <header class="page-header">
+        <h2>页面 5：验证清单</h2>
+        <p>修复后建议用这几类内容做回归，确保既不裁文字，也不破坏页面节奏。</p>
+      </header>
+      <div class="page-body">
+        <div class="grid-2">
+          <div class="card">
+            <span class="tag success">视觉验证</span>
+            <h3>页面样例</h3>
+            <ul>
+              <li>中文长句：安全探测、Dependabot、Code scanning 多项提示。</li>
+              <li>英文长句：仓库简介含长英文描述。</li>
+              <li>超长版本名：Release 标题包含连字符、下划线、中文混排。</li>
+              <li>小屏设备：宽度 360dp 左右。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">代码验证</span>
+            <h3>检查点</h3>
+            <ul>
+              <li>提示卡片没有 maxLines。</li>
+              <li>简介如果保留 maxLines，必须有 ellipsize。</li>
+              <li>createBodyText 默认 selectable=false。</li>
+              <li>需要复制的文本显式传 selectable=true。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>建议落地顺序</h3>
+          <p>先做最小修复并构建验证；如果截图问题消失，再考虑“查看更多”和长文本换行策略。这样可以把根因验证和视觉增强分开，避免一次改动过大。</p>
+        </div>
+        <div class="footer-actions"><button data-prev>上一页：增强方案</button><button class="primary" data-page-jump="0">回到第一页</button></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('[data-page]'));
+    const panels = Array.from(document.querySelectorAll('[data-page-panel]'));
+    let current = 0;
+
+    function showPage(index) {
+      current = Math.max(0, Math.min(index, panels.length - 1));
+      tabs.forEach((tab, i) => tab.classList.toggle('active', i === current));
+      panels.forEach((panel, i) => panel.classList.toggle('active', i === current));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tabs.forEach((tab, index) => tab.addEventListener('click', () => showPage(index)));
+    document.querySelectorAll('[data-next]').forEach(button => button.addEventListener('click', () => showPage(current + 1)));
+    document.querySelectorAll('[data-prev]').forEach(button => button.addEventListener('click', () => showPage(current - 1)));
+    document.querySelectorAll('[data-page-jump]').forEach(button => button.addEventListener('click', () => showPage(Number(button.dataset.pageJump))));
+  </script>
+</body>
+</html>

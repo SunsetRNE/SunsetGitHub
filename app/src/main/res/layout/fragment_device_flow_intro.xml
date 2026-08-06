@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/device_flow_intro_title"
+            android:textColor="@color/github_text_primary"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/device_flow_intro_subtitle"
+            android:textColor="@color/github_text_secondary"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_auth_method_card"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_auth_github_logo"
+                android:gravity="center"
+                android:text="GH"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/device_flow_intro_browser_label"
+                android:textColor="@color/github_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <include layout="@layout/item_auth_step_generate_code" />
+        <include layout="@layout/item_auth_step_open_browser" />
+        <include layout="@layout/item_auth_step_finish_auth" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="56dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_next_device_flow"
+            style="@style/Widget.SunsetGitHub.Material.PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/device_flow_intro_next" />
+    </LinearLayout>
+</ScrollView>

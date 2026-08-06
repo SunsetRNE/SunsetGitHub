@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- GitHub Primer Colors - Dark Theme Default (dimmed) -->
+    <!-- Brand / Accent -->
+    <color name="github_primer_accent_fg">#2f81f7</color>
+    <color name="github_primer_accent_emphasis">#1f6feb</color>
+    <color name="github_primer_accent_muted">#388bfd1a</color> <!-- 10% opacity -->
+    <color name="github_primer_accent_subtle">#388bfd1a</color>
+
+    <!-- Success -->
+    <color name="github_primer_success_fg">#3fb950</color>
+    <color name="github_primer_success_emphasis">#238636</color>
+    <color name="github_primer_success_muted">#2ea04326</color> <!-- 15% opacity -->
+    <color name="github_primer_success_subtle">#2ea0431a</color>
+
+    <!-- Danger -->
+    <color name="github_primer_danger_fg">#f85149</color>
+    <color name="github_primer_danger_emphasis">#da3633</color>
+    <color name="github_primer_danger_muted">#e34c2626</color>
+    <color name="github_primer_danger_subtle">#e34c261a</color>
+
+    <!-- Done / Merged -->
+    <color name="github_primer_done_fg">#a371f7</color>
+    <color name="github_primer_done_emphasis">#8957e5</color>
+    <color name="github_primer_done_muted">#a371f726</color>
+
+    <!-- Backgrounds (Canvas) -->
+    <color name="github_primer_canvas_default">#0d1117</color>
+    <color name="github_primer_canvas_overlay">#161b22</color>
+    <color name="github_primer_canvas_inset">#010409</color>
+    <color name="github_primer_canvas_subtle">#161b22</color>
+
+    <!-- Borders -->
+    <color name="github_primer_border_default">#30363d</color>
+    <color name="github_primer_border_muted">#21262d</color>
+    <color name="github_primer_border_subtle">#f0f6fc1a</color>
+
+    <!-- Text -->
+    <color name="github_primer_fg_default">#e6edf3</color>
+    <color name="github_primer_fg_muted">#7d8590</color>
+    <color name="github_primer_fg_subtle">#6e7681</color>
+    <color name="github_primer_fg_onEmphasis">#ffffff</color>
+
+    <!-- Semantic UI Elements -->
+    <color name="github_primer_button_bg">#21262d</color>
+    <color name="github_primer_button_hover">#30363d</color>
+    <color name="github_primer_button_border">#f0f6fc1a</color>
+
+    <color name="github_primer_button_primary_bg">#238636</color>
+    <color name="github_primer_button_primary_hover">#2ea043</color>
+</resources>

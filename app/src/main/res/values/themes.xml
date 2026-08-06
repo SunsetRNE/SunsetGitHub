@@ -1,0 +1,43 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/github_surface</item>
+        <item name="colorPrimaryVariant">@color/github_surface</item>
+        <item name="colorOnPrimary">@color/github_text_primary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/github_accent</item>
+        <item name="colorSecondaryVariant">@color/github_accent</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorAccent">@color/github_accent</item>
+        <item name="android:colorBackground">@color/github_canvas</item>
+        <item name="colorBackgroundFloating">@color/github_surface</item>
+        <item name="android:windowBackground">@color/github_canvas</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.SunsetGitHub.MaterialAlertDialog</item>
+        <item name="materialButtonStyle">@style/Widget.SunsetGitHub.Material.GlobalButton</item>
+        <item name="switchStyle">@style/Widget.SunsetGitHub.Material.Switch</item>
+        <item name="checkboxStyle">@style/Widget.SunsetGitHub.Material.CheckBox</item>
+        <item name="radioButtonStyle">@style/Widget.SunsetGitHub.Material.RadioButton</item>
+        <item name="chipStyle">@style/Widget.SunsetGitHub.Material.FilterChip</item>
+        <!-- System bar rendering. -->
+        <item name="android:statusBarColor" tools:targetApi="21">@color/github_surface</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/github_surface</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="buttonStyle">@style/Widget.SunsetGitHub.Platform.Button</item>
+        <item name="android:buttonStyle">@style/Widget.SunsetGitHub.Platform.Button</item>
+    </style>
+
+    <!-- 全局搜索浮层 dialog 主题：透明窗口、无边框、全屏，让 scrim 遮罩透出底层并变暗。 -->
+    <style name="ThemeOverlay.SunsetGitHub.SearchDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@android:color/transparent</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+    </style>
+</resources>

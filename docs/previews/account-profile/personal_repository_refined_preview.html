@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub - 个人仓库精致化预览</title>
+  <style>
+    :root {
+      --canvas: #f6f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #24292f;
+      --title: #0d1117;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --border: #d0d7de;
+      --border-soft: rgba(208, 215, 222, .72);
+      --accent: #0969da;
+      --accent-soft: #ddf4ff;
+      --success: #1a7f37;
+      --shell: #89e051;
+      --kotlin: #a97bff;
+      --html: #e34c26;
+      --shadow-phone: 0 26px 64px rgba(13, 17, 23, .18);
+      --shadow-card: 0 10px 28px rgba(27, 31, 36, .055);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(9, 105, 218, .14), transparent 30rem),
+        radial-gradient(circle at 88% 18%, rgba(26, 127, 55, .09), transparent 24rem),
+        linear-gradient(135deg, #eef2f6 0%, #fbfbfd 56%, #f2f4f8 100%);
+      display: flex;
+      justify-content: center;
+      padding: 28px 14px;
+    }
+
+    .preview-board {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: 430px minmax(320px, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .phone {
+      width: 430px;
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 38px;
+      background: #0d1117;
+      padding: 12px;
+      box-shadow: var(--shadow-phone);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .screen {
+      height: 852px;
+      overflow: hidden;
+      border-radius: 28px;
+      background: var(--canvas);
+      position: relative;
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.64) 18%, rgba(246,248,250,0) 40%),
+        radial-gradient(circle at 12% 0%, rgba(9,105,218,.09), transparent 18rem);
+      pointer-events: none;
+    }
+
+    .statusbar {
+      position: relative;
+      z-index: 1;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: #111827;
+      opacity: .82;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      height: calc(100% - 34px);
+      overflow: auto;
+      padding: 22px 20px 118px;
+      scrollbar-width: none;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    .hero {
+      padding: 12px 2px 18px;
+    }
+
+    .hero-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 30px;
+      padding: 0 11px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--title);
+      font-size: 35px;
+      line-height: 1.04;
+      letter-spacing: -1.05px;
+      font-weight: 780;
+    }
+
+    .subtitle {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 520;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 8px;
+      padding-top: 4px;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255,255,255,.86);
+      color: var(--title);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 18px rgba(27,31,36,.06);
+      font-size: 20px;
+      font-weight: 760;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 52px;
+      gap: 10px;
+      margin: 7px 0 10px;
+    }
+
+    .search {
+      height: 54px;
+      border-radius: 17px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255,255,255,.9);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 15px;
+      box-shadow: 0 8px 24px rgba(27,31,36,.04);
+      color: var(--subtle);
+      font-size: 15px;
+      font-weight: 560;
+    }
+
+    .filter-btn {
+      height: 54px;
+      border-radius: 17px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255,255,255,.9);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px rgba(27,31,36,.04);
+      color: var(--title);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .state-line {
+      min-height: 23px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--subtle);
+      font-size: 13px;
+      font-weight: 560;
+      padding: 0 2px 8px;
+    }
+
+    .dot-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 5px rgba(26,127,55,.10);
+    }
+
+    .repo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .repo-card {
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.96);
+      border: 1px solid var(--border-soft);
+      padding: 22px 21px 18px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .repo-card.featured {
+      background:
+        radial-gradient(circle at top right, rgba(9,105,218,.08), transparent 10rem),
+        rgba(255,255,255,.97);
+      border-color: rgba(9,105,218,.18);
+    }
+
+    .repo-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .repo-name {
+      color: var(--title);
+      font-size: 24px;
+      line-height: 1.13;
+      letter-spacing: -.45px;
+      font-weight: 760;
+      overflow-wrap: anywhere;
+    }
+
+    .chip {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      height: 27px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 760;
+      border: 1px solid var(--border-soft);
+      color: var(--muted);
+      background: #f6f8fa;
+    }
+
+    .chip.private {
+      color: #8250df;
+      background: #fbefff;
+      border-color: rgba(130,80,223,.22);
+    }
+
+    .desc {
+      margin: 14px 0 17px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.45;
+      letter-spacing: -.08px;
+    }
+
+    .topics {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin: -3px 0 15px;
+    }
+
+    .topic {
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: #ddf4ff;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+      color: var(--subtle);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .lang-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: -3px;
+      border: 1px solid rgba(13,17,23,.12);
+    }
+
+    .divider-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #afb8c1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .updated {
+      color: var(--subtle);
+      font-size: 13px;
+      font-weight: 590;
+    }
+
+    .repo-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .mini-action {
+      width: 36px;
+      height: 36px;
+      border-radius: 13px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--title);
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .mini-action.primary {
+      color: var(--accent);
+      background: #f6fbff;
+      border-color: rgba(9,105,218,.20);
+    }
+
+    .bottom-nav-wrap {
+      position: absolute;
+      z-index: 2;
+      left: 20px;
+      right: 20px;
+      bottom: 18px;
+      height: 76px;
+      border-radius: 26px;
+      border: 1px solid rgba(208,215,222,.82);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 18px 40px rgba(27,31,36,.14);
+      backdrop-filter: blur(18px);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      padding: 8px;
+    }
+
+    .nav-item {
+      height: 60px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #57606a;
+      font-size: 11px;
+      font-weight: 740;
+    }
+
+    .nav-item .nav-icon { font-size: 20px; line-height: 1; }
+    .nav-item.active {
+      color: var(--accent);
+      background: #ddf4ff;
+    }
+
+    .notes {
+      border-radius: 28px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(208,215,222,.7);
+      box-shadow: 0 18px 48px rgba(27,31,36,.08);
+      padding: 26px;
+      backdrop-filter: blur(18px);
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -.6px;
+      color: var(--title);
+    }
+
+    .notes p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .note-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .note-card {
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      padding: 16px;
+    }
+
+    .note-card strong {
+      display: block;
+      color: var(--title);
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .note-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .variants {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .variant {
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: #0d1117;
+      color: #f0f6fc;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .variant-title {
+      font-weight: 800;
+      margin-bottom: 7px;
+      color: #fff;
+    }
+
+    .variant-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #c9d1d9;
+      white-space: pre-wrap;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 16px 10px; }
+      .preview-board { grid-template-columns: 1fr; }
+      .phone { width: min(430px, 100%); }
+      .notes { padding: 20px; }
+      .note-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-board">
+    <section class="phone" aria-label="手机预览">
+      <div class="screen">
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="status-icons">▰▰ 5G ◉</span>
+        </div>
+
+        <div class="content">
+          <header class="hero">
+            <div class="hero-row">
+              <div>
+                <div class="eyebrow">● 个人空间</div>
+                <h1>我的仓库</h1>
+                <p class="subtitle">15 个 GitHub 仓库 · 只在页面级说明归属，卡片不再重复显示账号名。</p>
+              </div>
+              <div class="hero-actions">
+                <div class="icon-button" title="新建仓库">＋</div>
+                <div class="icon-button" title="刷新">↻</div>
+              </div>
+            </div>
+          </header>
+
+          <div class="search-row">
+            <div class="search">⌕ 搜索仓库、语言或 topic</div>
+            <div class="filter-btn">⇅</div>
+          </div>
+
+          <div class="state-line"><span class="dot-pulse"></span>正在刷新仓库列表…… 已按最近更新排序</div>
+
+          <section class="repo-list">
+            <article class="repo-card featured">
+              <div class="repo-head">
+                <div class="repo-name">oppo_oplus_realme_sm8650</div>
+                <span class="chip">公开</span>
+              </div>
+              <p class="desc">An automatic kernel builder for Oppo / OnePlus / Realme Snapdragon sm8650 series in a completely new way.</p>
+              <div class="topics">
+                <span class="topic">kernel</span>
+                <span class="topic">android</span>
+                <span class="topic">oneplus</span>
+              </div>
+              <div class="meta">
+                <span class="lang-dot" style="background: var(--shell)"></span><span>Shell</span>
+                <span class="divider-dot"></span><span>★ 6</span>
+                <span class="divider-dot"></span><span>Fork 2</span>
+                <span class="divider-dot"></span><span>main</span>
+              </div>
+              <div class="card-footer">
+                <span class="updated">3 天前更新</span>
+                <div class="repo-actions">
+                  <div class="mini-action primary">★</div>
+                  <div class="mini-action">♡</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="repo-card">
+              <div class="repo-head">
+                <div class="repo-name">SunsetGitHub</div>
+                <span class="chip private">私有</span>
+              </div>
+              <p class="desc">A refined Android GitHub client focused on mobile repository browsing, file preview, Issues and profile flows.</p>
+              <div class="topics">
+                <span class="topic">kotlin</span>
+                <span class="topic">compose</span>
+                <span class="topic">github-client</span>
+              </div>
+              <div class="meta">
+                <span class="lang-dot" style="background: var(--kotlin)"></span><span>Kotlin</span>
+                <span class="divider-dot"></span><span>★ 12</span>
+                <span class="divider-dot"></span><span>Fork 1</span>
+                <span class="divider-dot"></span><span>main</span>
+              </div>
+              <div class="card-footer">
+                <span class="updated">今天 12:39 更新</span>
+                <div class="repo-actions">
+                  <div class="mini-action primary">★</div>
+                  <div class="mini-action">⋯</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="repo-card">
+              <div class="repo-head">
+                <div class="repo-name">repository_preview_lab</div>
+                <span class="chip">模板</span>
+              </div>
+              <p class="desc">Design previews and visual experiments for repository cards, profile pages and compact mobile UI components.</p>
+              <div class="meta">
+                <span class="lang-dot" style="background: var(--html)"></span><span>HTML</span>
+                <span class="divider-dot"></span><span>★ 3</span>
+                <span class="divider-dot"></span><span>main</span>
+              </div>
+              <div class="card-footer">
+                <span class="updated">上周更新</span>
+                <div class="repo-actions">
+                  <div class="mini-action">☆</div>
+                  <div class="mini-action">♡</div>
+                </div>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <nav class="bottom-nav-wrap" aria-label="底部导航预览">
+          <div class="nav-item"><span class="nav-icon">⌂</span><span>首页</span></div>
+          <div class="nav-item active"><span class="nav-icon">▦</span><span>仓库</span></div>
+          <div class="nav-item"><span class="nav-icon">◌</span><span>通知</span></div>
+          <div class="nav-item"><span class="nav-icon">⚙</span><span>设置</span></div>
+        </nav>
+      </div>
+    </section>
+
+    <aside class="notes">
+      <h2>个人仓库页精致化预览</h2>
+      <p>这个预览重点验证一个取舍：个人仓库列表中不在每张卡片重复展示自己的账号名，而是把“我的仓库 / 仓库数量 / 账号归属”放到页面头部，卡片主视觉只服务于仓库本身。</p>
+
+      <div class="note-grid">
+        <div class="note-card">
+          <strong>页面级归属</strong>
+          <span>顶部用“我的仓库 · 15 个 GitHub 仓库”说明上下文，避免卡片内反复出现 owner。</span>
+        </div>
+        <div class="note-card">
+          <strong>卡片级重点</strong>
+          <span>仓库名、描述、语言、Star、Fork、默认分支、更新时间，比账号名更有价值。</span>
+        </div>
+        <div class="note-card">
+          <strong>参考第二张图</strong>
+          <span>大标题、大留白、圆角卡片、轻边框、悬浮底栏，整体更清爽。</span>
+        </div>
+        <div class="note-card">
+          <strong>可实现路径</strong>
+          <span>先只改 Dashboard/个人仓库列表的卡片布局与间距，不动数据逻辑。</span>
+        </div>
+      </div>
+
+      <div class="variants">
+        <div class="variant">
+          <div class="variant-title">推荐卡片信息结构</div>
+          <div class="variant-code">仓库名               状态 Chip
+描述，两到三行
+Topic 标签，可选
+● 语言 · ★ stars · Fork 数 · 默认分支
+更新时间                         ★ / ♡ / ⋯</div>
+        </div>
+        <div class="variant">
+          <div class="variant-title">不推荐</div>
+          <div class="variant-code">账号名/
+仓库名
+描述
+元信息</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>

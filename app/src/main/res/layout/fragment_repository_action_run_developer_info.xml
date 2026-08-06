@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_repository_action_run_developer_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:fillViewport="true"
+    tools:context=".ui.repo.RepositoryActionRunDeveloperInfoFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/page_horizontal_padding"
+        android:paddingVertical="@dimen/page_vertical_padding">
+
+        <TextView
+            android:id="@+id/text_repository_action_run_developer_info_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+            android:visibility="gone"
+            tools:text="正在加载 Actions 运行详情……"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_action_run_developer_info_retry"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="@string/repository_action_run_detail_retry"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_action_run_developer_info_open_actions"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="@string/repository_action_run_detail_open_in_github"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/container_repository_action_run_developer_info_card"
+            style="@style/Widget.SunsetGitHub.Material.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardUseCompatPadding="false"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/text_repository_action_run_developer_info_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                    tools:text="运行信息" />
+
+                <TextView
+                    android:id="@+id/text_repository_action_run_developer_info_meta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    tools:text="Run #11 · Attempt 1 · main · 172e916" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_action_run_developer_info_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

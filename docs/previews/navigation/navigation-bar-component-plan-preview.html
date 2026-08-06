@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub 独立悬浮导航栏组件方案</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --canvas: #ffffff;
+      --surface: rgba(255,255,255,.78);
+      --surface-strong: #ffffff;
+      --text: #1f2328;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --border: rgba(31,35,40,.12);
+      --border-strong: rgba(31,35,40,.2);
+      --blue: #0969da;
+      --blue-soft: #ddf4ff;
+      --green: #1a7f37;
+      --green-soft: #dafbe1;
+      --purple: #8250df;
+      --purple-soft: #f0e7ff;
+      --orange: #bc4c00;
+      --orange-soft: #fff1e5;
+      --red: #cf222e;
+      --red-soft: #ffebe9;
+      --shadow: 0 18px 44px rgba(31,35,40,.13);
+      --glass: linear-gradient(145deg, rgba(255,255,255,.78), rgba(255,255,255,.48));
+      --glass-border: rgba(255,255,255,.68);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% -10%, rgba(9,105,218,.18), transparent 30%),
+        radial-gradient(circle at 92% 4%, rgba(130,80,223,.16), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 54%, #eef3f9 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 18px 72px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .95fr);
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .hero-card,
+    .panel,
+    .phone,
+    .code-card,
+    .flow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .hero-card {
+      padding: 34px;
+      border-radius: var(--radius-xl);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: #0550ae;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(30px, 4.6vw, 56px);
+      line-height: 1.04;
+      letter-spacing: -1.8px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 28px;
+      letter-spacing: -.7px;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    p { margin: 0 0 12px; color: var(--muted); }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      padding: 11px 16px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--surface-strong);
+    }
+
+    .button.primary {
+      background: #1f6feb;
+      color: white;
+      border-color: rgba(31,111,235,.25);
+    }
+
+    .phone-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      aspect-ratio: 9 / 18.6;
+      border-radius: 44px;
+      padding: 14px;
+      background: linear-gradient(145deg, #202935, #0f1720);
+      box-shadow: 0 28px 80px rgba(1,4,9,.28);
+      overflow: hidden;
+    }
+
+    .phone-screen {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 32px;
+      background:
+        radial-gradient(circle at 80% 0%, rgba(130,80,223,.22), transparent 28%),
+        linear-gradient(180deg, #f6f8fa 0%, #ffffff 100%);
+    }
+
+    .statusbar {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #24292f;
+    }
+
+    .topbar {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(31,35,40,.08);
+      background: rgba(255,255,255,.7);
+    }
+
+    .octo {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #24292f;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .content {
+      position: absolute;
+      inset: 88px 0 0 0;
+      padding: 16px 16px 130px;
+      overflow: hidden;
+    }
+
+    .repo-card {
+      border: 1px solid rgba(31,35,40,.1);
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .repo-line { height: 11px; border-radius: 999px; background: #d8dee4; margin: 10px 0; }
+    .repo-line.short { width: 56%; }
+    .repo-line.mid { width: 76%; }
+
+    .floating-nav {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 18px;
+      height: 72px;
+      border-radius: 28px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      padding: 7px 9px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.46)),
+        rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.76);
+      box-shadow: 0 18px 42px rgba(31,35,40,.20), inset 0 1px 0 rgba(255,255,255,.85);
+      backdrop-filter: blur(22px) saturate(1.55);
+      -webkit-backdrop-filter: blur(22px) saturate(1.55);
+    }
+
+    .nav-item {
+      height: 56px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: #57606a;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .nav-item .icon { font-size: 18px; }
+    .nav-item.active { background: rgba(9,105,218,.12); color: #0969da; }
+
+    .caption {
+      color: var(--subtle);
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 22px 0;
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .panel .tag {
+      display: inline-flex;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .tag.blue { background: var(--blue-soft); color: #0550ae; }
+    .tag.green { background: var(--green-soft); color: #116329; }
+    .tag.purple { background: var(--purple-soft); color: #6639ba; }
+    .tag.orange { background: var(--orange-soft); color: #9a3412; }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .wide-panel {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      background: rgba(255,255,255,.8);
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 34px rgba(31,35,40,.09);
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+
+    .stack {
+      border-radius: 22px;
+      padding: 18px;
+      background: #f6f8fa;
+      border: 1px solid var(--border);
+    }
+
+    .stack-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: 900;
+    }
+
+    .layer {
+      border-radius: 14px;
+      padding: 11px 12px;
+      background: white;
+      border: 1px solid rgba(31,35,40,.1);
+      margin: 9px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .layer strong { color: var(--text); }
+
+    .arrow {
+      text-align: center;
+      color: var(--blue);
+      font-weight: 900;
+      font-size: 22px;
+      margin: auto;
+    }
+
+    .code-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: #c9d1d9;
+    }
+
+    .code-card {
+      border-radius: 20px;
+      padding: 18px;
+      background: #0d1117;
+      border: 1px solid rgba(240,246,252,.12);
+      overflow: hidden;
+    }
+
+    .code-title {
+      color: #f0f6fc;
+      font-weight: 900;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(56,139,253,.14);
+      color: #79c0ff;
+      white-space: nowrap;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 15px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--border);
+    }
+
+    .num {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(135deg, #0969da, #8250df);
+    }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 18px;
+      background: white;
+      border: 1px solid var(--border);
+      margin-top: 14px;
+    }
+
+    .matrix th,
+    .matrix td {
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(31,35,40,.08);
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .matrix th {
+      background: #f6f8fa;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .matrix tr:last-child td { border-bottom: none; }
+
+    .callout {
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid rgba(9,105,218,.22);
+      background: rgba(221,244,255,.74);
+      margin-top: 16px;
+    }
+
+    .risk {
+      border-color: rgba(207,34,46,.22);
+      background: rgba(255,235,233,.72);
+    }
+
+    .success {
+      border-color: rgba(26,127,55,.22);
+      background: rgba(218,251,225,.75);
+    }
+
+    ul { margin: 8px 0 0 20px; padding: 0; color: var(--muted); }
+    li { margin: 6px 0; }
+
+    .footer {
+      margin-top: 36px;
+      color: var(--subtle);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .architecture,
+      .code-grid { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .hero-card { padding: 24px; }
+      .page { padding-top: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">SunsetGitHub · Navigation Component Plan</div>
+        <h1>独立悬浮导航栏组件方案</h1>
+        <p>
+          目标不是简单移动代码，而是把底部导航栏抽成一个具有独立物理边界的渲染组件，后续可以彻底实现悬浮导航、统一底色渲染、玻璃材质、内容避让和动画过渡。
+        </p>
+        <p>
+          当前实现已经拆出了 HostController、Renderer、MenuBinder 和 DestinationRegistry，但导航栏仍依赖 Activity 布局里的 BottomNavigationView、divider、container，以及对 Fragment 根视图的外部 padding 修补。本方案将这些能力收敛到一个组件内部。
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#architecture">查看组件边界</a>
+          <a class="button" href="#migration">查看迁移步骤</a>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div>
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="statusbar"><span>9:41</span><span>●●● 100%</span></div>
+              <div class="topbar"><div class="octo">G</div><strong>SunsetGitHub</strong></div>
+              <div class="content">
+                <div class="repo-card"><strong>Sunset/REN</strong><div class="repo-line mid"></div><div class="repo-line short"></div></div>
+                <div class="repo-card"><strong>Repository sections</strong><div class="repo-line"></div><div class="repo-line mid"></div></div>
+                <div class="repo-card"><strong>Actions · Issues · Settings</strong><div class="repo-line short"></div><div class="repo-line"></div></div>
+                <div class="repo-card"><strong>Glass backdrop area</strong><div class="repo-line mid"></div></div>
+              </div>
+              <div class="floating-nav">
+                <div class="nav-item active"><div class="icon">⌘</div><div>Code</div></div>
+                <div class="nav-item"><div class="icon">●</div><div>Issues</div></div>
+                <div class="nav-item"><div class="icon">↻</div><div>Actions</div></div>
+                <div class="nav-item"><div class="icon">⚙</div><div>Settings</div></div>
+                <div class="nav-item"><div class="icon">⋯</div><div>More</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="caption">目标效果：导航栏作为独立 overlay 组件，自管玻璃、圆角、阴影、点击区和内容避让。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <div class="tag blue">问题 1</div>
+        <h3>底色来源不统一</h3>
+        <p>Fragment、Activity 背景、BottomNavigationView 背景分别绘制，悬浮时容易出现底色和内容不一致。</p>
+      </div>
+      <div class="panel">
+        <div class="tag purple">问题 2</div>
+        <h3>玻璃没有物理边界</h3>
+        <p>玻璃需要 backdrop、tint、stroke、blur、clip、shadow 协同，目前这些职责散在布局和 renderer 里。</p>
+      </div>
+      <div class="panel">
+        <div class="tag orange">问题 3</div>
+        <h3>内容避让是外部修补</h3>
+        <p>当前通过 navHostView.post 给 Fragment 根视图补 padding，切页时可能产生一帧错位或不一致。</p>
+      </div>
+    </section>
+
+    <section class="section wide-panel" id="architecture">
+      <h2>一、目标组件边界</h2>
+      <p>新增一个物理组件 <strong>AppNavigationBarLayout</strong>，外部只向它输入状态、接收事件。组件内部继续可以使用 BottomNavigationView，但这个实现细节不再暴露给 MainActivity。</p>
+
+      <div class="architecture">
+        <div class="stack">
+          <div class="stack-title">当前结构 <span class="pill">半组件化</span></div>
+          <div class="layer"><strong>MainActivity</strong><br/>持有 navViewContainer、navViewDivider、navView</div>
+          <div class="layer"><strong>NavigationBarHostController</strong><br/>业务状态 + 菜单切换 + 渲染调用</div>
+          <div class="layer"><strong>MaterialBottomNavigationBarSurface</strong><br/>连接 renderer 和 menu surface</div>
+          <div class="layer"><strong>NavigationBarController</strong><br/>设置背景、margin、elevation、content padding</div>
+          <div class="layer"><strong>BottomNavigationView</strong><br/>真实物理 View 暴露在 Activity 布局中</div>
+        </div>
+
+        <div class="stack">
+          <div class="stack-title">目标结构 <span class="pill">独立物理组件</span></div>
+          <div class="layer"><strong>MainActivity</strong><br/>只持有 AppNavigationBarHost</div>
+          <div class="layer"><strong>AppNavigationBarHost</strong><br/>连接 NavController、偏好、BottomSheet、事件</div>
+          <div class="layer"><strong>AppNavigationBarLayout</strong><br/>组件根 View，自管布局、玻璃、菜单、点击区</div>
+          <div class="layer"><strong>Material / Backdrop Renderer</strong><br/>Solid、FakeGlass、RenderEffectGlass 可替换</div>
+          <div class="layer"><strong>ContentInsetApplier</strong><br/>统一应用组件发布的内容避让</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>二、推荐目录结构</h2>
+      <p>建议把导航栏物理组件放在新的子包中，与目的地策略、偏好存储、仓库分区业务分开。</p>
+      <div class="code-card">
+        <div class="code-title">建议新增 / 调整文件 <span class="pill">ui/navigation/component</span></div>
+<pre>app/src/main/kotlin/com/Sunset/REN/GitHub/ui/navigation/
+├── component/
+│   ├── AppNavigationBarLayout.kt          // 独立物理 View，内部持有 BottomNavigationView / backdrop / stroke
+│   ├── AppNavigationBarState.kt           // 可渲染状态模型
+│   ├── AppNavigationBarEvent.kt           // 点击事件模型
+│   ├── AppNavigationBarRenderer.kt        // visibility / placement / material 渲染
+│   ├── AppNavigationBarMenuRenderer.kt    // 主导航菜单与仓库分区菜单渲染
+│   ├── AppNavigationBarInsets.kt          // 组件对内容区发布的避让信息
+│   ├── AppNavigationBarBackdrop.kt        // Solid / FakeGlass / RenderEffectGlass 接口
+│   └── RepositoryNavigationMenuModelFactory.kt
+├── AppNavigationBarHost.kt                // 原 NavigationBarHostController 的演进版
+├── NavigationBarDestinationPolicy.kt      // 显示 / 隐藏 / Docked / Floating 策略
+└── RepositorySectionDestinationPolicy.kt  // RepositorySection 与 destination 映射</pre>
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>三、状态与事件设计</h2>
+      <p>组件应该围绕状态渲染，而不是由外部直接操作 BottomNavigationView。这样后续切换玻璃、悬浮、Docked、Rail 都只影响 renderer。</p>
+      <div class="code-grid">
+        <div class="code-card">
+          <div class="code-title">AppNavigationBarState.kt <span class="pill">状态</span></div>
+<pre>data class AppNavigationBarState(
+    val visibility: AppNavigationBarVisibility,
+    val placement: AppNavigationBarPlacement,
+    val material: AppNavigationBarMaterial,
+    val menu: AppNavigationBarMenu,
+    val selectedItemId: Int?,
+    val contentAvoidance: ContentAvoidance
+)
+
+enum class AppNavigationBarVisibility {
+    Visible,
+    Hidden
+}
+
+enum class AppNavigationBarPlacement {
+    Docked,
+    Floating
+}
+
+sealed interface AppNavigationBarMaterial {
+    data object Solid : AppNavigationBarMaterial
+    data object FakeGlass : AppNavigationBarMaterial
+    data class Glass(
+        val blurRadiusDp: Float,
+        val tintAlpha: Float,
+        val strokeAlpha: Float
+    ) : AppNavigationBarMaterial
+}</pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-title">AppNavigationBarEvent.kt <span class="pill">事件</span></div>
+<pre>sealed interface AppNavigationBarEvent {
+    data class MainDestinationSelected(
+        @IdRes val destinationId: Int
+    ) : AppNavigationBarEvent
+
+    data class RepositorySectionSelected(
+        val section: RepositorySection
+    ) : AppNavigationBarEvent
+
+    data object RepositoryMoreSelected : AppNavigationBarEvent
+}
+
+sealed interface AppNavigationBarMenu {
+    data object Main : AppNavigationBarMenu
+
+    data class RepositorySections(
+        val sections: List&lt;RepositorySection&gt;,
+        val selectedSection: RepositorySection
+    ) : AppNavigationBarMenu
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>四、布局调整方案</h2>
+      <p>把 Activity 中分散的 nav container、divider、BottomNavigationView 收敛成一个自定义组件。组件内部自己决定是否显示 divider、stroke、glass layer 和 BottomNavigationView。</p>
+      <div class="code-grid">
+        <div class="code-card">
+          <div class="code-title">activity_main.xml 目标形态 <span class="pill">外部只放组件</span></div>
+<pre>&lt;FrameLayout
+    android:id="@+id/app_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;
+
+    &lt;androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment_activity_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/mobile_navigation" /&gt;
+
+    &lt;com.Sunset.REN.GitHub.ui.navigation.component.AppNavigationBarLayout
+        android:id="@+id/app_navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" /&gt;
+
+&lt;/FrameLayout&gt;</pre>
+        </div>
+        <div class="code-card">
+          <div class="code-title">组件内部结构 <span class="pill">自管物理层</span></div>
+<pre>AppNavigationBarLayout
+├── BackdropLayer
+│   ├── solid surface
+│   ├── fake glass tint
+│   └── future blur snapshot / RenderEffect
+├── StrokeLayer
+│   ├── docked divider
+│   └── floating glass border
+└── BottomNavigationView
+    ├── main menu
+    └── repository section menu</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>五、玻璃渲染路线</h2>
+      <p>不要第一步就做复杂真模糊。建议先建立 material 管线，再逐步替换 backdrop renderer。</p>
+      <table class="matrix">
+        <thead>
+          <tr><th>阶段</th><th>实现</th><th>收益</th><th>风险</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>阶段 A：统一底色</strong></td>
+            <td>Solid / SurfaceColor，统一使用主题 surface、canvas、stroke。</td>
+            <td>先解决 UI 和底色内容渲染不一致。</td>
+            <td>没有真玻璃，但稳定。</td>
+          </tr>
+          <tr>
+            <td><strong>阶段 B：假玻璃</strong></td>
+            <td>半透明 tint + stroke + elevation + 圆角裁剪 + backdrop-filter 风格近似。</td>
+            <td>视觉接近玻璃，兼容 minSdk 28。</td>
+            <td>不是背后内容真实模糊。</td>
+          </tr>
+          <tr>
+            <td><strong>阶段 C：RenderEffect 玻璃</strong></td>
+            <td>Android 12+ 使用 RenderEffect 或 snapshot layer。</td>
+            <td>可获得更真实的模糊材质。</td>
+            <td>性能、滚动同步、截图频率需要控制。</td>
+          </tr>
+          <tr>
+            <td><strong>阶段 D：高级 BackdropRenderer</strong></td>
+            <td>独立 renderer 管理 snapshot、失效、降级策略。</td>
+            <td>玻璃能力可插拔，不影响导航业务。</td>
+            <td>实现复杂，建议最后做。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout success">
+        <strong>建议：</strong>第一轮只实现 Solid + FakeGlass。先把物理组件、状态、内容避让和菜单事件稳定下来，真模糊作为后续 renderer 替换。
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>六、内容避让策略</h2>
+      <p>导航栏组件不应该直接修改 Fragment 根 View，而是发布自己需要的 bottom inset。宿主或统一 applier 负责应用到 NavHost 当前内容。</p>
+      <div class="code-grid">
+        <div class="code-card">
+          <div class="code-title">AppNavigationBarInsets.kt <span class="pill">组件输出</span></div>
+<pre>data class AppNavigationBarInsets(
+    val bottomContentPaddingPx: Int,
+    val bottomGesturePaddingPx: Int,
+    val isOverlayingContent: Boolean
+)
+
+enum class ContentAvoidance {
+    None,
+    ReserveDockedSpace,
+    ReserveFloatingTouchSpace
+}</pre>
+        </div>
+        <div class="code-card">
+          <div class="code-title">NavigationContentInsetApplier.kt <span class="pill">宿主应用</span></div>
+<pre>class NavigationContentInsetApplier(
+    private val navHost: ViewGroup
+) {
+    fun apply(insets: AppNavigationBarInsets) {
+        val contentRoot = navHost.getChildAt(0) ?: return
+        if (contentRoot is ViewGroup) {
+            contentRoot.clipToPadding = false
+        }
+        contentRoot.updatePadding(
+            bottom = insets.bottomContentPaddingPx
+        )
+    }
+}</pre>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>关键点：</strong>Docked 模式可以保留完整底部空间；Floating 模式允许内容绘制到底部，但为滚动内容保留触摸和阅读空间；Hidden 模式清空避让。
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>七、仓库分区菜单优化</h2>
+      <p>当前从 More 打开未钉选分区时，底栏菜单可能没有该分区，导致无法高亮。组件化时建议一并修复。</p>
+      <div class="code-card">
+        <div class="code-title">RepositoryNavigationMenuModelFactory.kt <span class="pill">临时显示当前分区</span></div>
+<pre>class RepositoryNavigationMenuModelFactory {
+    fun create(
+        shortcutSections: List&lt;RepositorySection&gt;,
+        orderedSections: List&lt;RepositorySection&gt;,
+        selectedSection: RepositorySection
+    ): List&lt;RepositorySection&gt; {
+        val shortcuts = orderedSections
+            .filter { it in shortcutSections }
+            .take(3)
+            .toMutableList()
+
+        val shouldExposeSelected =
+            selectedSection != RepositorySection.Code &&
+            selectedSection != RepositorySection.More &&
+            selectedSection !in shortcuts
+
+        if (shouldExposeSelected) {
+            if (shortcuts.size >= 3) shortcuts.removeLast()
+            shortcuts += selectedSection
+        }
+
+        return listOf(RepositorySection.Code) + shortcuts + RepositorySection.More
+    }
+}</pre>
+      </div>
+    </section>
+
+    <section class="section wide-panel" id="migration">
+      <h2>八、迁移步骤</h2>
+      <div class="timeline">
+        <div class="step"><div class="num">1</div><div><h3>新增状态和事件模型</h3><p>添加 AppNavigationBarState、AppNavigationBarEvent、AppNavigationBarMenu，不改变现有 UI。</p></div></div>
+        <div class="step"><div class="num">2</div><div><h3>新增 AppNavigationBarLayout</h3><p>内部先复用 BottomNavigationView，迁入背景、margin、elevation、divider、clip 逻辑。</p></div></div>
+        <div class="step"><div class="num">3</div><div><h3>替换 activity_main.xml</h3><p>用单个自定义组件替换 nav_view_container、nav_view_divider、nav_view。</p></div></div>
+        <div class="step"><div class="num">4</div><div><h3>HostController 改为状态输出</h3><p>让 NavigationBarHostController / AppNavigationBarHost 只生成 state 和处理 event，不再直接操作 BottomNavigationView。</p></div></div>
+        <div class="step"><div class="num">5</div><div><h3>引入 ContentInsetApplier</h3><p>组件发布 inset，宿主统一应用，移除 renderer 内部直接修改 NavHost 子 View 的逻辑。</p></div></div>
+        <div class="step"><div class="num">6</div><div><h3>实现 FakeGlass</h3><p>先用半透明 surface、stroke、shadow、圆角裁剪解决视觉一致性，再预留 RenderEffectGlass。</p></div></div>
+        <div class="step"><div class="num">7</div><div><h3>补测试和交互验证</h3><p>验证目的地规则、仓库分区菜单生成、未钉选分区高亮、Docked/Floating/Hidden inset。</p></div></div>
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>九、验收标准</h2>
+      <div class="grid">
+        <div class="panel">
+          <div class="tag green">结构</div>
+          <h3>MainActivity 变薄</h3>
+          <p>MainActivity 不再知道 BottomNavigationView、divider、menu.clear、inflateMenu、clip/elevation/margin。</p>
+        </div>
+        <div class="panel">
+          <div class="tag blue">视觉</div>
+          <h3>底色一致</h3>
+          <p>Docked 和 Floating 模式下，导航栏背景、页面底色、Activity canvas 不再出现明显断层。</p>
+        </div>
+        <div class="panel">
+          <div class="tag purple">扩展</div>
+          <h3>玻璃可替换</h3>
+          <p>Solid、FakeGlass、RenderEffectGlass 可以通过 material renderer 切换，不改导航业务。</p>
+        </div>
+      </div>
+      <div class="callout risk">
+        <strong>注意：</strong>不要第一轮就把真模糊、截图采样、滚动同步全部做完。先完成独立物理组件和假玻璃，确保现有导航功能无回退后，再进入真玻璃 renderer。
+      </div>
+    </section>
+
+    <section class="section wide-panel">
+      <h2>十、最终 MainActivity 目标代码</h2>
+      <div class="code-card">
+        <div class="code-title">MainActivity 中只保留组件宿主接入 <span class="pill">最终边界</span></div>
+<pre>appNavigationBarHost = AppNavigationBarHost(
+    navController = navController,
+    navigationBar = binding.appNavigationBar,
+    repositoryNavigationPreferencesRepository = repositoryNavigationPreferencesRepository,
+    showRepositoryMoreSections = ::showRepositoryMoreSectionsSheet,
+    logTag = TAG
+)
+
+navController.addOnDestinationChangedListener { _, destination, arguments ->
+    appNavigationBarHost.onDestinationChanged(destination.id, arguments)
+    applyRepositoryTitleForDestination(destination.id, arguments)
+    invalidateOptionsMenu()
+}
+
+themePreferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+    if (key == ThemePreferenceStore.KeyFloatingNavigationEnabled) {
+        appNavigationBarHost.setFloatingEnabled(themePreferenceStore.isFloatingNavigationEnabled())
+    }
+}</pre>
+      </div>
+    </section>
+
+    <div class="footer">
+      生成文件：docs/navigation-bar-component-plan-preview.html · 方案用于 SunsetGitHub 独立悬浮导航栏组件重构
+    </div>
+  </main>
+</body>
+</html>

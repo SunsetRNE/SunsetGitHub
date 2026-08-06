@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MT 风格文件管理器模块预览</title>
+  <style>
+    :root {
+      --bar: #2f2f2f;
+      --barText: #f7f7f7;
+      --barSub: #d9d9d9;
+      --page: #fafafa;
+      --pane: #fbfbfb;
+      --text: #171717;
+      --muted: #6f7378;
+      --line: #b9b9b9;
+      --lineDark: #8e8e8e;
+      --folder: #202020;
+      --blue: #2f6fcb;
+      --doc: #607d8b;
+      --green: #229b43;
+      --select: #e1f0ff;
+      --bottom: #f8f8f8;
+      --bottomIcon: #575b5f;
+      --disabled: #c7c9cc;
+      --preview-scale: 0.86;
+      font-family: Roboto, "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #fff;
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview-frame {
+      width: min(100vw, 430px);
+      height: 100vh;
+      overflow: hidden;
+      background: var(--page);
+      position: relative;
+    }
+
+    .app {
+      width: calc(min(100vw, 430px) / var(--preview-scale));
+      height: calc(100vh / var(--preview-scale));
+      transform: scale(var(--preview-scale));
+      transform-origin: top left;
+      min-height: 680px;
+      background: var(--page);
+      display: grid;
+      grid-template-rows: 60px 1fr 52px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body.standalone {
+      background: #2f2f2f;
+    }
+
+    body.standalone .app {
+      grid-template-rows: 36px 60px 1fr 52px;
+    }
+
+    body:not(.standalone) .statusbar {
+      display: none;
+    }
+
+    .statusbar {
+      height: 36px;
+      background: var(--bar);
+      color: #f0f0f0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 0 16px 0 24px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ececec;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .signal {
+      width: 34px;
+      height: 16px;
+      display: inline-grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: end;
+      gap: 3px;
+    }
+
+    .signal span {
+      display: block;
+      width: 4px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+    .signal span:nth-child(1) { height: 5px; }
+    .signal span:nth-child(2) { height: 8px; }
+    .signal span:nth-child(3) { height: 12px; }
+    .signal span:nth-child(4) { height: 16px; }
+
+    .battery {
+      border: 2px solid currentColor;
+      border-radius: 4px;
+      width: 27px;
+      height: 16px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      line-height: 1;
+    }
+    .battery::after {
+      content: "";
+      position: absolute;
+      right: -5px;
+      top: 4px;
+      width: 3px;
+      height: 6px;
+      border-radius: 0 2px 2px 0;
+      background: currentColor;
+    }
+
+    .topbar {
+      height: 60px;
+      background: var(--bar);
+      color: var(--barText);
+      display: grid;
+      grid-template-columns: 42px 1fr 34px;
+      align-items: center;
+      padding: 5px 10px 7px 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.34);
+      z-index: 2;
+    }
+
+    .hamburger,
+    .kebab {
+      width: 40px;
+      height: 46px;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .hamburger .mark {
+      width: 28px;
+      height: 22px;
+      position: relative;
+    }
+    .hamburger .mark::before,
+    .hamburger .mark::after,
+    .hamburger .mark span {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 28px;
+      height: 4px;
+      border-radius: 3px;
+      background: currentColor;
+    }
+    .hamburger .mark::before { top: 0; }
+    .hamburger .mark span { top: 9px; }
+    .hamburger .mark::after { bottom: 0; }
+
+    .kebab .mark {
+      width: 8px;
+      height: 34px;
+      position: relative;
+    }
+    .kebab .mark::before,
+    .kebab .mark::after,
+    .kebab .mark span {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .kebab .mark::before { top: 3px; }
+    .kebab .mark span { top: 14px; }
+    .kebab .mark::after { top: 25px; }
+
+    .title {
+      min-width: 0;
+      transform: translateY(1px);
+    }
+
+    .path {
+      font-size: 21px;
+      line-height: 1.04;
+      font-weight: 500;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0;
+    }
+
+    .subline {
+      margin-top: 3px;
+      font-size: 12px;
+      line-height: 1.08;
+      color: var(--barSub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0;
+    }
+
+    .dual-pane {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .pane {
+      min-width: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--pane);
+      scrollbar-width: none;
+    }
+    .pane::-webkit-scrollbar { display: none; }
+
+    .pane.left {
+      border-right: 2px solid var(--lineDark);
+      box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .list {
+      list-style: none;
+      padding: 7px 0 18px;
+      margin: 0;
+    }
+
+    .row {
+      height: 40px;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) 0;
+      gap: 5px;
+      align-items: center;
+      padding: 0 6px 0 6px;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    .row.tall { height: 44px; }
+
+    .row.selected {
+      background: var(--select);
+    }
+
+    .row.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      background: var(--blue);
+    }
+
+    .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--folder);
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+      justify-self: center;
+    }
+
+    .icon.folder::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 9px;
+      width: 15px;
+      height: 10px;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .icon.folder::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 7px;
+      width: 7px;
+      height: 4px;
+      background: #fff;
+      border-radius: 2px 2px 0 0;
+    }
+
+    .icon.file {
+      background: var(--doc);
+    }
+    .icon.code {
+      background: var(--blue);
+    }
+    .icon.apk {
+      background: #2b8a3e;
+    }
+
+    .icon.file::before,
+    .icon.code::before,
+    .icon.apk::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      width: 13px;
+      height: 17px;
+      background: #fff;
+      border-radius: 2px;
+      clip-path: polygon(0 0, 70% 0, 100% 28%, 100% 100%, 0 100%);
+    }
+    .icon.code::after {
+      content: "<>";
+      position: absolute;
+      left: 9px;
+      bottom: 7px;
+      font-size: 6.5px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+    .icon.file::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 12px;
+      width: 9px;
+      height: 2px;
+      background: var(--doc);
+      box-shadow: 0 5px 0 var(--doc), 0 10px 0 var(--doc);
+    }
+
+    .name {
+      display: block;
+      font-size: 15px;
+      line-height: 1.08;
+      font-weight: 400;
+      color: #171717;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      letter-spacing: 0;
+    }
+    .name.green { color: var(--green); }
+
+    .meta {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      letter-spacing: 0;
+    }
+
+    .bottom {
+      height: 52px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      background: var(--bottom);
+      border-top: 1px solid #cfcfcf;
+      z-index: 2;
+    }
+
+    .bottom button {
+      height: 52px;
+      border: 0;
+      background: transparent;
+      color: var(--bottomIcon);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+    .bottom button:active { background: #ebebeb; }
+    .bottom button.disabled { color: var(--disabled); }
+
+    .navicon-svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+      stroke: currentColor;
+      stroke-width: 2.15;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .bottom button.disabled .navicon-svg {
+      opacity: 0.42;
+    }
+
+    .navicon {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      display: block;
+    }
+
+    .navicon.glyph {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, Roboto, sans-serif;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 300;
+      color: currentColor;
+      transform: translateY(-1px);
+    }
+
+    .navicon.glyph.plus-glyph {
+      font-size: 30px;
+      transform: translateY(-2px);
+    }
+
+    .navicon.glyph.swap-glyph {
+      font-size: 23px;
+      transform: translateY(0);
+    }
+
+    .navicon.glyph.up-glyph {
+      font-size: 28px;
+      transform: translateY(-2px);
+    }
+
+    .navicon.glyph::before,
+    .navicon.glyph::after {
+      content: none;
+    }
+
+    .back::before,
+    .forward::before {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-left: 2.5px solid currentColor;
+      border-bottom: 2.5px solid currentColor;
+      top: 4px;
+    }
+    .back::before { left: 5px; transform: rotate(45deg); }
+    .forward::before { right: 5px; transform: rotate(225deg); }
+
+    .plus::before,
+    .plus::after {
+      content: "";
+      position: absolute;
+      background: currentColor;
+      border-radius: 1px;
+    }
+    .plus::before { width: 18px; height: 2.5px; top: 8px; left: 0; }
+    .plus::after { width: 2.5px; height: 18px; left: 8px; top: 0; }
+
+    .swap::before,
+    .swap::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 8px;
+      border-top: 2.5px solid currentColor;
+      top: 4px;
+    }
+    .swap::before { left: 1px; border-right: 2.5px solid currentColor; }
+    .swap::after { right: 1px; top: 8px; border-left: 2.5px solid currentColor; transform: rotate(180deg); }
+
+    .up::before {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-left: 2.5px solid currentColor;
+      border-top: 2.5px solid currentColor;
+      transform: rotate(45deg);
+      left: 3px;
+      top: 5px;
+    }
+
+    .drawer {
+      position: absolute;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 292px;
+      background: #fff;
+      transform: translateX(-102%);
+      transition: transform 130ms ease-out;
+      box-shadow: 10px 0 24px rgba(0, 0, 0, 0.32);
+      display: grid;
+      grid-template-rows: 122px 1fr;
+    }
+    .drawer-open .drawer { transform: translateX(0); }
+
+    .drawer-head {
+      background: var(--bar);
+      color: #fff;
+      padding: 42px 18px 14px;
+    }
+    .drawer-head strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 500;
+    }
+    .drawer-head span {
+      display: block;
+      margin-top: 6px;
+      color: #d5d5d5;
+      font-size: 13px;
+    }
+
+    .drawer-list {
+      padding: 9px 0;
+      overflow: auto;
+    }
+    .drawer-item {
+      min-height: 50px;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 8px 17px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .drawer-item:active { background: #eeeeee; }
+    .drawer-item small {
+      display: block;
+      color: var(--muted);
+      margin-top: 2px;
+      font-size: 12px;
+    }
+
+    .menu {
+      position: absolute;
+      right: 8px;
+      top: 111px;
+      z-index: 11;
+      width: 206px;
+      background: #fff;
+      border-radius: 2px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.32);
+      padding: 6px 0;
+      display: none;
+    }
+    .menu-open .menu { display: block; }
+    .menu button {
+      border: 0;
+      background: transparent;
+      width: 100%;
+      height: 44px;
+      text-align: left;
+      padding: 0 18px;
+      font-size: 15px;
+      color: #222;
+      cursor: pointer;
+    }
+    .menu button:active { background: #eeeeee; }
+
+    .scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      display: none;
+      background: rgba(0, 0, 0, 0.26);
+    }
+    .drawer-open .scrim,
+    .sheet-open .scrim,
+    .menu-open .scrim { display: block; }
+
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 12;
+      background: #fff;
+      transform: translateY(105%);
+      transition: transform 130ms ease-out;
+      border-top: 1px solid #d0d0d0;
+      box-shadow: 0 -5px 22px rgba(0, 0, 0, 0.24);
+      padding: 10px 8px 14px;
+    }
+    .sheet-open .sheet { transform: translateY(0); }
+    .sheet-title {
+      padding: 4px 8px 12px;
+      font-size: 16px;
+      color: #222;
+    }
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+    .sheet button {
+      border: 0;
+      background: #f2f2f2;
+      min-height: 60px;
+      border-radius: 2px;
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      color: #222;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .sheet b {
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .selection .topbar {
+      grid-template-columns: 50px 1fr 44px 44px;
+    }
+    .selection .path {
+      font-size: 23px;
+    }
+    .selection .bottom span.label {
+      display: block;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .selection .bottom .navicon {
+      transform: scale(.68);
+    }
+
+    @media (min-width: 700px) {
+      body { background: #e6e8eb; padding: 18px; }
+      .app {
+        height: min(920px, calc(100vh - 36px));
+        box-shadow: 0 14px 44px rgba(0, 0, 0, 0.22);
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (new URLSearchParams(window.location.search).get('standalone') === '1') {
+      document.documentElement.style.setProperty('--preview-scale', '1');
+      document.body.classList.add('standalone');
+    }
+  </script>
+  <div class="preview-frame">
+    <main class="app" id="app">
+    <div class="statusbar">
+      <div>15:08</div>
+      <div class="status-icons">
+        <span>◢</span>
+        <span class="signal"><span></span><span></span><span></span><span></span></span>
+        <span class="signal"><span></span><span></span><span></span><span></span></span>
+        <span class="battery">51</span>
+      </div>
+    </div>
+
+    <header class="topbar" id="topbar">
+      <button class="hamburger" id="drawerBtn" aria-label="打开侧边栏"><span class="mark"><span></span></span></button>
+      <div class="title">
+        <div class="path" id="pathTitle">/storage/emulated/0/</div>
+        <div class="subline" id="pathMeta">文件夹: 30&nbsp;&nbsp;文件: 3&nbsp;&nbsp;储存: 162.44G/932.51G</div>
+      </div>
+      <button class="kebab" id="menuBtn" aria-label="更多"><span class="mark"><span></span></span></button>
+    </header>
+
+    <section class="dual-pane" id="dualPane">
+      <ul class="pane left list" id="leftList" aria-label="左侧文件列表"></ul>
+      <ul class="pane right list" id="rightList" aria-label="右侧文件列表"></ul>
+    </section>
+
+    <nav class="bottom" id="bottomBar" aria-label="底部导航">
+      <button data-action="back" aria-label="后退"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 L9 12 L15 18" /></svg></button>
+      <button data-action="forward" class="disabled" aria-label="前进"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 L15 12 L9 18" /></svg></button>
+      <button data-action="new" aria-label="新建"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg></button>
+      <button data-action="swap" aria-label="交换窗格"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8 H18" /><path d="M15 5 L18 8 L15 11" /><path d="M17 16 H6" /><path d="M9 13 L6 16 L9 19" /></svg></button>
+      <button data-action="up" aria-label="上级目录"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15 L12 9 L18 15" /></svg></button>
+    </nav>
+
+    <aside class="drawer" aria-label="位置抽屉">
+      <div class="drawer-head">
+        <strong>文件管理器</strong>
+        <span>SunsetGitHub 模块方案</span>
+      </div>
+      <div class="drawer-list">
+        <div class="drawer-item">▣ <div>内部储存<small>/storage/emulated/0</small></div></div>
+        <div class="drawer-item">⌂ <div>项目工作区<small>SunsetGitHub/app</small></div></div>
+        <div class="drawer-item">↓ <div>Download<small>下载目录</small></div></div>
+        <div class="drawer-item">★ <div>收藏夹<small>常用路径</small></div></div>
+        <div class="drawer-item">◷ <div>最近文件<small>按访问时间</small></div></div>
+        <div class="drawer-item">↗ <div>GitHub 上传<small>选择文件提交到仓库</small></div></div>
+      </div>
+    </aside>
+
+    <div class="scrim" id="scrim"></div>
+
+    <section class="menu" aria-label="更多菜单">
+      <button data-menu="select">多项选择</button>
+      <button data-menu="sort-name">按名称排序</button>
+      <button data-menu="sort-time">按时间排序</button>
+      <button data-menu="single">切换单栏</button>
+      <button data-menu="refresh">刷新</button>
+      <button data-menu="props">目录属性</button>
+    </section>
+
+    <section class="sheet" aria-label="操作面板">
+      <div class="sheet-title" id="sheetTitle">新建</div>
+      <div class="sheet-grid" id="sheetGrid"></div>
+    </section>
+  </main>
+  </div>
+
+  <script>
+    const left = [
+      ["..", "", "folder"],
+      ["build", "26-07-02 07:34", "folder"],
+      ["src", "26-07-08 08:01", "folder"],
+      ["build.gradle.kts", "-rw-------  9.22K", "code", "green"],
+      ["proguard-rules.pro", "-rw-------  770B", "file"],
+      ["README.md", "-rw-------  6.1K", "file"],
+      ["settings.gradle.kts", "-rw-------  1K", "code"],
+      ["gradlew", "-rwx------  5K", "file"]
+    ];
+
+    const right = [
+      ["..", "", "folder"],
+      ["Pictures", "26-07-12 10:01", "folder"],
+      ["Download", "26-07-12 08:34", "folder"],
+      ["MT2", "26-07-12 01:06", "folder"],
+      ["Sunset", "26-07-12 00:29", "folder"],
+      ["Android", "26-07-04 00:41", "folder"],
+      ["GitHub", "26-07-02 14:12", "folder"],
+      ["DCIM", "26-07-01 15:35", "folder"],
+      ["Root", "26-06-30 22:03", "folder"],
+      ["My Documents", "26-06-29 22:36", "folder"],
+      ["NP", "26-06-29 20:24", "folder"],
+      ["ponytail-main", "26-06-22 18:52", "folder"],
+      ["Notes", "26-06-21 23:09", "folder"],
+      ["AndroidIDEProjects", "26-06-21 22:52", "folder"],
+      ["ColorOS", "26-06-20 23:43", "folder"],
+      ["AndroidCS Native", "26-06-20 02:56", "folder"]
+    ];
+
+    const app = document.getElementById('app');
+    const pathTitle = document.getElementById('pathTitle');
+    const pathMeta = document.getElementById('pathMeta');
+    const bottom = document.getElementById('bottomBar');
+    const sheetTitle = document.getElementById('sheetTitle');
+    const sheetGrid = document.getElementById('sheetGrid');
+    let selected = new Set();
+    let activePane = 'left';
+    let single = false;
+
+    function render(target, data, pane) {
+      target.innerHTML = data.map((item, index) => {
+        const [name, meta, type, tone] = item;
+        return `<li class="row ${meta ? 'tall' : ''}" data-pane="${pane}" data-key="${pane}-${index}" data-name="${name}">
+          <span class="icon ${type}"></span>
+          <span><span class="name ${tone || ''}">${name}</span><span class="meta">${meta}</span></span>
+          <span></span>
+        </li>`;
+      }).join('');
+      target.querySelectorAll('.row').forEach(row => {
+        let hold = 0;
+        row.addEventListener('pointerdown', () => hold = setTimeout(() => enterSelect(row), 380));
+        row.addEventListener('pointerup', () => clearTimeout(hold));
+        row.addEventListener('pointerleave', () => clearTimeout(hold));
+        row.addEventListener('click', () => clickRow(row));
+        row.addEventListener('dblclick', () => enterSelect(row));
+      });
+    }
+
+    function clickRow(row) {
+      activePane = row.dataset.pane;
+      if (app.classList.contains('selection')) {
+        toggle(row);
+        return;
+      }
+      document.querySelectorAll('.row.active').forEach(el => el.classList.remove('active'));
+      row.classList.add('active');
+      if (activePane === 'left') {
+        pathTitle.textContent = '...-b6ce-5939372d9bda/app/';
+        pathMeta.textContent = '文件夹: 2  文件: 2';
+      } else {
+        pathTitle.textContent = '/storage/emulated/0/';
+        pathMeta.textContent = '文件夹: 30  文件: 3  储存: 162.44G/932.51G';
+      }
+      if (!row.querySelector('.icon').classList.contains('folder')) {
+        openSheet('文件操作', [['打开','↗'], ['编辑','✎'], ['上传','↑'], ['属性','i'], ['复制','⧉'], ['移动','⇄'], ['重命名','T'], ['删除','⌫']]);
+      }
+    }
+
+    function enterSelect(row) {
+      app.classList.add('selection');
+      pathTitle.textContent = `${selected.size || 1} 项已选择`;
+      pathMeta.textContent = '复制、移动、压缩、删除或上传到仓库';
+      if (row) toggle(row, true);
+      bottom.innerHTML = `
+        <button data-action="copy"><span><span class="navicon glyph swap-glyph">⧉</span><span class="label">复制</span></span></button>
+        <button data-action="move"><span><span class="navicon glyph">›</span><span class="label">移动</span></span></button>
+        <button data-action="zip"><span><span class="navicon glyph plus-glyph">+</span><span class="label">压缩</span></span></button>
+        <button data-action="upload"><span><span class="navicon glyph up-glyph">⌃</span><span class="label">上传</span></span></button>
+        <button data-action="delete"><span><span class="navicon glyph">‹</span><span class="label">删除</span></span></button>`;
+      bindBottom();
+    }
+
+    function toggle(row, force) {
+      const key = row.dataset.key;
+      if (!force && selected.has(key)) {
+        selected.delete(key);
+        row.classList.remove('selected');
+      } else {
+        selected.add(key);
+        row.classList.add('selected');
+      }
+      pathTitle.textContent = `${selected.size} 项已选择`;
+      if (selected.size === 0) exitSelect();
+    }
+
+    function exitSelect() {
+      app.classList.remove('selection');
+      selected.clear();
+      document.querySelectorAll('.row.selected').forEach(el => el.classList.remove('selected'));
+      pathTitle.textContent = activePane === 'left' ? '...-b6ce-5939372d9bda/app/' : '/storage/emulated/0/';
+      pathMeta.textContent = activePane === 'left' ? '文件夹: 2  文件: 2' : '文件夹: 30  文件: 3  储存: 162.44G/932.51G';
+      bottom.innerHTML = `
+        <button data-action="back" aria-label="后退"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 L9 12 L15 18" /></svg></button>
+        <button data-action="forward" class="disabled" aria-label="前进"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 L15 12 L9 18" /></svg></button>
+        <button data-action="new" aria-label="新建"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg></button>
+        <button data-action="swap" aria-label="交换窗格"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8 H18" /><path d="M15 5 L18 8 L15 11" /><path d="M17 16 H6" /><path d="M9 13 L6 16 L9 19" /></svg></button>
+        <button data-action="up" aria-label="上级目录"><svg class="navicon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15 L12 9 L18 15" /></svg></button>`;
+      bindBottom();
+    }
+
+    function openSheet(title, actions) {
+      sheetTitle.textContent = title;
+      sheetGrid.innerHTML = actions.map(([text, icon]) => `<button><b>${icon}</b><span>${text}</span></button>`).join('');
+      app.classList.add('sheet-open');
+      sheetGrid.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => app.classList.remove('sheet-open')));
+    }
+
+    function bindBottom() {
+      bottom.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        if (action === 'new') openSheet('新建', [['文件','□'], ['文件夹','▣'], ['从相册','◉'], ['授权目录','↗']]);
+        else if (action === 'swap') {
+          activePane = activePane === 'left' ? 'right' : 'left';
+          pathTitle.textContent = activePane === 'left' ? '...-b6ce-5939372d9bda/app/' : '/storage/emulated/0/';
+          pathMeta.textContent = activePane === 'left' ? '文件夹: 2  文件: 2' : '文件夹: 30  文件: 3  储存: 162.44G/932.51G';
+        } else if (['copy','move','zip','upload','delete'].includes(action)) {
+          openSheet(`${selected.size} 项操作`, [['确认','✓'], ['属性','i'], ['取消选择','×'], ['更多','⋮']]);
+        }
+      }));
+    }
+
+    document.getElementById('drawerBtn').onclick = () => app.classList.add('drawer-open');
+    document.getElementById('menuBtn').onclick = () => app.classList.add('menu-open');
+    document.getElementById('scrim').onclick = () => app.classList.remove('drawer-open', 'menu-open', 'sheet-open');
+
+    document.querySelectorAll('.menu button').forEach(btn => btn.addEventListener('click', () => {
+      app.classList.remove('menu-open');
+      const action = btn.dataset.menu;
+      if (action === 'select') enterSelect(document.querySelector(`.pane.${activePane} .row`));
+      if (action === 'single') {
+        single = !single;
+        document.getElementById('dualPane').style.gridTemplateColumns = single ? '1fr' : '1fr 1fr';
+        document.querySelector('.pane.right').style.display = single ? 'none' : 'block';
+      }
+    }));
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (app.classList.contains('selection')) exitSelect();
+        app.classList.remove('drawer-open', 'menu-open', 'sheet-open');
+      }
+    });
+
+    render(document.getElementById('leftList'), left, 'left');
+    render(document.getElementById('rightList'), right, 'right');
+    bindBottom();
+  </script>
+</body>
+</html>

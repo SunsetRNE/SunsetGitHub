@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_subtle_background"
+    tools:context=".ui.repo.RepositoryProjectsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:id="@+id/card_repository_projects_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_repository_projects_card"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progress_repository_projects_state"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/text_repository_projects_state_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/repository_projects_loading"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                    android:textColor="@color/github_text_primary" />
+
+                <TextView
+                    android:id="@+id/text_repository_projects_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                    android:textColor="@color/github_text_secondary"
+                    tools:text="正在加载仓库项目……" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_repository_projects_retry"
+                    style="@style/Widget.SunsetGitHub.Material.PrimaryButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/repository_projects_retry"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_repository_projects_skeleton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <View
+                        android:layout_width="72dp"
+                        android:layout_height="22dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="118dp"
+                        android:layout_height="26dp"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="14dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="28dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <View
+                                android:layout_width="180dp"
+                                android:layout_height="18dp"
+                                android:background="@drawable/bg_skeleton_block" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="13dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="36dp"
+                                android:background="@drawable/bg_skeleton_block" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="54dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="62dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="78dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="58dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_skeleton_block" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <View
+                        android:layout_width="92dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="54dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="54dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="54dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="58dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_skeleton_block" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <View
+                        android:layout_width="88dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="64dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="72dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="84dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_skeleton_block" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="132dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="92dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_skeleton_block" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <View
+                        android:layout_width="96dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="42dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="96dp"
+                        android:background="@drawable/bg_skeleton_block" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <View
+                        android:layout_width="108dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="76dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="110dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="110dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="92dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_skeleton_block" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <View
+                        android:layout_width="88dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_skeleton_block" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_skeleton_block" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_repository_projects_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:id="@+id/text_repository_projects_status_chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_repository_projects_chip_selected"
+                        android:paddingStart="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="4dp"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_secondary"
+                        tools:text="暂无内容" />
+
+                    <TextView
+                        android:id="@+id/text_repository_projects_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/repository_projects_section_title"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                        android:textColor="@color/github_text_primary" />
+
+                    <TextView
+                        android:id="@+id/text_repository_projects_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="2dp"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                        android:textColor="@color/github_text_secondary"
+                        tools:text="仓库项目已开启，但暂未发现可展示的项目。" />
+
+                    <LinearLayout
+                        android:id="@+id/container_repository_projects_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_repository_projects_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_projects_samples"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_projects_notices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_projects_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_projects_actions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_projects_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repository_projects_actions_title"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                        android:textColor="@color/github_text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/repository_projects_actions_description"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_secondary" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_repository_projects_toggle"
+                            style="@style/Widget.SunsetGitHub.Material.Button"
+                            android:background="@drawable/bg_repository_projects_secondary_button"
+                            android:textColor="@color/github_text_primary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/repository_projects_disable" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_repository_projects_open_in_github"
+                            style="@style/Widget.SunsetGitHub.Material.Button"
+                            android:background="@drawable/bg_repository_projects_accent_button"
+                            android:textColor="@color/white"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/repository_section_open_in_github" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_repository_projects_refresh"
+                            style="@style/Widget.SunsetGitHub.Material.Button"
+                            android:background="@drawable/bg_repository_projects_secondary_button"
+                            android:textColor="@color/github_text_primary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/repository_projects_refresh_status" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_repository_projects_copy_link"
+                            style="@style/Widget.SunsetGitHub.Material.Button"
+                            android:background="@drawable/bg_repository_projects_success_button"
+                            android:textColor="@color/white"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/repository_projects_copy_link" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ProgressBar
+                            android:id="@+id/progress_repository_projects_saving"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:indeterminate="true"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/text_repository_projects_pending"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:visibility="gone"
+                            tools:text="正在关闭项目..."
+                            tools:visibility="visible" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

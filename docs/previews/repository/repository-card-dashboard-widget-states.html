@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Widget 状态组合测试</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070b10;
+      --panel: #0d131b;
+      --panel-soft: #121a25;
+      --border: #26384d;
+      --border-soft: #1b2938;
+      --text: #f1f6fc;
+      --muted: #95a4b7;
+      --faint: #65758a;
+      --blue: #4ea1ff;
+      --blue-soft: rgba(78, 161, 255, .13);
+      --yellow: #f1c75b;
+      --yellow-soft: rgba(241, 199, 91, .11);
+      --violet: #b38cff;
+      --cyan: #52d6ff;
+      --green: #89e051;
+      --orange: #df8e1d;
+      --red: #ff7b72;
+      --shadow: 0 18px 42px rgba(0, 0, 0, .32);
+      font-family: Inter, Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(78,161,255,.13), transparent 280px),
+        radial-gradient(circle at 92% 16%, rgba(179,140,255,.09), transparent 260px),
+        var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 24px));
+      margin: 0 auto;
+      padding: 16px 0 32px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 -12px 16px;
+      padding: 12px;
+      border-bottom: 1px solid rgba(38,56,77,.78);
+      background: rgba(7,11,16,.9);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 { margin: 0; font-size: 18px; font-weight: 760; }
+    .lead { margin-top: 3px; color: var(--muted); font-size: 13px; }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 18px 0 9px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 720;
+    }
+
+    .section-title span { color: var(--faint); font-size: 12px; font-weight: 500; }
+
+    .playground {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 13px;
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      background: rgba(13,19,27,.82);
+    }
+
+    label { display: grid; gap: 5px; min-width: 0; color: var(--muted); font-size: 12px; }
+    label.wide { grid-column: 1 / -1; }
+
+    input, select, textarea {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      background: #0b1119;
+      color: var(--text);
+      padding: 8px 9px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    textarea { min-height: 66px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--blue); }
+
+    .checks {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
+      padding: 0 9px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--muted);
+      background: #0b1119;
+      font-size: 12px;
+    }
+
+    .check input { width: auto; margin: 0; accent-color: var(--blue); }
+
+    .preview-wrap {
+      display: grid;
+      place-items: start center;
+      min-height: 100%;
+      padding: 14px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      background: rgba(9,14,20,.55);
+    }
+
+    .mobile-column { width: min(100%, 430px); }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .case { min-width: 0; }
+    .case-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 7px 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .case-label span:last-child { color: var(--faint); text-align: right; }
+
+    .widget-card {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      padding: 14px;
+      border: 1px solid rgba(78,161,255,.24);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(78,161,255,.13), rgba(88,214,141,.035) 48%, rgba(179,140,255,.085)),
+        var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .widget-card.private {
+      border-color: rgba(241,199,91,.3);
+      background:
+        linear-gradient(145deg, rgba(241,199,91,.10), rgba(78,161,255,.04) 50%, rgba(179,140,255,.06)),
+        var(--panel);
+    }
+
+    .widget-card.archived { filter: saturate(.76); }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .identity { flex: 1; min-width: 0; }
+
+    .repo-name {
+      display: -webkit-box;
+      margin: 0;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 780;
+      line-height: 1.16;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .owner-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 5px;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .owner-line span:not(:last-child)::after { content: " ·"; color: var(--faint); }
+
+    .score-box {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      min-width: 58px;
+      height: 58px;
+      padding: 6px 8px;
+      border: 1px solid rgba(241,199,91,.35);
+      border-radius: 13px;
+      color: var(--yellow);
+      background: var(--yellow-soft);
+      text-align: center;
+    }
+
+    .score-box strong {
+      display: block;
+      max-width: 74px;
+      overflow: hidden;
+      font-size: 17px;
+      line-height: 1;
+      text-overflow: ellipsis;
+    }
+
+    .score-box small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+
+    .desc {
+      display: -webkit-box;
+      margin: 11px 0 0;
+      min-height: 38px;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.42;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .desc.empty { color: var(--faint); font-style: italic; }
+
+    .language-bar {
+      display: flex;
+      width: 100%;
+      height: 7px;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--border-soft);
+    }
+
+    .language-bar.hidden { display: none; }
+    .language-bar span { min-width: 3px; }
+
+    .language-legend {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px 11px;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .language-legend.no-language { color: var(--faint); }
+
+    .legend-item, .metric {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .lang-dot { width: 9px; height: 9px; border-radius: 999px; }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .state-button, .date-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 29px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(145,164,183,.055);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .state-button.active {
+      color: var(--blue);
+      border-color: rgba(78,161,255,.48);
+      background: var(--blue-soft);
+    }
+
+    .state-button.disabled { opacity: .48; }
+    .date-chip { margin-left: auto; color: var(--faint); }
+
+    .status-ribbon {
+      position: absolute;
+      top: 0;
+      right: 16px;
+      padding: 3px 9px 4px;
+      border-radius: 0 0 8px 8px;
+      color: #d8c8ff;
+      background: rgba(179,140,255,.19);
+      border: 1px solid rgba(179,140,255,.28);
+      border-top: 0;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .status-ribbon.hidden { display: none; }
+
+    .notes {
+      margin: 15px 0 0;
+      padding: 12px 14px;
+      border-left: 3px solid var(--blue);
+      border-radius: 0 10px 10px 0;
+      background: rgba(78,161,255,.07);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 820px) {
+      main { width: min(460px, calc(100vw - 20px)); padding-top: 8px; }
+      header { margin-left: -10px; margin-right: -10px; }
+      .playground { grid-template-columns: 1fr; }
+      .gallery { grid-template-columns: 1fr; }
+      .preview-wrap { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>C 方案 · 状态组合测试</h1>
+    <div class="lead">检查 Dashboard Widget 在真实字段组合、缺失数据和极端长度下是否仍然稳定。</div>
+  </header>
+
+  <div class="section-title">交互预览 <span>切换控件查看组合结果</span></div>
+  <section class="playground">
+    <div class="controls">
+      <label class="wide">仓库名<input id="repoName" value="SunsetGitHub" /></label>
+      <label>Owner<input id="owner" value="SunsetRNE" /></label>
+      <label>默认分支<input id="branch" value="main" /></label>
+      <label class="wide">描述<textarea id="description">移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、README 预览和 Issues 浏览。</textarea></label>
+      <label>Star 数<input id="stars" type="number" value="12" min="0" /></label>
+      <label>Fork 数<input id="forks" type="number" value="3" min="0" /></label>
+      <label>Issue 数<input id="issues" type="number" value="4" min="0" /></label>
+      <label>更新时间<input id="updated" value="2 天前" /></label>
+      <label class="wide">语言组合
+        <select id="languageMode">
+          <option value="multi">Kotlin 78% + Java 22%</option>
+          <option value="single">Shell 100%</option>
+          <option value="many">Kotlin + Java + XML + 其他</option>
+          <option value="none">无语言数据</option>
+        </select>
+      </label>
+      <div class="checks">
+        <label class="check"><input id="isPrivate" type="checkbox" />私有</label>
+        <label class="check"><input id="isFork" type="checkbox" />派生</label>
+        <label class="check"><input id="isArchived" type="checkbox" />归档</label>
+        <label class="check"><input id="isPinned" type="checkbox" checked />置顶</label>
+        <label class="check"><input id="isFavorite" type="checkbox" />收藏</label>
+      </div>
+    </div>
+
+    <div class="preview-wrap">
+      <div class="mobile-column" id="livePreview"></div>
+    </div>
+  </section>
+
+  <div class="section-title">典型组合 <span>覆盖状态、内容缺失与极端数据</span></div>
+  <section class="gallery" id="gallery"></section>
+
+  <div class="notes">
+    建议规则：语言条只在有可靠语言占比时显示；无描述用弱提示占位；归档仓库保留操作但降低饱和度；Star 大数使用 1.2k / 12.8k 等紧凑格式；长仓库名最多两行。
+  </div>
+</main>
+
+<script>
+  const palettes = {
+    Kotlin: '#b38cff', Java: '#df8e1d', XML: '#52d6ff', Shell: '#89e051', Other: '#65758a'
+  };
+
+  const languagePresets = {
+    multi: [{name:'Kotlin', value:78}, {name:'Java', value:22}],
+    single: [{name:'Shell', value:100}],
+    many: [{name:'Kotlin', value:62}, {name:'Java', value:21}, {name:'XML', value:11}, {name:'Other', value:6}],
+    none: []
+  };
+
+  const cases = [
+    {
+      label:'01 · 置顶，无收藏', note:'公开 · 双语言 · 常规数据',
+      name:'SunsetGitHub', owner:'SunsetRNE', branch:'main',
+      description:'移动端 GitHub 客户端，支持登录、仓库浏览、文件预览、README 预览和 Issues 浏览。',
+      stars:12, forks:3, issues:4, updated:'2 天前', languages:languagePresets.multi,
+      pinned:true, favorite:false
+    },
+    {
+      label:'02 · 收藏，无置顶', note:'派生 · 单语言 · 零 Issue',
+      name:'oppo_oplus_realme_sm8750', owner:'SunsetRNE', branch:'android15',
+      description:'An automatic kernel builder for OPlus Realme devices with reproducible release artifacts.',
+      stars:2, forks:0, issues:0, updated:'今天', languages:languagePresets.single,
+      fork:true, pinned:false, favorite:true
+    },
+    {
+      label:'03 · 置顶并收藏', note:'私有 · 多语言 · 两个状态同时激活',
+      name:'internal-release-console', owner:'SunsetRNE', branch:'develop',
+      description:'内部发布、签名、版本追踪与构建产物管理工具。',
+      stars:0, forks:1, issues:7, updated:'刚刚', languages:languagePresets.many,
+      private:true, pinned:true, favorite:true
+    },
+    {
+      label:'04 · 无本地状态', note:'无描述 · 无语言 · 全零数据',
+      name:'empty-repository', owner:'SunsetRNE', branch:'main', description:'',
+      stars:0, forks:0, issues:0, updated:'未知', languages:[],
+      pinned:false, favorite:false
+    },
+    {
+      label:'05 · 已归档仓库', note:'归档 + 派生 · 操作弱化',
+      name:'legacy-github-client-android-viewbinding-migration-backup', owner:'SunsetRNE', branch:'legacy',
+      description:'历史实现，仅用于查阅和迁移对照，不再接受功能更新。',
+      stars:12840, forks:386, issues:0, updated:'2024-08-16', languages:languagePresets.multi,
+      archived:true, fork:true, pinned:false, favorite:true
+    },
+    {
+      label:'06 · 极端长内容', note:'长名称 · 长描述 · 大数字',
+      name:'android-github-repository-browser-with-markdown-preview-and-file-editing-experiments',
+      owner:'organization-with-a-very-long-name', branch:'feature/repository-dashboard-redesign',
+      description:'This intentionally long description verifies the two-line truncation behavior when repository metadata, localized text and device width all compete for limited horizontal space.',
+      stars:987654, forks:12500, issues:1268, updated:'11 个月前', languages:languagePresets.many,
+      pinned:true, favorite:false
+    }
+  ];
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'"'}[char]));
+  }
+
+  function compact(value) {
+    const n = Math.max(0, Number(value) || 0);
+    if (n >= 1000000) return (n / 1000000).toFixed(n >= 10000000 ? 0 : 1).replace('.0','') + 'm';
+    if (n >= 1000) return (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace('.0','') + 'k';
+    return String(n);
+  }
+
+  function renderLanguages(languages) {
+    if (!languages.length) {
+      return `
+        <div class="language-bar hidden"></div>
+        <div class="language-legend no-language">语言数据暂不可用</div>`;
+    }
+    const bars = languages.map(item => `<span style="width:${item.value}%;background:${palettes[item.name] || palettes.Other}"></span>`).join('');
+    const visible = languages.slice(0, 3).map(item => `
+      <span class="legend-item"><span class="lang-dot" style="background:${palettes[item.name] || palettes.Other}"></span>${escapeHtml(item.name)} ${item.value}%</span>`).join('');
+    const hidden = languages.length > 3 ? `<span class="legend-item">+${languages.length - 3} 种</span>` : '';
+    return `<div class="language-bar">${bars}</div><div class="language-legend">${visible}${hidden}</div>`;
+  }
+
+  function renderCard(data) {
+    const flags = [data.private ? '私有' : '公开'];
+    if (data.fork) flags.push('派生');
+    if (data.archived) flags.push('已归档');
+    const description = data.description && data.description.trim()
+      ? escapeHtml(data.description)
+      : '暂无仓库描述';
+    const cardClass = ['widget-card', data.private ? 'private' : '', data.archived ? 'archived' : ''].filter(Boolean).join(' ');
+    return `
+      <article class="${cardClass}">
+        <div class="status-ribbon ${data.archived ? '' : 'hidden'}">Archived</div>
+        <div class="card-head">
+          <div class="identity">
+            <h2 class="repo-name">${escapeHtml(data.name)}</h2>
+            <div class="owner-line">
+              <span>${escapeHtml(data.owner)}</span>
+              ${flags.map(flag => `<span>${flag}</span>`).join('')}
+              <span>${escapeHtml(data.branch || '默认分支未知')}</span>
+            </div>
+          </div>
+          <div class="score-box"><strong>${compact(data.stars)}</strong><small>stars</small></div>
+        </div>
+        <p class="desc ${data.description && data.description.trim() ? '' : 'empty'}">${description}</p>
+        ${renderLanguages(data.languages || [])}
+        <div class="language-legend">
+          <span class="metric">Fork ${compact(data.forks)}</span>
+          <span class="metric">Issue ${compact(data.issues)}</span>
+        </div>
+        <div class="actions">
+          <span class="state-button ${data.pinned ? 'active' : ''} ${data.archived ? 'disabled' : ''}">${data.pinned ? '已置顶' : '置顶'}</span>
+          <span class="state-button ${data.favorite ? 'active' : ''} ${data.archived ? 'disabled' : ''}">${data.favorite ? '已收藏' : '收藏'}</span>
+          <span class="date-chip">${escapeHtml(data.updated || '更新时间未知')}</span>
+        </div>
+      </article>`;
+  }
+
+  function liveData() {
+    return {
+      name: document.querySelector('#repoName').value,
+      owner: document.querySelector('#owner').value,
+      branch: document.querySelector('#branch').value,
+      description: document.querySelector('#description').value,
+      stars: document.querySelector('#stars').value,
+      forks: document.querySelector('#forks').value,
+      issues: document.querySelector('#issues').value,
+      updated: document.querySelector('#updated').value,
+      languages: languagePresets[document.querySelector('#languageMode').value],
+      private: document.querySelector('#isPrivate').checked,
+      fork: document.querySelector('#isFork').checked,
+      archived: document.querySelector('#isArchived').checked,
+      pinned: document.querySelector('#isPinned').checked,
+      favorite: document.querySelector('#isFavorite').checked
+    };
+  }
+
+  function refreshLive() {
+    document.querySelector('#livePreview').innerHTML = renderCard(liveData());
+  }
+
+  document.querySelectorAll('input, select, textarea').forEach(control => {
+    control.addEventListener('input', refreshLive);
+    control.addEventListener('change', refreshLive);
+  });
+
+  document.querySelector('#gallery').innerHTML = cases.map(item => `
+    <div class="case">
+      <div class="case-label"><span>${escapeHtml(item.label)}</span><span>${escapeHtml(item.note)}</span></div>
+      ${renderCard(item)}
+    </div>`).join('');
+
+  refreshLive();
+</script>
+</body>
+</html>

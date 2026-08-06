@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f8fb" />
+  <title>仓库洞察优化预览</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f8;
+      --surface-tint: #eef6ff;
+      --text: #20242c;
+      --muted: #69717e;
+      --subtle: #9198a3;
+      --line: #dce1e7;
+      --blue: #176fd1;
+      --blue-soft: #dff1ff;
+      --violet: #6e3df2;
+      --green: #178447;
+      --green-soft: #e1f6e8;
+      --amber: #a76600;
+      --amber-soft: #fff2d6;
+      --red: #c83a45;
+      --red-soft: #ffe8ea;
+      --shadow: 0 10px 30px rgba(32, 48, 72, .08);
+      --nav-height: 82px;
+      --radius: 24px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0b1018;
+      --surface: #121923;
+      --surface-soft: #19222e;
+      --surface-tint: #11263b;
+      --text: #edf3fb;
+      --muted: #a8b1be;
+      --subtle: #7f8997;
+      --line: #293544;
+      --blue: #61a9ff;
+      --blue-soft: #143a5b;
+      --violet: #9a78ff;
+      --green: #59d18b;
+      --green-soft: #123c28;
+      --amber: #f1b951;
+      --amber-soft: #443113;
+      --red: #ff7f89;
+      --red-soft: #4b1f25;
+      --shadow: 0 12px 34px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% -12%, rgba(23,111,209,.12), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+    }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    .phone {
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--bg);
+      padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 24px);
+    }
+
+    .system-bar {
+      height: 34px;
+      padding: 8px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: color-mix(in srgb, var(--surface) 95%, transparent);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .system-icons { color: var(--muted); font-size: 12px; letter-spacing: .06em; }
+
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      height: 66px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      padding: 0 12px;
+      background: color-mix(in srgb, var(--surface) 91%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+      backdrop-filter: blur(18px);
+    }
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 24px;
+    }
+    .icon-button:active { background: var(--surface-soft); }
+    .appbar h1 { margin: 0; font-size: 23px; letter-spacing: -.04em; }
+    .appbar .subtitle { color: var(--subtle); font-size: 11px; font-weight: 700; }
+    .title-stack { text-align: center; line-height: 1.18; }
+
+    main { padding: 14px 16px 18px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 28px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(255,255,255,.22), transparent 30%),
+        linear-gradient(145deg, #136fc9 0%, #5d45ed 55%, #7f2ced 100%);
+      box-shadow: 0 18px 38px rgba(63, 65, 209, .22);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      bottom: -72px;
+      width: 180px;
+      height: 180px;
+      border: 28px solid rgba(255,255,255,.08);
+      border-radius: 50%;
+    }
+    .hero > * { position: relative; z-index: 1; }
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 5px 11px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d9ffe6;
+      box-shadow: 0 0 0 5px rgba(217,255,230,.13);
+    }
+    .repo-chip { color: rgba(255,255,255,.78); font-size: 12px; font-weight: 700; }
+    .hero h2 { margin: 14px 0 3px; font-size: 27px; letter-spacing: -.055em; }
+    .hero-copy { margin: 0; color: rgba(255,255,255,.82); font-size: 13px; }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .hero-stat {
+      min-width: 0;
+      padding: 10px 11px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 17px;
+      background: rgba(255,255,255,.12);
+    }
+    .hero-stat strong { display: block; font-size: 19px; line-height: 1.2; }
+    .hero-stat span { display: block; margin-top: 2px; color: rgba(255,255,255,.7); font-size: 11px; }
+    .sync-strip {
+      margin-top: 12px;
+      padding: 11px 12px;
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border-radius: 17px;
+      background: rgba(231,255,237,.94);
+      color: #1d4f31;
+    }
+    [data-theme="dark"] .sync-strip { background: rgba(21,69,43,.94); color: #dff9e8; }
+    .sync-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(23,132,71,.13);
+      font-weight: 900;
+    }
+    .sync-strip b { display: block; font-size: 13px; }
+    .sync-strip small { display: block; margin-top: 1px; opacity: .72; font-size: 11px; }
+    .sync-time { white-space: nowrap; font-size: 11px; font-weight: 800; opacity: .72; }
+
+    .tabs-shell {
+      position: sticky;
+      top: 66px;
+      z-index: 20;
+      margin: 12px -16px 0;
+      padding: 8px 16px 10px;
+      background: linear-gradient(var(--bg) 84%, transparent);
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 24px rgba(32,48,72,.06);
+    }
+    .tab {
+      min-height: 43px;
+      border: 0;
+      border-radius: 17px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--violet), #286dec);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(78,72,231,.23);
+    }
+
+    .page { display: none; animation: enter .22s ease; }
+    .page.active { display: block; }
+    @keyframes enter { from { opacity: 0; transform: translateY(5px); } }
+
+    .card {
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 16px 12px;
+    }
+    .heading {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      min-width: 0;
+    }
+    .heading-icon {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      border: 1px solid color-mix(in srgb, var(--blue) 18%, var(--line));
+      font-weight: 900;
+    }
+    .card-title { margin: 0; font-size: 17px; letter-spacing: -.025em; }
+    .card-subtitle { margin: 2px 0 0; color: var(--subtle); font-size: 12px; }
+    .card-body { padding: 0 16px 16px; }
+    .tag {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .tag.good { color: var(--green); background: var(--green-soft); }
+    .tag.warn { color: var(--amber); background: var(--amber-soft); }
+    .tag.bad { color: var(--red); background: var(--red-soft); }
+
+    .score-layout {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+    .score-ring {
+      width: 104px;
+      height: 104px;
+      padding: 9px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blue) 0 78%, var(--surface-soft) 78% 100%);
+    }
+    .score-ring-inner {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--surface);
+      text-align: center;
+      line-height: 1.05;
+    }
+    .score-ring strong { display: block; font-size: 28px; letter-spacing: -.06em; }
+    .score-ring span { color: var(--subtle); font-size: 11px; }
+    .score-bars { display: grid; gap: 10px; }
+    .score-row-top { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
+    .score-row-top span { color: var(--muted); }
+    .progress { height: 7px; margin-top: 5px; overflow: hidden; border-radius: 999px; background: var(--surface-soft); }
+    .progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), var(--violet)); }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .metric {
+      min-height: 82px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: var(--surface-soft);
+    }
+    .metric.full {
+      grid-column: 1 / -1;
+      min-height: 56px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+    .metric-label { color: var(--muted); font-size: 12px; }
+    .metric strong { display: block; margin-top: 8px; font-size: 22px; line-height: 1.12; text-align: right; }
+    .metric.full strong { margin: 0; font-size: 15px; }
+    .metric small { display: block; margin-top: 4px; color: var(--subtle); font-size: 10px; text-align: right; }
+
+    .repo-summary {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+    }
+    .repo-summary p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .repo-summary.expanded p { -webkit-line-clamp: initial; }
+    .text-button {
+      margin-top: 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .chart-switch {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .chart-switch::-webkit-scrollbar { display: none; }
+    .chart-switch button {
+      flex: 0 0 auto;
+      min-height: 34px;
+      padding: 6px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .chart-switch button.active { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+    .chart {
+      height: 158px;
+      display: flex;
+      align-items: flex-end;
+      gap: 7px;
+      padding: 14px 12px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background:
+        repeating-linear-gradient(to top, transparent 0 37px, color-mix(in srgb, var(--line) 48%, transparent) 38px),
+        var(--surface-soft);
+    }
+    .bar {
+      flex: 1;
+      min-width: 8px;
+      border-radius: 8px 8px 2px 2px;
+      background: linear-gradient(180deg, #5aa7ff, var(--blue));
+      transition: height .26s ease;
+    }
+    .bar.green { background: linear-gradient(180deg, #66d99a, var(--green)); }
+    .bar.amber { background: linear-gradient(180deg, #ffc86a, var(--amber)); }
+    .chart-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--subtle);
+      font-size: 11px;
+    }
+    .chart-meta strong { flex: 0 0 auto; color: var(--text); font-size: 13px; }
+
+    .compact-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-top: 12px;
+    }
+    .compact-stat { padding: 9px 5px; border-radius: 15px; background: var(--surface-soft); text-align: center; }
+    .compact-stat strong { display: block; font-size: 17px; }
+    .compact-stat span { display: block; color: var(--subtle); font-size: 10px; }
+
+    .timeline { display: grid; gap: 0; }
+    .event {
+      position: relative;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .event:last-child { border-bottom: 0; }
+    .event-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-weight: 900;
+    }
+    .event-icon.good { color: var(--green); background: var(--green-soft); }
+    .event-icon.warn { color: var(--amber); background: var(--amber-soft); }
+    .event-title { margin: 0; font-size: 14px; }
+    .event-copy { margin: 2px 0 0; color: var(--muted); font-size: 12px; word-break: break-word; }
+    .event-time { white-space: nowrap; color: var(--subtle); font-size: 10px; }
+
+    .checklist { display: grid; gap: 9px; }
+    .check-row {
+      display: grid;
+      grid-template-columns: 32px minmax(0,1fr) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 58px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--surface-soft);
+    }
+    .check-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: var(--green);
+      background: var(--green-soft);
+      font-weight: 900;
+    }
+    .check-icon.warn { color: var(--amber); background: var(--amber-soft); }
+    .check-row b { display: block; font-size: 13px; }
+    .check-row small { display: block; color: var(--subtle); font-size: 11px; }
+    .check-value { color: var(--muted); font-size: 12px; font-weight: 800; }
+
+    .action-list { display: grid; gap: 9px; }
+    .action-card {
+      display: grid;
+      grid-template-columns: 5px minmax(0, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+      min-height: 66px;
+      padding: 10px 10px 10px 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .action-accent { align-self: stretch; border-radius: 0 99px 99px 0; background: var(--amber); }
+    .action-card b { display: block; font-size: 13px; }
+    .action-card small { display: block; margin-top: 2px; color: var(--subtle); font-size: 11px; }
+    .action-button {
+      min-height: 34px;
+      padding: 5px 10px;
+      border: 0;
+      border-radius: 13px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .traffic-hero {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .traffic-kpi {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 21px;
+      background: var(--surface-soft);
+    }
+    .traffic-kpi span { color: var(--muted); font-size: 12px; }
+    .traffic-kpi strong { display: block; margin-top: 7px; font-size: 29px; letter-spacing: -.06em; }
+    .traffic-kpi small { display: block; color: var(--green); font-size: 11px; }
+    .sparkline {
+      height: 82px;
+      margin-top: 12px;
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      padding: 8px 5px 0;
+      border-radius: 17px;
+      background: var(--surface-soft);
+    }
+    .sparkline i { flex: 1; min-width: 5px; border-radius: 5px 5px 0 0; background: color-mix(in srgb, var(--blue) 72%, #7bd0ff); }
+
+    .notice {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 17px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .notice + .notice { margin-top: 8px; }
+    .notice-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 13px; background: var(--blue-soft); color: var(--blue); font-weight: 900; }
+    .notice strong { color: var(--text); }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 40;
+      width: min(430px, 100%);
+      height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 -8px 28px rgba(32,48,72,.09);
+    }
+    .nav-item {
+      border: 0;
+      border-radius: 17px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .nav-icon { display: block; margin: 0 auto 2px; font-size: 22px; line-height: 1; }
+    .nav-item.active { color: var(--blue); background: var(--surface-tint); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 14px);
+      z-index: 50;
+      transform: translate(-50%, 16px);
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: #20242c;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: .22s ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .spin { animation: spin .7s linear; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 350px) {
+      .hero-stats { grid-template-columns: 1fr; }
+      .score-layout { grid-template-columns: 1fr; }
+      .score-ring { margin: auto; }
+      .compact-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="system-bar"><span>22:16</span><span class="system-icons">◉ ◒ ▮▮ 81%</span></div>
+    <header class="appbar">
+      <button class="icon-button" aria-label="返回">‹</button>
+      <div class="title-stack"><h1>洞察</h1><span class="subtitle">OPPO-OnePlus-Realme-build</span></div>
+      <button class="icon-button" id="themeButton" aria-label="切换主题">◐</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-top">
+          <span class="live-badge"><i class="live-dot"></i>实时洞察</span>
+          <span class="repo-chip">main · Shell</span>
+        </div>
+        <h2>仓库运行良好</h2>
+        <p class="hero-copy">自动化稳定，基础社区规范仍有 2 项待完善。</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>良好</strong><span>健康度</span></div>
+          <div class="hero-stat"><strong>刚刚</strong><span>更新时间</span></div>
+          <div class="hero-stat"><strong>6/10</strong><span>覆盖度</span></div>
+        </div>
+        <div class="sync-strip">
+          <span class="sync-icon">✓</span>
+          <span><b>洞察已同步</b><small>活跃度、质量和访问数据均已刷新</small></span>
+          <span class="sync-time">现在</span>
+        </div>
+      </section>
+
+      <div class="tabs-shell">
+        <nav class="tabs" aria-label="洞察分类">
+          <button class="tab active" data-tab="overview">概览</button>
+          <button class="tab" data-tab="activity">动态</button>
+          <button class="tab" data-tab="quality">质量</button>
+          <button class="tab" data-tab="traffic">访问</button>
+        </nav>
+      </div>
+
+      <section class="page active" id="overview">
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">◇</span><div><h3 class="card-title">仓库评分</h3><p class="card-subtitle">动态、社区和安全综合评估</p></div></div>
+            <span class="tag good">稳定</span>
+          </header>
+          <div class="card-body score-layout">
+            <div class="score-ring"><div class="score-ring-inner"><div><strong>78</strong><span>综合评分</span></div></div></div>
+            <div class="score-bars">
+              <div><div class="score-row-top"><span>动态活跃度</span><b>88%</b></div><div class="progress"><i style="width:88%"></i></div></div>
+              <div><div class="score-row-top"><span>社区规范度</span><b>64%</b></div><div class="progress"><i style="width:64%"></i></div></div>
+              <div><div class="score-row-top"><span>自动化可靠性</span><b>100%</b></div><div class="progress"><i style="width:100%"></i></div></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">▦</span><div><h3 class="card-title">关键指标</h3><p class="card-subtitle">数据来自 GitHub REST 接口</p></div></div>
+          </header>
+          <div class="card-body metric-grid">
+            <div class="metric"><span class="metric-label">星标</span><strong>2</strong></div>
+            <div class="metric"><span class="metric-label">复刻</span><strong>0</strong></div>
+            <div class="metric"><span class="metric-label">关注者</span><strong>2</strong></div>
+            <div class="metric"><span class="metric-label">未关闭议题</span><strong>0</strong></div>
+            <div class="metric"><span class="metric-label">最近发布</span><strong>5</strong><small>最近一次构建已发布</small></div>
+            <div class="metric"><span class="metric-label">最近自动化</span><strong>5</strong><small>全部成功</small></div>
+            <div class="metric full"><span class="metric-label">默认分支</span><strong>main</strong></div>
+            <div class="metric full"><span class="metric-label">主要语言</span><strong>Shell</strong></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">◎</span><div><h3 class="card-title">仓库简介</h3><p class="card-subtitle">保留仓库原始描述，不自动翻译</p></div></div>
+          </header>
+          <div class="card-body">
+            <div class="repo-summary" id="repoSummary">
+              <p>An automatic kernel builder for Oppo/OnePlus/Realme Snapdragon sm8750 series in a completely new way.</p>
+              <button class="text-button" id="expandSummary">展开原文</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="activity">
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">↗</span><div><h3 class="card-title">活跃趋势</h3><p class="card-subtitle" id="chartSubtitle">提交、自动化与发布聚合趋势</p></div></div>
+            <span class="tag" id="chartTotal">综合 78</span>
+          </header>
+          <div class="card-body">
+            <div class="chart-switch">
+              <button class="active" data-chart="combined">综合</button>
+              <button data-chart="commits">提交</button>
+              <button data-chart="actions">自动化</button>
+              <button data-chart="releases">发布</button>
+            </div>
+            <div class="chart" id="chart">
+              <i class="bar" style="height:22%"></i><i class="bar green" style="height:45%"></i><i class="bar" style="height:25%"></i><i class="bar green" style="height:62%"></i><i class="bar amber" style="height:34%"></i><i class="bar green" style="height:78%"></i><i class="bar" style="height:42%"></i><i class="bar green" style="height:72%"></i>
+            </div>
+            <div class="chart-meta"><span id="chartHint">近 8 周维护活动稳定，自动化运行保持成功。</span><strong id="chartValue">趋势稳定</strong></div>
+            <div class="compact-stats">
+              <div class="compact-stat"><strong>5</strong><span>发布</span></div>
+              <div class="compact-stat"><strong>0</strong><span>拉取请求</span></div>
+              <div class="compact-stat"><strong>0</strong><span>议题</span></div>
+              <div class="compact-stat"><strong>5</strong><span>自动化</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">⌁</span><div><h3 class="card-title">实时动态</h3><p class="card-subtitle">将长段落拆分为可扫描事件</p></div></div>
+          </header>
+          <div class="card-body timeline">
+            <div class="event"><span class="event-icon good">✓</span><div><h4 class="event-title">内核快速构建成功</h4><p class="event-copy">6.6.89 欧加真 OKI 内核快速构建</p></div><time class="event-time">刚刚</time></div>
+            <div class="event"><span class="event-icon">R</span><div><h4 class="event-title">新版本已发布</h4><p class="event-copy">OPPO-OPlus-Realme-build-6.6.89-Zsunset_暮雨年秋冬-1-0410-2</p></div><time class="event-time">8 分钟前</time></div>
+            <div class="event"><span class="event-icon warn">!</span><div><h4 class="event-title">社区规范待完善</h4><p class="event-copy">许可证与议题模板尚未配置。</p></div><time class="event-time">当前</time></div>
+            <div class="event"><span class="event-icon">◇</span><div><h4 class="event-title">安全探测摘要</h4><p class="event-copy">安全策略、依赖机器人和代码扫描均未启用。</p></div><time class="event-time">当前</time></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="quality">
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">✓</span><div><h3 class="card-title">社区检查清单</h3><p class="card-subtitle">优先展示结论，不重复冗长说明</p></div></div>
+            <span class="tag warn">2 项待完善</span>
+          </header>
+          <div class="card-body checklist">
+            <div class="check-row"><span class="check-icon">✓</span><span><b>仓库元数据</b><small>主要语言：Shell</small></span><span class="check-value">完整</span></div>
+            <div class="check-row"><span class="check-icon">✓</span><span><b>说明文档</b><small>README 已配置</small></span><span class="tag good">通过</span></div>
+            <div class="check-row"><span class="check-icon warn">!</span><span><b>许可证</b><small>尚未明确开源使用边界</small></span><span class="tag warn">缺失</span></div>
+            <div class="check-row"><span class="check-icon warn">!</span><span><b>议题模板</b><small>缺少结构化反馈入口</small></span><span class="tag warn">缺失</span></div>
+            <div class="check-row"><span class="check-icon">✓</span><span><b>自动化可靠性</b><small>最近 5 次运行全部成功</small></span><span class="tag good">100%</span></div>
+            <div class="check-row"><span class="check-icon warn">◐</span><span><b>安全探测</b><small>依赖与代码扫描尚未启用</small></span><span class="tag">0 项</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">→</span><div><h3 class="card-title">下一步建议</h3><p class="card-subtitle">合并重复前缀，突出优先级和动作</p></div></div>
+          </header>
+          <div class="card-body action-list">
+            <div class="action-card"><i class="action-accent"></i><span><b>补齐许可证</b><small>明确代码分发和开源使用边界</small></span><button class="action-button">去配置</button></div>
+            <div class="action-card"><i class="action-accent"></i><span><b>添加议题模板</b><small>提升问题反馈质量与处理效率</small></span><button class="action-button">去添加</button></div>
+            <div class="action-card"><i class="action-accent" style="background:var(--blue)"></i><span><b>启用基础安全扫描</b><small>优先启用依赖机器人与代码扫描</small></span><button class="action-button">查看方案</button></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="traffic">
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">↗</span><div><h3 class="card-title">访问概览</h3><p class="card-subtitle">最近统计周期</p></div></div>
+            <span class="tag good">数据可用</span>
+          </header>
+          <div class="card-body">
+            <div class="traffic-hero">
+              <div class="traffic-kpi"><span>浏览量</span><strong>37</strong><small>较上周期 +12%</small></div>
+              <div class="traffic-kpi"><span>克隆量</span><strong>1</strong><small>1 位独立克隆者</small></div>
+            </div>
+            <div class="sparkline" aria-label="访问量趋势">
+              <i style="height:28%"></i><i style="height:42%"></i><i style="height:34%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:86%"></i><i style="height:68%"></i><i style="height:78%"></i><i style="height:58%"></i><i style="height:74%"></i><i style="height:66%"></i><i style="height:92%"></i>
+            </div>
+            <div class="chart-meta"><span>过去 14 天浏览趋势</span><strong>峰值 6 次/天</strong></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <header class="card-header">
+            <div class="heading"><span class="heading-icon">!</span><div><h3 class="card-title">提示</h3><p class="card-subtitle">仅保留与访问相关的信息</p></div></div>
+          </header>
+          <div class="card-body">
+            <div class="notice"><span class="notice-icon">i</span><span><strong>统计口径：</strong>访问数据来自 GitHub Traffic 接口，存在一定延迟。</span></div>
+            <div class="notice"><span class="notice-icon">◇</span><span><strong>仓库质量：</strong>说明文档已配置；许可证和议题模板仍需完善。</span></div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="仓库导航">
+    <button class="nav-item"><span class="nav-icon">‹›</span>代码</button>
+    <button class="nav-item"><span class="nav-icon">◉</span>议题</button>
+    <button class="nav-item active" id="refreshButton"><span class="nav-icon" id="refreshIcon">↻</span>洞察</button>
+    <button class="nav-item"><span class="nav-icon">⚙</span>设置</button>
+    <button class="nav-item"><span class="nav-icon">☰</span>更多</button>
+  </nav>
+  <div class="toast" id="toast">洞察已刷新</div>
+
+  <script>
+    const tabButtons = [...document.querySelectorAll('.tab')];
+    const pages = [...document.querySelectorAll('.page')];
+    tabButtons.forEach(button => button.addEventListener('click', () => {
+      tabButtons.forEach(item => item.classList.toggle('active', item === button));
+      pages.forEach(page => page.classList.toggle('active', page.id === button.dataset.tab));
+      window.scrollTo({ top: document.querySelector('.tabs-shell').offsetTop - 60, behavior: 'smooth' });
+    }));
+
+    const chartSets = {
+      combined: { heights: [22,45,25,62,34,78,42,72], classes: ['', 'green', '', 'green', 'amber', 'green', '', 'green'], subtitle: '提交、自动化与发布聚合趋势', total: '综合 78', hint: '近 8 周维护活动稳定，自动化运行保持成功。', value: '趋势稳定' },
+      commits: { heights: [16,26,18,55,30,72,38,62], classes: ['', '', '', '', '', '', '', ''], subtitle: '最近 8 周提交活跃度', total: '提交趋势', hint: '提交节奏存在波动，但近期仍保持持续维护。', value: '活跃' },
+      actions: { heights: [45,45,45,45,45,45,45,45], classes: ['green','green','green','green','green','green','green','green'], subtitle: '自动化运行成功率', total: '5 次运行', hint: '最近自动化任务全部成功，没有失败记录。', value: '100% 成功' },
+      releases: { heights: [8,8,18,8,32,8,52,72], classes: ['amber','amber','amber','amber','amber','amber','amber','amber'], subtitle: '版本发布频率', total: '5 个发布', hint: '发布频率较低时保留真实低柱形，不再拉伸成满高。', value: '5 个发布' }
+    };
+    const chartButtons = [...document.querySelectorAll('[data-chart]')];
+    const bars = [...document.querySelectorAll('#chart .bar')];
+    chartButtons.forEach(button => button.addEventListener('click', () => {
+      const data = chartSets[button.dataset.chart];
+      chartButtons.forEach(item => item.classList.toggle('active', item === button));
+      bars.forEach((bar, index) => {
+        bar.style.height = data.heights[index] + '%';
+        bar.className = 'bar ' + data.classes[index];
+      });
+      document.getElementById('chartSubtitle').textContent = data.subtitle;
+      document.getElementById('chartTotal').textContent = data.total;
+      document.getElementById('chartHint').textContent = data.hint;
+      document.getElementById('chartValue').textContent = data.value;
+    }));
+
+    const repoSummary = document.getElementById('repoSummary');
+    const expandSummary = document.getElementById('expandSummary');
+    expandSummary.addEventListener('click', () => {
+      const expanded = repoSummary.classList.toggle('expanded');
+      expandSummary.textContent = expanded ? '收起原文' : '展开原文';
+    });
+
+    document.getElementById('themeButton').addEventListener('click', () => {
+      const root = document.documentElement;
+      root.dataset.theme = root.dataset.theme === 'dark' ? '' : 'dark';
+    });
+
+    let toastTimer;
+    document.getElementById('refreshButton').addEventListener('click', () => {
+      const icon = document.getElementById('refreshIcon');
+      const toast = document.getElementById('toast');
+      icon.classList.remove('spin');
+      void icon.offsetWidth;
+      icon.classList.add('spin');
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1600);
+    });
+
+    document.querySelectorAll('.action-button').forEach(button => button.addEventListener('click', () => {
+      const toast = document.getElementById('toast');
+      toast.textContent = '预览模式：操作入口已触发';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+        toast.textContent = '洞察已刷新';
+      }, 1600);
+    }));
+  </script>
+</body>
+</html>

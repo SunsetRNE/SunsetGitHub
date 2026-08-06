@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Component Runtime Spec v4</title>
+  <style>
+    :root{--bg:#f6f8fa;--text:#1f2328;--muted:#57606a;--line:rgba(31,35,40,.12);--blue:#0969da;--blueSoft:#ddf4ff;--green:#1a7f37;--greenSoft:#dafbe1;--purple:#8250df;--purpleSoft:#f0e7ff;--orange:#bc4c00;--orangeSoft:#fff1e5;--red:#cf222e;--redSoft:#ffebe9;--ink:#0d1117;--shadow:0 14px 42px rgba(31,35,40,.1);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef6ff,#f6f8fa 380px),var(--bg);color:var(--text);line-height:1.55}.page{max-width:1220px;margin:0 auto;padding:30px 18px 72px}.card{background:rgba(255,255,255,.84);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.hero{display:grid;grid-template-columns:1fr 1fr;gap:20px}.heroText{padding:30px}.eyebrow{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--blueSoft);color:#0550ae;font-size:12px;font-weight:850;margin-bottom:14px}h1{font-size:clamp(32px,5vw,58px);line-height:1.03;letter-spacing:-1.5px;margin:0 0 14px}h2{font-size:27px;margin:0 0 12px;letter-spacing:-.4px}h3{font-size:17px;margin:0 0 8px}p{margin:0 0 12px;color:var(--muted)}strong{color:var(--text)}.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text);font-weight:800;text-decoration:none}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.runtime{padding:20px;display:grid;gap:12px}.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.pipe{min-height:112px;border-radius:18px;border:1px solid var(--line);background:#fff;padding:13px}.pipe b{display:block;margin-bottom:8px;color:var(--blue)}.pipe small{color:var(--muted)}.section{margin-top:22px}.section.card{padding:24px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.mini{padding:17px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.76)}.tag{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:9px}.blue{background:var(--blueSoft);color:#0550ae}.green{background:var(--greenSoft);color:#116329}.purple{background:var(--purpleSoft);color:#6639ba}.orange{background:var(--orangeSoft);color:#9a3412}.red{background:var(--redSoft);color:#a40e26}.matrix{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;margin-top:12px}.matrix th,.matrix td{padding:12px 13px;border-bottom:1px solid rgba(31,35,40,.08);font-size:13.5px;text-align:left;vertical-align:top}.matrix th{background:#f6f8fa;color:var(--text);font-size:12px}.matrix tr:last-child td{border-bottom:0}.code{background:#0d1117;border:1px solid rgba(240,246,252,.12);border-radius:18px;padding:18px;overflow:hidden}.codeTitle{color:#f0f6fc;font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px}.pill{color:#79c0ff;background:rgba(56,139,253,.14);padding:3px 7px;border-radius:999px;font-size:11px;white-space:nowrap}pre{margin:0;color:#c9d1d9;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}.state{display:grid;gap:10px}.row{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:12px;border-radius:15px;background:#fff;border:1px solid var(--line)}.row b{color:var(--blue)}.callout{padding:16px;border-radius:18px;background:rgba(221,244,255,.72);border:1px solid rgba(9,105,218,.22);margin-top:14px}.ok{background:rgba(218,251,225,.78);border-color:rgba(26,127,55,.22)}.warn{background:rgba(255,241,229,.8);border-color:rgba(188,76,0,.22)}.danger{background:rgba(255,235,233,.78);border-color:rgba(207,34,46,.22)}.flow{display:grid;gap:10px;margin-top:12px}.step{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:14px;border-radius:17px;border:1px solid var(--line);background:#fff}.num{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:950;background:linear-gradient(135deg,#0969da,#8250df)}.phone{height:430px;border-radius:34px;background:#111;padding:12px;box-shadow:0 28px 80px rgba(1,4,9,.24)}.screen{position:relative;height:100%;border-radius:25px;background:linear-gradient(180deg,#fff,#f6f8fa);overflow:hidden}.content{padding:20px;display:grid;gap:12px}.fake{height:54px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.86)}.nav{position:absolute;left:18px;right:18px;bottom:18px;height:72px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.46));border:1px solid rgba(255,255,255,.78);box-shadow:0 18px 42px rgba(31,35,40,.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}.debug{position:absolute;left:18px;right:18px;bottom:100px;border-radius:14px;background:rgba(13,17,23,.86);color:#c9d1d9;font:11px ui-monospace,monospace;padding:10px}.footer{text-align:center;color:#6e7781;font-size:13px;margin-top:28px}@media(max-width:920px){.hero,.grid2,.grid3,.pipeline{grid-template-columns:1fr}.heroText{padding:22px}.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="heroText card">
+      <div class="eyebrow">Spec v4 · Runtime + Debuggability</div>
+      <h1>差的不是更多变体，而是运行时闭环</h1>
+      <p>v3 讲了变体系统，但还不够，因为它仍然偏静态。真正能落地的组件规格，需要回答：<strong>输入如何变成像素、状态如何迁移、token 从哪里来、动画如何衔接、问题如何调试、第一刀怎么切。</strong></p>
+      <p>v4 把导航栏设计成一条运行时管线：Context -> Policy -> Variant -> RenderPlan -> Measure/Layout -> Draw/Animate -> Insets/Events/Debug。</p>
+      <div class="links"><a class="btn primary" href="#pipeline">运行时管线</a><a class="btn" href="#tokens">Token</a><a class="btn" href="#machine">状态机</a><a class="btn" href="#slice">纵向切片</a></div>
+    </div>
+    <div class="runtime card">
+      <div class="phone"><div class="screen"><div class="content"><div class="fake"></div><div class="fake"></div><div class="fake"></div><div class="fake"></div></div><div class="debug">variant=Floating/FakeGlass/Repository<br/>height=72 inset=102 capability=FakeGlass<br/>source=Destination+Preference+Capability</div><div class="nav"></div></div></div>
+    </div>
+  </section>
+
+  <section class="section card" id="pipeline">
+    <h2>一、运行时管线</h2>
+    <p>这一层是前几版缺掉的东西。它让组件从“结构合理”变成“行为可解释”。</p>
+    <div class="pipeline">
+      <div class="pipe"><b>1. Context</b><small>destination、arguments、auth、theme、window、ime、scroll、capability</small></div>
+      <div class="pipe"><b>2. Policy</b><small>页面是否允许导航栏、菜单类型、强制隐藏、仓库上下文</small></div>
+      <div class="pipe"><b>3. Variant</b><small>placement、material、density、surface、behavior、fallback</small></div>
+      <div class="pipe"><b>4. RenderPlan</b><small>尺寸、圆角、颜色、stroke、shadow、menu items、animation</small></div>
+      <div class="pipe"><b>5. Commit</b><small>measure/layout/draw、发布 inset、派发事件、记录 debug snapshot</small></div>
+    </div>
+    <div class="callout ok"><strong>关键：</strong>View 不应该临时推理业务，Host 不应该临时设置像素。中间必须有 RenderPlan，作为“状态到像素”的可测试边界。</div>
+  </section>
+
+  <section class="section card">
+    <h2>二、RenderPlan：缺失的中间层</h2>
+    <div class="grid2">
+      <div class="code"><div class="codeTitle">RenderPlan <span class="pill">可快照测试</span></div><pre>data class AppNavigationBarRenderPlan(
+    val visibility: Visibility,
+    val bounds: NavigationBarBounds,
+    val material: NavigationBarMaterialPlan,
+    val menu: NavigationBarMenuPlan,
+    val animation: NavigationBarAnimationPlan,
+    val insets: AppNavigationBarInsets,
+    val debug: NavigationBarDebugInfo
+)</pre></div>
+      <div class="code"><div class="codeTitle">Planner <span class="pill">variant -> pixels</span></div><pre>class AppNavigationBarRenderPlanner(
+    private val tokens: NavigationBarTokenResolver,
+    private val menuPlanner: NavigationBarMenuPlanner
+) {
+    fun plan(
+        state: AppNavigationBarState,
+        metrics: NavigationBarRuntimeMetrics
+    ): AppNavigationBarRenderPlan
+}</pre></div>
+    </div>
+  </section>
+
+  <section class="section card" id="tokens">
+    <h2>三、Token 系统：不要把尺寸和颜色散在 renderer</h2>
+    <p>玻璃和变体会失败，常常不是因为架构，而是因为每个 renderer 自己写 margin、alpha、stroke、height。必须集中成 token。</p>
+    <table class="matrix">
+      <thead><tr><th>Token 类别</th><th>字段</th><th>来源</th><th>变体影响</th></tr></thead>
+      <tbody>
+        <tr><td>Size</td><td>height、compactHeight、railWidth、floatingMargin、hitSlop</td><td>dimens + window metrics</td><td>Placement、Density、IME</td></tr>
+        <tr><td>Shape</td><td>cornerRadius、dockCornerRadius、strokeWidth</td><td>style token</td><td>Material、Density</td></tr>
+        <tr><td>Color</td><td>surface、surfaceAlt、stroke、itemSelected、itemMuted</td><td>theme attrs</td><td>Surface、HighContrast、Dark</td></tr>
+        <tr><td>Glass</td><td>tintAlpha、blurRadius、saturation、highlightAlpha</td><td>material preset + capability</td><td>Material、Capability</td></tr>
+        <tr><td>Motion</td><td>duration、easing、interruptMode</td><td>motion token</td><td>Behavior、Accessibility reduce motion</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card" id="machine">
+    <h2>四、状态机：避免动画和 inset 打架</h2>
+    <p>悬浮、隐藏、键盘、切页会互相打断。需要状态机定义谁能到谁，动画如何中断。</p>
+    <div class="state">
+      <div class="row"><b>Detached</b><div>组件未 attach。不能 render glass，不能发布 inset。</div></div>
+      <div class="row"><b>Attached.Hidden</b><div>组件 attach 但不可见。inset = 0，menu 可预构建但不提交视觉。</div></div>
+      <div class="row"><b>Attached.Visible.Docked</b><div>底部占位导航。内容避让 = bar height + system navigation consideration。</div></div>
+      <div class="row"><b>Attached.Visible.Floating</b><div>overlay 悬浮导航。内容可绘制到底部，但滚动区要有 touch/read padding。</div></div>
+      <div class="row"><b>Transitioning</b><div>任意可见性或 placement 变化进入过渡态。过渡完成后一次性发布最终 debug snapshot。</div></div>
+    </div>
+    <div class="callout warn"><strong>规则：</strong>inset 发布应跟随目标态，而不是每一帧动画态，否则列表底部会跟着抖。</div>
+  </section>
+
+  <section class="section card">
+    <h2>五、调试能力：否则玻璃问题很难定位</h2>
+    <div class="grid3">
+      <div class="mini"><span class="tag blue">Debug Overlay</span><h3>显示解析结果</h3><p>variant、fallback reason、bar height、inset、material、menu type。</p></div>
+      <div class="mini"><span class="tag purple">Snapshot Log</span><h3>记录状态变更</h3><p>destination change、preference change、IME change、capability fallback。</p></div>
+      <div class="mini"><span class="tag green">RenderPlan Dump</span><h3>可复制计划</h3><p>把当前 RenderPlan 转成文本，方便在 issue 或日志中定位。</p></div>
+    </div>
+    <div class="code" style="margin-top:14px"><div class="codeTitle">DebugInfo <span class="pill">不是发布功能，只为开发</span></div><pre>data class NavigationBarDebugInfo(
+    val destinationId: Int?,
+    val variant: AppNavigationBarResolvedVariant,
+    val fallbackReasons: List&lt;String&gt;,
+    val measuredHeightPx: Int,
+    val publishedInsetPx: Int,
+    val menuItemIds: List&lt;Int&gt;,
+    val selectedItemId: Int?
+)</pre></div>
+  </section>
+
+  <section class="section card">
+    <h2>六、页面级契约：Fragment 如何配合</h2>
+    <p>导航栏独立后，Fragment 不应该知道它怎么画，但需要声明自己对底部 overlay 的偏好。</p>
+    <table class="matrix">
+      <thead><tr><th>页面契约</th><th>含义</th><th>例子</th></tr></thead>
+      <tbody>
+        <tr><td>AllowsNavigationBar</td><td>页面允许导航栏显示</td><td>Home、Dashboard、仓库详情</td></tr>
+        <tr><td>ForcesNavigationBarHidden</td><td>页面强制隐藏导航栏</td><td>登录子流程、全屏预览、沉浸编辑</td></tr>
+        <tr><td>PrefersCompactWhenImeVisible</td><td>键盘出现时压缩而不是隐藏</td><td>搜索页、轻量表单</td></tr>
+        <tr><td>ConsumesBottomInset</td><td>页面自己处理 inset</td><td>自带 RecyclerView inset 管理的复杂页面</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section card" id="slice">
+    <h2>七、最小纵向切片</h2>
+    <p>别第一轮铺满整个系统。最小切片应该证明“运行时管线成立”。</p>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div><h3>模型层</h3><p>State、Variant、RenderPlan、Insets、DebugInfo。</p></div></div>
+      <div class="step"><div class="num">2</div><div><h3>Planner 层</h3><p>Docked Solid、Floating FakeGlass、Hidden 三种 plan 可单测。</p></div></div>
+      <div class="step"><div class="num">3</div><div><h3>View 层</h3><p>AppNavigationBarLayout 接收 RenderPlan，不直接推理业务。</p></div></div>
+      <div class="step"><div class="num">4</div><div><h3>Host 接入</h3><p>MainActivity 只收集 context，调用 pipeline，转发事件。</p></div></div>
+      <div class="step"><div class="num">5</div><div><h3>验证</h3><p>主导航页 + 仓库页 + 未钉选分区 + 浮动开关 + 隐藏页。</p></div></div>
+    </div>
+  </section>
+
+  <section class="section card">
+    <h2>八、v4 之后才算完整的原因</h2>
+    <div class="callout ok"><strong>完整标准：</strong>方案必须同时包含组件边界、变体系统、运行时管线、RenderPlan、token、状态机、调试能力和最小切片。v1-v3 分别补了方向、物理边界、变体扩展；v4 补的是“它实际怎么跑”。</div>
+    <div class="callout danger"><strong>反模式：</strong>如果新增一个变体需要改 Activity、Fragment、Host、Renderer 里的多个 when，这个组件系统就失败了。</div>
+  </section>
+
+  <div class="footer">生成文件：docs/navigation-bar-component-plan-preview-v4.html</div>
+</main>
+</body>
+</html>

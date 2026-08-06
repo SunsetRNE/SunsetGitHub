@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container_repository_detail_skeleton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <!-- 头部信息卡片骨架 -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="false"
+        style="@style/Widget.SunsetGitHub.Material.Card">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 标题行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="22dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="48dp"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_skeleton_circle" />
+
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_skeleton_circle" />
+            </LinearLayout>
+
+            <!-- 所有者行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_skeleton_circle" />
+
+                <View
+                    android:layout_width="160dp"
+                    android:layout_height="14dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_skeleton_block" />
+            </LinearLayout>
+
+            <!-- 描述 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="14dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_skeleton_block" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="14dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="80dp"
+                android:background="@drawable/bg_skeleton_block" />
+
+            <!-- 徽章行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="72dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="56dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_skeleton_block" />
+            </LinearLayout>
+
+            <!-- 统计格子 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_skeleton_block" />
+            </LinearLayout>
+
+            <!-- 默认分支行 -->
+            <View
+                android:layout_width="140dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_skeleton_block" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 目录内容卡片骨架 -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:cardUseCompatPadding="false"
+        style="@style/Widget.SunsetGitHub.Material.Card">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <View
+                    android:layout_width="128dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/bg_skeleton_block" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_skeleton_block" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/github_border" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_skeleton_block" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/github_border" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_skeleton_block" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/github_border" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_skeleton_block" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/github_border" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_skeleton_block" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

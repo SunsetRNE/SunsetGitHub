@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>SunsetGitHub Repository Security Redesign Preview</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f6f8fa;--canvas:#ffffff;--fg:#24292f;--muted:#57606a;--subtle:#6e7781;
+  --border:#d0d7de;--border-soft:#d8dee4;--soft:#f6f8fa;--soft-blue:#ddf4ff;
+  --blue:#0969da;--green:#1a7f37;--red:#cf222e;--orange:#bc4c00;--done:#8250df;
+  --shadow:0 1px 0 rgba(31,35,40,.04);--focus:0 0 0 3px rgba(9,105,218,.16);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+}
+[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--canvas:#161b22;--fg:#e6edf3;--muted:#8b949e;--subtle:#7d8590;--border:#30363d;--border-soft:#21262d;--soft:#0d1117;--soft-blue:#112b42;--blue:#58a6ff;--green:#3fb950;--red:#ff7b72;--orange:#db6d28;--done:#a371f7;--shadow:none;--focus:0 0 0 3px rgba(88,166,255,.18)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.45}.wrap{min-height:100vh;display:grid;place-items:start center;padding:0}.phone{width:min(100%,430px);min-height:100vh;background:var(--bg)}
+.status{height:32px;padding:9px 17px 0;background:var(--canvas);display:flex;justify-content:space-between;font-weight:700;font-size:13px}.icons{color:var(--muted);font-weight:650}.top{position:sticky;top:0;z-index:20;background:var(--canvas);border-bottom:1px solid var(--border)}.title{height:54px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;padding:0 8px}.icon-btn{border:0;background:transparent;color:var(--muted);font-size:24px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center}.icon-btn:active{background:var(--soft)}h1,h2,h3,p{margin:0}h1{font-size:21px;letter-spacing:0;line-height:1.2}.repo-strip{display:flex;gap:7px;overflow:auto;padding:0 16px 12px;color:var(--muted);white-space:nowrap;scrollbar-width:none}.repo-strip::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}.repo-strip b{color:var(--blue)}.badge{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border);border-radius:999px;padding:2px 7px;font-size:12px;color:var(--muted);background:var(--canvas);font-weight:600}.badge.good{color:var(--green);border-color:color-mix(in srgb,var(--green) 35%,var(--border));background:color-mix(in srgb,var(--green) 9%,var(--canvas))}.badge.warn{color:var(--orange);border-color:color-mix(in srgb,var(--orange) 35%,var(--border));background:color-mix(in srgb,var(--orange) 9%,var(--canvas))}.badge.bad{color:var(--red);border-color:color-mix(in srgb,var(--red) 35%,var(--border));background:color-mix(in srgb,var(--red) 8%,var(--canvas))}
+main{padding:12px 12px 30px}.preview-switch{display:flex;gap:7px;overflow:auto;padding:0 0 10px;scrollbar-width:none}.preview-switch button,.chip{flex:0 0 auto;border:1px solid var(--border);background:var(--canvas);border-radius:999px;padding:7px 10px;color:var(--muted);font-weight:700;font-size:13px}.preview-switch button.on,.chip.on{background:var(--fg);border-color:var(--fg);color:var(--canvas)}.hero{border:1px solid var(--border);border-radius:6px;background:var(--canvas);box-shadow:var(--shadow);overflow:hidden}.hero-main{padding:14px}.crumb{font-size:13px;color:var(--muted);margin-bottom:8px}.crumb b{color:var(--blue)}.hero h2{font-size:22px;line-height:1.18;letter-spacing:0}.hero .desc{margin-top:5px;color:var(--muted)}.hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{appearance:none;border:1px solid var(--border);border-radius:6px;background:var(--canvas);color:var(--fg);font-weight:700;padding:7px 11px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:34px}.btn.primary{background:#1f883d;border-color:#1f883d;color:#fff}.btn:active{box-shadow:var(--focus)}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);background:var(--soft)}.score-grid div{padding:10px;border-right:1px solid var(--border);min-width:0}.score-grid div:last-child{border-right:0}.score-grid b{display:block;font-size:18px;line-height:1.1}.score-grid span{display:block;margin-top:2px;font-size:11px;color:var(--subtle);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:14px 0 8px}.section-title h3{font-size:15px}.section-title span{color:var(--subtle);font-size:12px}.cards{display:grid;gap:8px}.capability{border:1px solid var(--border);border-radius:6px;background:var(--canvas);box-shadow:var(--shadow);overflow:hidden}.capability-head{display:grid;grid-template-columns:28px 1fr auto;gap:9px;align-items:start;padding:12px}.mark{width:28px;height:28px;border:1px solid var(--border);border-radius:50%;display:grid;place-items:center;font-weight:900;color:var(--muted);background:var(--soft)}.mark.good{color:var(--green);border-color:color-mix(in srgb,var(--green) 42%,var(--border))}.mark.warn{color:var(--orange);border-color:color-mix(in srgb,var(--orange) 42%,var(--border))}.mark.bad{color:var(--red);border-color:color-mix(in srgb,var(--red) 42%,var(--border))}.capability h4{font-size:14px;margin:0}.capability p{color:var(--muted);font-size:12px;margin-top:2px}.capability-detail{border-top:1px solid var(--border-soft);background:var(--soft);padding:9px 12px;color:var(--muted);font-size:12px}.capability-detail strong{color:var(--fg)}.notice{border:1px solid var(--border);border-left:4px solid var(--orange);border-radius:6px;background:var(--canvas);padding:10px 11px;color:var(--muted);margin-top:10px}.notice.good{border-left-color:var(--green)}.notice.bad{border-left-color:var(--red)}.notice b{color:var(--fg)}.tabs{display:flex;gap:4px;overflow:auto;margin:14px 0 8px;border-bottom:1px solid var(--border);scrollbar-width:none}.tab{border:0;background:transparent;color:var(--muted);padding:10px 9px 8px;font-weight:700;white-space:nowrap;border-bottom:2px solid transparent}.tab.on{color:var(--fg);border-bottom-color:#fd8c73}.chips{display:flex;gap:7px;overflow:auto;padding-bottom:8px;scrollbar-width:none}.panel{display:none}.panel.on,.state.on{display:block}.state{display:none}.box{border:1px solid var(--border);border-radius:6px;background:var(--canvas);box-shadow:var(--shadow);overflow:hidden;margin-top:8px}.box-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}.box-head h3{font-size:15px}.box-head p{font-size:12px;color:var(--subtle);margin-top:1px}.box-body{padding:12px}.alert-row{display:grid;grid-template-columns:28px 1fr auto;gap:9px;padding:11px 0;border-bottom:1px solid var(--border-soft);align-items:start}.alert-row:last-child{border-bottom:0;padding-bottom:0}.alert-row:first-child{padding-top:0}.alert-title{font-weight:700;color:var(--fg)}.alert-meta{margin-top:2px;color:var(--muted);font-size:12px}.alert-detail{margin-top:5px;color:var(--subtle);font-size:12px}.chev{color:var(--subtle);font-size:20px;line-height:1}.empty{text-align:center;padding:26px 14px}.empty .mark{margin:0 auto 10px;width:54px;height:54px;font-size:24px}.empty h3{font-size:16px}.empty p{color:var(--muted);margin-top:5px}.sk{height:14px;border-radius:999px;background:linear-gradient(90deg,var(--soft),var(--border),var(--soft));background-size:200% 100%;animation:sh 1.15s linear infinite;margin:10px 0}@keyframes sh{to{background-position:-200% 0}}.skeleton-card{height:86px;border:1px solid var(--border);border-radius:6px;background:var(--canvas);padding:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.implementation{margin-top:16px;border:1px solid var(--border);border-radius:6px;background:var(--canvas);padding:12px;color:var(--muted)}.implementation h3{color:var(--fg);font-size:15px;margin-bottom:6px}.implementation ul{margin:0;padding-left:18px}.implementation li{margin:4px 0}@media (min-width:860px){.wrap{padding:24px}.phone{border:1px solid var(--border);border-radius:24px;overflow:hidden;min-height:860px;box-shadow:0 18px 45px rgba(31,35,40,.12)}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="phone">
+  <div class="status"><span>21:55</span><span class="icons">◉ ◒ ▮▮ 73%</span></div>
+  <header class="top">
+    <div class="title"><button class="icon-btn" aria-label="返回">‹</button><h1>安全</h1><button class="icon-btn" id="theme" aria-label="切换主题">◐</button></div>
+    <div class="repo-strip"><span>Sunset /</span><b>ExampleRepo</b><span class="badge">Public</span><span class="badge">main</span><span class="badge">Security</span></div>
+  </header>
+  <main>
+    <nav class="preview-switch" aria-label="预览状态">
+      <button class="on" data-state="limited">权限受限</button><button data-state="alerts">有警报</button><button data-state="empty">无警报</button><button data-state="loading">加载</button><button data-state="error">错误</button>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="crumb">Security / <b id="crumb">Overview</b></div>
+        <h2 id="heroTitle">Security overview</h2>
+        <p class="desc" id="heroText">按 GitHub 网页版安全页重排：先给仓库风险摘要，再展示安全功能状态和告警列表。</p>
+        <div class="hero-actions"><a class="btn primary">启用安全功能</a><a class="btn">在 GitHub 打开</a></div>
+      </div>
+      <div class="score-grid"><div><b id="risk">1</b><span>open alerts</span></div><div><b id="enabled">1/4</b><span>features enabled</span></div><div><b id="scope">Partial</b><span>token access</span></div></div>
+    </section>
+
+    <div id="limited" class="state on">
+      <div class="section-title"><h3>Security features</h3><span>REST API probes</span></div>
+      <div class="cards">
+        <article class="capability"><div class="capability-head"><div class="mark warn">!</div><div><h4>Security policy</h4><p>未启用。GitHub 未找到 SECURITY.md 或社区指标端点不可用。</p></div><span class="badge warn">Disabled</span></div><div class="capability-detail"><strong>建议：</strong>添加 SECURITY.md，并在仓库设置中确认安全策略可见。</div></article>
+        <article class="capability"><div class="capability-head"><div class="mark warn">!</div><div><h4>Dependabot alerts</h4><p>当前仓库未启用，或 Token 缺少仓库安全告警访问权限。</p></div><span class="badge warn">403</span></div><div class="capability-detail"><strong>HTTP 403</strong> 被折叠为可理解状态，完整错误放入详情/调试入口，避免污染正文。</div></article>
+        <article class="capability"><div class="capability-head"><div class="mark warn">!</div><div><h4>Code scanning alerts</h4><p>没有找到分析结果。可以配置 CodeQL 或第三方扫描上传 SARIF。</p></div><span class="badge warn">404</span></div></article>
+        <article class="capability"><div class="capability-head"><div class="mark good">✓</div><div><h4>Secret scanning alerts</h4><p>接口可访问，当前没有返回告警。</p></div><span class="badge good">Enabled</span></div></article>
+      </div>
+      <p class="notice"><b>部分数据受限。</b>公开仓库可显示安全能力概况；私有仓库通常需要 repo 或 Fine-grained repository security events 权限。</p>
+      <nav class="tabs"><button class="tab on" data-tab="dependabot">Dependabot</button><button class="tab" data-tab="code">代码扫描</button><button class="tab" data-tab="secret">密钥扫描</button></nav>
+      <div class="chips"><button class="chip on">待处理</button><button class="chip">已修复</button><button class="chip">已忽略</button><button class="chip">自动忽略</button></div>
+      <section class="box"><div class="box-head"><div><h3>Security alerts</h3><p>Dependabot alerts</p></div><span class="badge warn">Restricted</span></div><div class="box-body"><p class="notice bad"><b>无法读取 Dependabot 警报。</b><br>Dependabot alerts are disabled for this repository. 检查仓库设置或 Token 权限后重试。</p></div></section>
+    </div>
+
+    <div id="alerts" class="state">
+      <div class="section-title"><h3>Security features</h3><span>2 enabled, 1 warning</span></div>
+      <div class="cards"><article class="capability"><div class="capability-head"><div class="mark good">✓</div><div><h4>Dependabot alerts</h4><p>正在监控依赖漏洞，发现 3 条待处理警报。</p></div><span class="badge bad">3 open</span></div></article><article class="capability"><div class="capability-head"><div class="mark good">✓</div><div><h4>Secret scanning</h4><p>已启用，暂无泄露密钥。</p></div><span class="badge good">Clean</span></div></article></div>
+      <nav class="tabs"><button class="tab on">Dependabot</button><button class="tab">代码扫描</button><button class="tab">密钥扫描</button></nav>
+      <div class="chips"><button class="chip on">待处理 3</button><button class="chip">已修复 8</button><button class="chip">已忽略</button></div>
+      <section class="box"><div class="box-head"><div><h3>Security alerts</h3><p>Newest first</p></div><span class="badge bad">High risk</span></div><div class="box-body">
+        <div class="alert-row"><div class="mark bad">!</div><div><div class="alert-title">CVE-2026-1234 in okhttp</div><div class="alert-meta">Dependabot · open · high · build.gradle.kts</div><div class="alert-detail">Upgrade okhttp from 4.11.0 to 4.12.0.</div></div><div class="chev">›</div></div>
+        <div class="alert-row"><div class="mark warn">!</div><div><div class="alert-title">Transitive vulnerability in markdown parser</div><div class="alert-meta">Dependabot · open · medium · app module</div><div class="alert-detail">Patched version available.</div></div><div class="chev">›</div></div>
+      </div></section>
+    </div>
+
+    <div id="empty" class="state">
+      <div class="section-title"><h3>Security features</h3><span>all available</span></div>
+      <div class="cards"><article class="capability"><div class="capability-head"><div class="mark good">✓</div><div><h4>Dependabot alerts</h4><p>接口可访问，当前没有待处理漏洞。</p></div><span class="badge good">Clean</span></div></article><article class="capability"><div class="capability-head"><div class="mark good">✓</div><div><h4>Secret scanning</h4><p>没有返回泄露密钥告警。</p></div><span class="badge good">Clean</span></div></article></div>
+      <section class="box"><div class="empty"><div class="mark good">✓</div><h3>No security alerts</h3><p>当前筛选条件下没有告警。可以切换类型或状态查看历史记录。</p><div class="hero-actions" style="justify-content:center"><a class="btn">查看已修复</a><a class="btn">配置安全功能</a></div></div></section>
+    </div>
+
+    <div id="loading" class="state"><div class="section-title"><h3>Security features</h3><span>loading</span></div><div class="two"><div class="skeleton-card"><div class="sk" style="width:60%"></div><div class="sk" style="width:88%"></div></div><div class="skeleton-card"><div class="sk" style="width:48%"></div><div class="sk" style="width:75%"></div></div></div><section class="box"><div class="box-head"><h3>Security alerts</h3></div><div class="box-body"><div class="sk" style="width:82%"></div><div class="sk" style="width:94%"></div><div class="sk" style="width:65%"></div></div></section></div>
+
+    <div id="error" class="state"><section class="box"><div class="empty"><div class="mark bad">!</div><h3>Could not load security overview</h3><p>网络、限流或登录状态异常时展示明确失败页，并保留重试入口。</p><div class="hero-actions" style="justify-content:center"><a class="btn primary">重试</a><a class="btn">在 GitHub 打开</a></div></div></section></div>
+
+    <section class="implementation"><h3>落地映射</h3><ul><li>保留现有 ViewModel：summary.probes 渲染为上方功能卡片。</li><li>alertFilter / alertState 仍使用 Chip，只把它们放到告警区标题下。</li><li>HTTP 403/404 不再作为整段正文铺开，转成 badge、notice 和详情入口。</li><li>可新增空态、受限态、加载骨架和告警行卡片，均可用 XML + MaterialCardView 实现。</li></ul></section>
+  </main>
+</div></div>
+<script>
+const stateCopy={limited:['Overview','Security overview','按 GitHub 网页版安全页重排：先给仓库风险摘要，再展示安全功能状态和告警列表。','1','1/4','Partial'],alerts:['Dependabot','Security alerts','发现可处理的安全警报，列表按严重程度和更新时间排序。','3','3/4','Full'],empty:['Clean','No security alerts','当前仓库没有待处理安全告警，保留历史筛选和配置入口。','0','4/4','Full'],loading:['Loading','Loading security','正在分批读取社区指标、安全功能和告警列表。','--','--','Loading'],error:['Error','Could not load security','失败时展示重试、GitHub 网页兜底和简短原因，不把接口堆栈塞进正文。','--','0/4','Error']};
+document.querySelectorAll('[data-state]').forEach(btn=>btn.addEventListener('click',()=>{const k=btn.dataset.state;document.querySelectorAll('[data-state]').forEach(x=>x.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('.state').forEach(x=>x.classList.remove('on'));document.getElementById(k).classList.add('on');const c=stateCopy[k];crumb.textContent=c[0];heroTitle.textContent=c[1];heroText.textContent=c[2];risk.textContent=c[3];enabled.textContent=c[4];scope.textContent=c[5];}));
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{btn.parentElement.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));btn.classList.add('on');}));
+document.querySelectorAll('.chip').forEach(btn=>btn.addEventListener('click',()=>{btn.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));btn.classList.add('on');}));
+theme.addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'':'dark';});
+</script>
+</body>
+</html>

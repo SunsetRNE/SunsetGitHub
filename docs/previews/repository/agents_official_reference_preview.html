@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Agents 官方风格重绘预览</title>
+  <style>
+    :root {
+      --canvas: #f6f8fa;
+      --page: #ffffff;
+      --fg: #1f2328;
+      --muted: #59636e;
+      --subtle: #818b98;
+      --border: #d0d7de;
+      --border-muted: #d8dee4;
+      --neutral: #f6f8fa;
+      --neutral-muted: #eaeef2;
+      --accent: #0969da;
+      --accent-emphasis: #0969da;
+      --success: #1a7f37;
+      --danger: #cf222e;
+      --attention: #9a6700;
+      --orange: #fd8c73;
+      --shadow: 0 16px 42px rgba(31, 35, 40, .16);
+      --radius: 12px;
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--fg);
+      background:
+        radial-gradient(circle at 20% 8%, rgba(9, 105, 218, .11), transparent 30%),
+        linear-gradient(180deg, #f6f8fa 0%, #eef3f8 100%);
+      display: grid;
+      place-items: center;
+      padding: 22px;
+    }
+
+    button, input, select { font: inherit; }
+
+    .preview-shell {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: 430px minmax(320px, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .phone {
+      width: 430px;
+      max-width: 100%;
+      height: 884px;
+      background: var(--page);
+      border: 10px solid #111827;
+      border-radius: 40px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .screen {
+      height: 100%;
+      overflow: auto;
+      background: var(--page);
+    }
+
+    .browser-bottom {
+      height: 66px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-muted);
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      padding: 0 14px;
+      color: #24292f;
+      z-index: 30;
+    }
+
+    .browser-bottom span {
+      display: grid;
+      place-items: center;
+      font-size: 29px;
+      line-height: 1;
+    }
+
+    .tab-count {
+      width: 28px;
+      height: 28px;
+      border: 2px solid currentColor;
+      border-radius: 8px;
+      font-size: 16px !important;
+      font-weight: 700;
+    }
+
+    .statusbar {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px 6px;
+      font-size: 18px;
+      font-weight: 750;
+      background: #f6f8fa;
+      letter-spacing: -.02em;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      color: #111827;
+    }
+
+    .battery {
+      min-width: 34px;
+      height: 18px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #16a34a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 0 4px;
+    }
+
+    .mobile-top {
+      height: 70px;
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      align-items: center;
+      gap: 14px;
+      padding: 0 18px;
+      background: #f6f8fa;
+      border-bottom: 1px solid transparent;
+      position: sticky;
+      top: 46px;
+      z-index: 39;
+    }
+
+    .mobile-top.scrolled { border-bottom-color: var(--border-muted); }
+
+    .repo-title {
+      min-width: 0;
+      font-size: 19px;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-title strong { font-weight: 500; }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 9px;
+      color: #24292f;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: #eaeef2; }
+    .icon { font-size: 24px; line-height: 1; }
+
+    .repo-head {
+      background: #f6f8fa;
+      padding: 18px 18px 0;
+      border-bottom: 1px solid var(--border-muted);
+    }
+
+    .repo-line {
+      display: grid;
+      grid-template-columns: 40px 48px 1fr 42px 42px 48px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .square-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f6f8fa;
+      color: #57606a;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      cursor: pointer;
+      box-shadow: 0 1px 0 rgba(31, 35, 40, .04);
+    }
+
+    .avatar-gh {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #24292f;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 31px;
+      font-weight: 800;
+    }
+
+    .repo-path {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #57606a;
+      font-size: 18px;
+    }
+
+    .repo-path b {
+      max-width: 86px;
+      color: #24292f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 18px;
+    }
+
+    .avatar-user {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border-muted);
+      background:
+        linear-gradient(90deg, transparent 40%, rgba(255,255,255,.6) 40% 60%, transparent 60%),
+        linear-gradient(180deg, #b7f7d0 0 25%, #78dba5 25% 55%, #b7f7d0 55% 100%);
+      position: relative;
+    }
+
+    .avatar-user::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      right: -1px;
+      top: -2px;
+      border-radius: 50%;
+      background: #0969da;
+      border: 2px solid #f6f8fa;
+    }
+
+    .repo-tabs {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      gap: 24px;
+      scrollbar-width: none;
+    }
+
+    .repo-tabs::-webkit-scrollbar { display: none; }
+
+    .repo-tab {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      height: 48px;
+      padding: 0 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #24292f;
+      font-size: 18px;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+    }
+
+    .repo-tab.active {
+      font-weight: 700;
+      border-bottom-color: var(--orange);
+    }
+
+    .repo-tab.more { padding-right: 10px; }
+
+    .content {
+      padding: 20px 18px 112px;
+      background: #fff;
+    }
+
+    .hamburger-row { margin-bottom: 26px; }
+
+    .page-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .page-title-row h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.18;
+      letter-spacing: -.03em;
+      font-weight: 750;
+    }
+
+    .state-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 650;
+      border: 1px solid var(--state-border);
+      background: var(--state-bg);
+      color: var(--state-fg);
+      white-space: nowrap;
+    }
+
+    .state-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .search-form {
+      display: grid;
+      grid-template-columns: 1fr 42px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(31, 35, 40, .02);
+      margin-bottom: 20px;
+    }
+
+    .search-form input {
+      border: 0;
+      outline: none;
+      min-width: 0;
+      padding: 0 12px;
+      color: #24292f;
+      font-size: 17px;
+      background: #fff;
+    }
+
+    .search-form button {
+      border: 0;
+      border-left: 1px solid var(--border);
+      background: #f6f8fa;
+      color: #57606a;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .query-token-open {
+      background: #ddf4ff;
+      color: #0969da;
+      border-radius: 4px;
+      padding: 0 2px;
+    }
+
+    .query-token-me {
+      background: #fbefff;
+      color: #8250df;
+      border-radius: 4px;
+      padding: 0 2px;
+    }
+
+    .session-box {
+      border: 1px solid var(--border-muted);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 42px;
+    }
+
+    .session-tabs {
+      min-height: 68px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 54px;
+      align-items: center;
+      background: #f6f8fa;
+      border-bottom: 1px solid var(--border-muted);
+    }
+
+    .session-tab {
+      border: 0;
+      background: transparent;
+      height: 68px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #57606a;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .session-tab.active {
+      color: #24292f;
+      font-weight: 700;
+    }
+
+    .count {
+      min-width: 40px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #eaeef2;
+      color: #24292f;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .kebab {
+      color: #57606a;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .sessions-body {
+      min-height: 118px;
+      display: grid;
+      place-items: center;
+      padding: 24px 18px;
+    }
+
+    .empty-state {
+      text-align: center;
+      display: grid;
+      gap: 10px;
+    }
+
+    .empty-state strong {
+      font-size: 21px;
+      line-height: 1.25;
+      letter-spacing: -.02em;
+    }
+
+    .empty-state span {
+      color: #57606a;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .session-list {
+      width: 100%;
+      display: grid;
+      gap: 0;
+    }
+
+    .session-item {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      width: 100%;
+      padding: 14px 0;
+      border-top: 1px solid var(--border-muted);
+    }
+
+    .session-item:first-child { border-top: 0; padding-top: 0; }
+
+    .session-octicon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--state-bg);
+      color: var(--state-fg);
+      border: 1px solid var(--state-border);
+      font-weight: 800;
+    }
+
+    .session-main b {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .session-main small {
+      color: #57606a;
+      line-height: 1.35;
+      display: block;
+    }
+
+    .session-status {
+      height: 28px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--state-bg);
+      border: 1px solid var(--state-border);
+      color: var(--state-fg);
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .skeleton {
+      width: 100%;
+      display: grid;
+      gap: 12px;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #eef1f4, #dbe2e9, #eef1f4);
+      background-size: 220% 100%;
+      animation: shimmer 1.05s infinite linear;
+    }
+
+    @keyframes shimmer { to { background-position: -220% 0; } }
+
+    .ai-note {
+      text-align: center;
+      color: #57606a;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .ai-note a {
+      color: #57606a;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .notice {
+      border: 1px solid var(--state-border);
+      border-radius: 12px;
+      background: var(--state-bg);
+      color: var(--state-fg);
+      padding: 12px;
+      margin-bottom: 18px;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .notice b { display: block; margin-bottom: 4px; }
+
+    .filter-drawer {
+      position: absolute;
+      inset: auto 0 0;
+      background: #fff;
+      border-top: 1px solid var(--border-muted);
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -16px 34px rgba(31, 35, 40, .18);
+      padding: 18px;
+      transform: translateY(105%);
+      transition: transform .22s ease;
+      z-index: 80;
+    }
+
+    .filter-drawer.open { transform: translateY(0); }
+
+    .drawer-mask {
+      position: absolute;
+      inset: 0;
+      background: rgba(31, 35, 40, .28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+      z-index: 70;
+    }
+
+    .drawer-mask.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .drawer-title h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.02em;
+    }
+
+    .drawer-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .drawer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--border-muted);
+      border-radius: 10px;
+      padding: 12px;
+      color: #24292f;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .drawer-row.active {
+      border-color: #0969da;
+      box-shadow: 0 0 0 3px #ddf4ff;
+    }
+
+    .control-panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border-muted);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .control-panel h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+
+    .control-panel p {
+      margin: 0;
+      color: #57606a;
+      line-height: 1.55;
+    }
+
+    .control-section { display: grid; gap: 10px; }
+    .control-section h3 { margin: 0; font-size: 16px; }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .state-option {
+      border: 1px solid var(--border-muted);
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      gap: 5px;
+    }
+
+    .state-option.active {
+      border-color: #0969da;
+      box-shadow: 0 0 0 3px #ddf4ff;
+    }
+
+    .state-option b { font-size: 14px; }
+    .state-option small { color: #57606a; line-height: 1.35; }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field { display: grid; gap: 6px; }
+    .field label { color: #57606a; font-size: 13px; font-weight: 650; }
+    .field input, .field select {
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 10px;
+      background: #fff;
+      color: #24292f;
+      outline: none;
+    }
+
+    .primer-btn {
+      height: 36px;
+      border: 1px solid rgba(31,35,40,.15);
+      border-radius: 8px;
+      background: #f6f8fa;
+      color: #24292f;
+      font-weight: 650;
+      cursor: pointer;
+      box-shadow: 0 1px 0 rgba(31,35,40,.04);
+    }
+
+    .primer-btn.primary {
+      background: #1f883d;
+      color: #fff;
+      border-color: rgba(31,35,40,.15);
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%) translateY(90px);
+      background: #24292f;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 650;
+      transition: transform .22s ease;
+      z-index: 200;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    body[data-state="empty"] {
+      --state-fg: #57606a;
+      --state-bg: #f6f8fa;
+      --state-border: #d0d7de;
+    }
+    body[data-state="active"] {
+      --state-fg: #1a7f37;
+      --state-bg: #dafbe1;
+      --state-border: #aceebb;
+    }
+    body[data-state="completed"] {
+      --state-fg: #0969da;
+      --state-bg: #ddf4ff;
+      --state-border: #b6e3ff;
+    }
+    body[data-state="loading"] {
+      --state-fg: #8250df;
+      --state-bg: #fbefff;
+      --state-border: #ecd8ff;
+    }
+    body[data-state="error"] {
+      --state-fg: #cf222e;
+      --state-bg: #ffebe9;
+      --state-border: #ffcecb;
+    }
+    body[data-state="blocked"] {
+      --state-fg: #9a6700;
+      --state-bg: #fff8c5;
+      --state-border: #f0d98c;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 14px; align-items: start; }
+      .preview-shell { grid-template-columns: 1fr; }
+      .control-panel { order: -1; }
+      .phone { height: 820px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body data-state="empty">
+  <main class="preview-shell">
+    <section class="phone" aria-label="官方风格手机页面预览">
+      <div class="drawer-mask" id="drawerMask"></div>
+      <aside class="filter-drawer" id="filterDrawer" aria-label="筛选菜单">
+        <div class="drawer-title">
+          <h2>筛选 sessions</h2>
+          <button class="icon-btn" type="button" onclick="toggleDrawer(false)">×</button>
+        </div>
+        <div class="drawer-grid">
+          <button class="drawer-row active" type="button" onclick="setSessionTab('active'); toggleDrawer(false)"><span>Active</span><strong id="drawerActiveCount">0</strong></button>
+          <button class="drawer-row" type="button" onclick="setSessionTab('completed'); toggleDrawer(false)"><span>Completed</span><strong id="drawerCompletedCount">0</strong></button>
+          <button class="drawer-row" type="button" onclick="setState('blocked'); toggleDrawer(false)"><span>诊断 / 受限</span><strong>404</strong></button>
+        </div>
+      </aside>
+
+      <div class="screen" id="screen">
+        <div class="statusbar">
+          <span>22:16</span>
+          <span class="status-icons">◕ 📶 📶 <span class="battery">100</span> ⚡</span>
+        </div>
+
+        <header class="mobile-top" id="mobileTop">
+          <button class="icon-btn" type="button" aria-label="安全状态" onclick="toast('已打开安全状态')"><span class="icon">▣</span></button>
+          <div class="repo-title">Agents · <strong id="repoTitle">SunsetRNE/ReSukiSU_CI</strong></div>
+          <button class="icon-btn" type="button" aria-label="刷新" onclick="refreshSessions()"><span class="icon">↻</span></button>
+        </header>
+
+        <section class="repo-head">
+          <div class="repo-line">
+            <button class="square-btn" type="button" aria-label="打开菜单">☰</button>
+            <div class="avatar-gh">⌁</div>
+            <div class="repo-path"><span>···</span><span>/</span><span>⌘</span><b id="repoShort">R...</b><span>⌄</span></div>
+            <button class="square-btn" type="button" aria-label="搜索">⌕</button>
+            <button class="square-btn" type="button" aria-label="收件箱">⌂</button>
+            <div class="avatar-user" aria-label="用户头像"></div>
+          </div>
+          <nav class="repo-tabs" aria-label="仓库导航">
+            <button class="repo-tab" type="button">Code</button>
+            <button class="repo-tab" type="button">Pull requests</button>
+            <button class="repo-tab active" type="button">Agents</button>
+            <button class="repo-tab more" type="button">More ⌄</button>
+          </nav>
+        </section>
+
+        <section class="content">
+          <div class="hamburger-row">
+            <button class="square-btn" type="button" aria-label="页面菜单" onclick="toggleDrawer(true)">☰</button>
+          </div>
+
+          <div class="page-title-row">
+            <h1>Sessions</h1>
+            <span class="state-pill"><i class="state-dot"></i><span id="stateText">No sessions</span></span>
+          </div>
+
+          <div class="notice" id="noticeBox" hidden>
+            <b id="noticeTitle">提示</b>
+            <span id="noticeText">当前状态说明。</span>
+          </div>
+
+          <form class="search-form" onsubmit="event.preventDefault(); applySearch();">
+            <input id="queryInput" value="is:open author:@me" aria-label="搜索 Sessions" />
+            <button type="submit" aria-label="搜索">⌕</button>
+          </form>
+
+          <section class="session-box">
+            <div class="session-tabs">
+              <button class="session-tab active" id="tabActive" type="button" onclick="setSessionTab('active')">Active <span class="count" id="activeCount">0</span></button>
+              <button class="session-tab" id="tabCompleted" type="button" onclick="setSessionTab('completed')">Completed <span class="count" id="completedCount">0</span></button>
+              <button class="session-tab kebab" type="button" onclick="toggleDrawer(true)">···</button>
+            </div>
+            <div class="sessions-body" id="sessionsBody"></div>
+          </section>
+
+          <p class="ai-note"><a href="#" onclick="toast('这里可跳转到 Copilot 说明');return false;">Copilot</a> uses AI. Check for mistakes.</p>
+        </section>
+
+        <nav class="browser-bottom" aria-label="浏览器底部工具栏">
+          <span>‹</span>
+          <span>›</span>
+          <span>⌂</span>
+          <span class="tab-count">5</span>
+          <span>☰</span>
+        </nav>
+      </div>
+    </section>
+
+    <aside class="control-panel">
+      <div>
+        <h2>官方板块参考重绘</h2>
+        <p>这版弱化自定义卡片，改为接近 GitHub mobile / Primer 的仓库页结构：仓库头部、横向 tab、Sessions 标题、搜索框、Active / Completed 分段列表和底部 AI 提示。</p>
+      </div>
+
+      <section class="control-section">
+        <h3>页面状态</h3>
+        <div class="state-grid" id="stateGrid"></div>
+      </section>
+
+      <section class="control-section">
+        <h3>仓库上下文</h3>
+        <div class="field-grid">
+          <div class="field">
+            <label for="ownerInput">Owner</label>
+            <input id="ownerInput" value="SunsetRNE" />
+          </div>
+          <div class="field">
+            <label for="repoInput">Repo</label>
+            <input id="repoInput" value="ReSukiSU_CI" />
+          </div>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3>快速操作</h3>
+        <div class="action-row">
+          <button class="primer-btn primary" type="button" onclick="setState('active')">模拟有活动会话</button>
+          <button class="primer-btn" type="button" onclick="refreshSessions()">重新诊断</button>
+          <button class="primer-btn" type="button" onclick="setState('completed')">模拟完成记录</button>
+          <button class="primer-btn" type="button" onclick="setState('empty')">恢复空状态</button>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3>落地建议</h3>
+        <p>Android 实现时建议复用现有仓库详情页导航：Agents 作为一个 RepositorySection；页面主体只维护 query、activeTab、diagnosticState、sessions 四类状态，避免把 GitHub 页面诊断文案散落在 View 层。</p>
+      </section>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast">已刷新</div>
+
+  <script>
+    const stateDefs = {
+      empty: {
+        label: 'No sessions', title: '空结果', desc: '官方默认空列表：Active 0、Completed 0。', active: 0, completed: 0,
+        notice: null,
+        body: 'empty',
+        emptyTitle: 'No sessions match your filters',
+        emptyText: 'Try adjusting your search or filters.'
+      },
+      active: {
+        label: 'Active sessions', title: '活动会话', desc: '展示正在运行或等待处理的 Agents session。', active: 2, completed: 1,
+        notice: null,
+        body: 'list'
+      },
+      completed: {
+        label: 'Completed', title: '完成记录', desc: '展示已完成的 session，可回看摘要和结果。', active: 0, completed: 3,
+        notice: null,
+        body: 'list'
+      },
+      loading: {
+        label: 'Loading', title: '加载中', desc: '保留官方骨架屏与刷新态。', active: '…', completed: '…',
+        notice: null,
+        body: 'loading'
+      },
+      blocked: {
+        label: 'Unavailable', title: '受限 / 未开放', desc: '功能入口存在但页面诊断受限或能力未启用。', active: 0, completed: 0,
+        notice: { title: 'Agents unavailable', text: 'Copilot / Agents 页面当前不可用，可能受组织策略、仓库权限或账号功能开关影响。' },
+        body: 'empty',
+        emptyTitle: 'Agents is not available for this repository',
+        emptyText: 'Check Copilot policies, repository settings, or account access.'
+      },
+      error: {
+        label: 'Error', title: '读取失败', desc: '网络、授权或 GitHub 响应异常。', active: 0, completed: 0,
+        notice: { title: 'Could not load sessions', text: '请求失败。请检查登录状态、Token scope、网络连接或稍后重试。' },
+        body: 'empty',
+        emptyTitle: 'Could not load sessions',
+        emptyText: 'Refresh the page or review diagnostics.'
+      }
+    };
+
+    const stateOrder = ['empty', 'active', 'completed', 'loading', 'blocked', 'error'];
+    let currentState = 'empty';
+    let currentTab = 'active';
+
+    const $ = id => document.getElementById(id);
+
+    function renderStateGrid() {
+      $('stateGrid').innerHTML = stateOrder.map(key => `
+        <button class="state-option ${key === currentState ? 'active' : ''}" type="button" data-state="${key}">
+          <b>${stateDefs[key].title}</b>
+          <small>${stateDefs[key].desc}</small>
+        </button>
+      `).join('');
+      document.querySelectorAll('.state-option').forEach(btn => {
+        btn.addEventListener('click', () => setState(btn.dataset.state));
+      });
+    }
+
+    function setState(key) {
+      currentState = key;
+      document.body.dataset.state = key;
+      const state = stateDefs[key];
+      $('stateText').textContent = state.label;
+      $('activeCount').textContent = state.active;
+      $('completedCount').textContent = state.completed;
+      $('drawerActiveCount').textContent = state.active;
+      $('drawerCompletedCount').textContent = state.completed;
+      if (key === 'completed') currentTab = 'completed';
+      if (key === 'active') currentTab = 'active';
+      syncTabs();
+      renderNotice(state.notice);
+      renderSessions();
+      renderStateGrid();
+    }
+
+    function renderNotice(notice) {
+      const box = $('noticeBox');
+      if (!notice) {
+        box.hidden = true;
+        return;
+      }
+      box.hidden = false;
+      $('noticeTitle').textContent = notice.title;
+      $('noticeText').textContent = notice.text;
+    }
+
+    function setSessionTab(tab) {
+      currentTab = tab;
+      syncTabs();
+      renderSessions();
+    }
+
+    function syncTabs() {
+      $('tabActive').classList.toggle('active', currentTab === 'active');
+      $('tabCompleted').classList.toggle('active', currentTab === 'completed');
+      document.querySelectorAll('.drawer-row').forEach((row, index) => {
+        row.classList.toggle('active', (index === 0 && currentTab === 'active') || (index === 1 && currentTab === 'completed'));
+      });
+    }
+
+    function renderSessions() {
+      const state = stateDefs[currentState];
+      const body = $('sessionsBody');
+      if (state.body === 'loading') {
+        body.innerHTML = `<div class="skeleton">
+          <div class="skeleton-line" style="width:88%"></div>
+          <div class="skeleton-line" style="width:72%"></div>
+          <div class="skeleton-line" style="width:94%"></div>
+          <div class="skeleton-line" style="width:56%"></div>
+        </div>`;
+        return;
+      }
+
+      const hasActive = currentState === 'active' && currentTab === 'active';
+      const hasCompleted = (currentState === 'completed' && currentTab === 'completed') || (currentState === 'active' && currentTab === 'completed');
+
+      if (hasActive) {
+        body.innerHTML = `<div class="session-list">
+          ${sessionItem('Build Android release notes', 'Opened by @me · waiting for repository context', 'Active', '▶')}
+          ${sessionItem('Review CI workflow failure', 'Copilot is checking workflow logs and recent commits', 'Active', '●')}
+        </div>`;
+        return;
+      }
+
+      if (hasCompleted) {
+        body.innerHTML = `<div class="session-list">
+          ${sessionItem('Summarize repository automation', 'Completed 2 minutes ago · 4 files referenced', 'Done', '✓')}
+          ${sessionItem('Explain failing Gradle task', 'Completed yesterday · diagnostic summary available', 'Done', '✓')}
+          ${sessionItem('Draft issue triage response', 'Completed last week · no follow-up needed', 'Done', '✓')}
+        </div>`;
+        return;
+      }
+
+      body.innerHTML = `<div class="empty-state">
+        <strong>${state.emptyTitle || 'No sessions match your filters'}</strong>
+        <span>${state.emptyText || 'Try adjusting your search or filters.'}</span>
+      </div>`;
+    }
+
+    function sessionItem(title, meta, status, icon) {
+      return `<article class="session-item">
+        <div class="session-octicon">${icon}</div>
+        <div class="session-main"><b>${title}</b><small>${meta}</small></div>
+        <span class="session-status">${status}</span>
+      </article>`;
+    }
+
+    function refreshSessions() {
+      setState('loading');
+      toast('正在重新诊断');
+      setTimeout(() => {
+        setState('empty');
+        toast('诊断完成：暂无 sessions');
+      }, 950);
+    }
+
+    function applySearch() {
+      const value = $('queryInput').value.trim();
+      if (!value) {
+        setState('empty');
+        toast('已清空筛选');
+        return;
+      }
+      toast('已应用筛选：' + value);
+      renderSessions();
+    }
+
+    function toggleDrawer(force) {
+      const drawer = $('filterDrawer');
+      const mask = $('drawerMask');
+      const open = typeof force === 'boolean' ? force : !drawer.classList.contains('open');
+      drawer.classList.toggle('open', open);
+      mask.classList.toggle('open', open);
+    }
+
+    function toast(message) {
+      const el = $('toast');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 1500);
+    }
+
+    function syncRepoName() {
+      const owner = $('ownerInput').value.trim() || 'SunsetRNE';
+      const repo = $('repoInput').value.trim() || 'ReSukiSU_CI';
+      $('repoTitle').textContent = owner + '/' + repo;
+      $('repoShort').textContent = repo.length > 3 ? repo.slice(0, 1) + '...' : repo;
+    }
+
+    $('ownerInput').addEventListener('input', syncRepoName);
+    $('repoInput').addEventListener('input', syncRepoName);
+    $('drawerMask').addEventListener('click', () => toggleDrawer(false));
+    $('screen').addEventListener('scroll', () => {
+      $('mobileTop').classList.toggle('scrolled', $('screen').scrollTop > 8);
+    });
+
+    renderStateGrid();
+    setState('empty');
+    syncRepoName();
+  </script>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SunsetGitHub 登录页重绘方案</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --surface: rgba(255, 255, 255, 0.82);
+      --surface-strong: #ffffff;
+      --text: #20242b;
+      --muted: #69717d;
+      --subtle: #8a93a1;
+      --line: rgba(24, 31, 42, 0.09);
+      --primary: #1565d8;
+      --primary-2: #35a4ff;
+      --accent: #7c3aed;
+      --success: #16a34a;
+      --shadow: 0 22px 60px rgba(17, 30, 54, 0.12);
+      --card-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(53, 164, 255, 0.22), transparent 34%),
+        radial-gradient(circle at 84% 5%, rgba(124, 58, 237, 0.16), transparent 28%),
+        linear-gradient(180deg, #fbfdff 0%, var(--bg) 46%, #eef4fb 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .stage {
+      width: min(430px, 100%);
+      min-height: min(920px, calc(100vh - 48px));
+      background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.52));
+      border: 1px solid rgba(255,255,255,0.76);
+      border-radius: 42px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(20px);
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 310px;
+      background:
+        linear-gradient(135deg, rgba(21,101,216,0.14), rgba(53,164,255,0.04)),
+        radial-gradient(circle at 70% 28%, rgba(255,255,255,0.95), transparent 22%);
+      pointer-events: none;
+    }
+
+    .status-bar {
+      height: 52px;
+      padding: 17px 22px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .indicators {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .signal {
+      width: 18px;
+      height: 13px;
+      display: inline-grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      align-items: end;
+    }
+    .signal span { width: 3px; background: #111827; border-radius: 3px; }
+    .signal span:nth-child(1){height:4px}.signal span:nth-child(2){height:7px}.signal span:nth-child(3){height:10px}.signal span:nth-child(4){height:13px}
+    .battery { width: 24px; height: 13px; border: 2px solid #111827; border-radius: 5px; position: relative; }
+    .battery::before { content:""; position:absolute; right:-5px; top:3px; width:3px; height:5px; background:#111827; border-radius: 0 3px 3px 0; }
+    .battery::after { content:""; position:absolute; inset:2px 4px 2px 2px; background:#111827; border-radius: 2px; }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 18px 26px 30px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .help-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.62);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+    }
+
+    h1 {
+      margin: 15px 0 0;
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: -0.045em;
+      font-weight: 860;
+    }
+
+    .hero-card {
+      margin-top: 26px;
+      padding: 28px 22px 24px;
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--card-shadow);
+      text-align: center;
+    }
+
+    .logo-wrap {
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 18px;
+      border-radius: 32px;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2), var(--accent));
+      box-shadow: 0 20px 38px rgba(21,101,216,0.26);
+      transform: rotate(-7deg);
+    }
+
+    .logo {
+      width: 100%;
+      height: 100%;
+      border-radius: 31px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255,255,255,0.3), transparent 28%),
+        linear-gradient(135deg, #1463d6, #0f82ef);
+    }
+
+    .logo svg {
+      width: 58px;
+      height: 58px;
+      transform: rotate(7deg);
+      filter: drop-shadow(0 8px 14px rgba(7, 38, 92, 0.18));
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.045em;
+      font-weight: 820;
+    }
+
+    .hero-desc {
+      max-width: 310px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    .options {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .option {
+      appearance: none;
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.74);
+      border-radius: var(--radius-lg);
+      padding: 17px 16px;
+      display: grid;
+      grid-template-columns: 58px 1fr 26px;
+      gap: 14px;
+      align-items: center;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.055);
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border-color: rgba(21,101,216,0.28);
+      background: #fff;
+      box-shadow: 0 18px 34px rgba(21,101,216,0.12);
+    }
+
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      background: linear-gradient(145deg, rgba(21,101,216,0.12), rgba(53,164,255,0.18));
+      color: var(--primary);
+    }
+
+    .option:nth-child(2) .icon {
+      background: linear-gradient(145deg, rgba(250,204,21,0.2), rgba(21,101,216,0.10));
+    }
+
+    .option-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 790;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .option-desc {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.46;
+    }
+
+    .arrow {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      color: var(--primary);
+      background: rgba(21,101,216,0.08);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .note {
+      margin: 20px auto 0;
+      width: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13.5px;
+      font-weight: 650;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.58);
+      border: 1px solid rgba(255,255,255,0.72);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--success);
+      box-shadow: 0 0 0 5px rgba(22,163,74,0.12);
+    }
+
+    .bottom-sheet {
+      margin-top: 26px;
+      padding: 17px 18px;
+      border-radius: 26px;
+      background: rgba(30, 41, 59, 0.92);
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 20px 40px rgba(15,23,42,0.16);
+    }
+
+    .bottom-sheet strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .bottom-sheet span {
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .design-notes {
+      width: min(860px, 100%);
+      margin: 22px auto 0;
+      color: #475569;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .design-notes section {
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.72);
+      padding: 14px 16px;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.05);
+    }
+
+    .design-notes h2 {
+      margin: 0 0 7px;
+      font-size: 14px;
+      color: #1f2937;
+    }
+
+    .design-notes p {
+      margin: 0;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 0; place-items: stretch; }
+      .stage {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: 0;
+      }
+      .design-notes { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="stage" aria-label="SunsetGitHub 登录页重绘预览">
+      <div class="status-bar" aria-hidden="true">
+        <div>21:43</div>
+        <div class="indicators">
+          <span>⌁</span>
+          <span class="signal"><span></span><span></span><span></span><span></span></span>
+          <span class="battery"></span>
+          <span>84%</span>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="topline">
+          <p class="eyebrow">Login</p>
+          <div class="help-btn" title="帮助">?</div>
+        </div>
+
+        <h1>登录 GitHub</h1>
+
+        <section class="hero-card">
+          <div class="logo-wrap" aria-hidden="true">
+            <div class="logo">
+              <svg viewBox="0 0 24 24" role="img" aria-label="GitHub 图标">
+                <path fill="currentColor" d="M12 2C6.48 2 2 6.59 2 12.25c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.93.85.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.31 9.31 0 0 1 12 6.95c.85 0 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.81 0 .27.18.6.69.49A10.13 10.13 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="hero-title">登录 SunsetGitHub</p>
+          <p class="hero-desc">选择一种安全方式继续使用 SunsetGitHub，登录凭据仅保存在本机。</p>
+        </section>
+
+        <div class="options">
+          <button class="option" type="button">
+            <span class="icon">⌁</span>
+            <span>
+              <p class="option-title">设备码登录</p>
+              <p class="option-desc">在浏览器中完成 GitHub 授权，更适合移动设备和新用户。</p>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+
+          <button class="option" type="button">
+            <span class="icon">🔑</span>
+            <span>
+              <p class="option-title">访问令牌登录</p>
+              <p class="option-desc">使用 GitHub Personal Access Token 登录，适合高级用户。</p>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+
+        <p class="note"><span class="dot"></span>凭据本地加密保存，不会上传到第三方。</p>
+
+        <aside class="bottom-sheet">
+          <div>
+            <strong>推荐：设备码登录</strong>
+            <span>降低输入成本，减少令牌粘贴错误，授权过程更清晰。</span>
+          </div>
+          <span class="pill">Safe OAuth</span>
+        </aside>
+      </div>
+    </section>
+
+    <div class="design-notes" aria-label="设计说明">
+      <section>
+        <h2>视觉方向</h2>
+        <p>保留原页面的简洁感，改成轻玻璃卡片、柔和渐变和更强层次，让登录入口更像产品首页。</p>
+      </section>
+      <section>
+        <h2>信息层级</h2>
+        <p>顶部标题负责定位，中央 Hero 建立品牌感，两个登录方式用大卡片承载，底部补充推荐与安全感。</p>
+      </section>
+      <section>
+        <h2>落地到 Android</h2>
+        <p>可用 Compose 的 Column、Card、Button、Brush 渐变实现；颜色 token 可复用 Material3 ColorScheme。</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

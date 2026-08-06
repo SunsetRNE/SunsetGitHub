@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_repository_section_native_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_repository_action_run_badge"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Pill"
+            android:textColor="@color/github_accent"
+            tools:text="HTML 解析摘要" />
+
+        <TextView
+            android:id="@+id/text_repository_section_native_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+            android:textColor="@color/github_text_primary"
+            tools:text="Projects" />
+
+        <TextView
+            android:id="@+id/text_repository_section_native_repository"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+            android:textColor="@color/github_text_secondary"
+            tools:text="octocat/Hello-World" />
+
+        <TextView
+            android:id="@+id/text_repository_section_native_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+            android:textColor="@color/github_text_primary"
+            tools:text="正在加载 GitHub HTML 页面并生成分区摘要……" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_section_native_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/repository_section_native_stub_retry"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_repository_section_native_summary"
+            style="@style/Widget.SunsetGitHub.Material.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/text_repository_section_native_summary_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_repository_action_run_badge"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Pill"
+                    android:textColor="@color/github_accent"
+                    tools:text="Available" />
+
+                <TextView
+                    android:id="@+id/text_repository_section_native_summary_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                    android:textColor="@color/github_text_primary"
+                    tools:text="Projects 摘要" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_section_native_metrics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical"
+                    android:showDividers="middle" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_section_native_notices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical"
+                    android:showDividers="middle" />
+
+                <TextView
+                    android:id="@+id/text_repository_section_native_debug_output"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/github_primer_canvas_subtle"
+                    android:fontFamily="monospace"
+                    android:padding="12dp"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_text_secondary"
+                    tools:text="section=projects\nstatus=Available\nmetrics=Board: 已识别" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_section_native_open_in_github"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/repository_section_open_in_github"
+            app:icon="@drawable/ic_open_in_new_24"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

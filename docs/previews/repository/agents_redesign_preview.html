@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Agents 代理页重绘预览</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #17202a;
+      --muted: #697386;
+      --subtle: #8a94a6;
+      --line: #dce2ea;
+      --line-strong: #c8d0dc;
+      --brand: #111827;
+      --accent: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #0ea5e9;
+      --radius-lg: 26px;
+      --radius-md: 18px;
+      --shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+      --card-shadow: 0 1px 0 rgba(15, 23, 42, 0.05), inset 0 0 0 1px var(--line);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(37, 99, 235, 0.14), transparent 28%),
+        radial-gradient(circle at 86% 12%, rgba(16, 185, 129, 0.12), transparent 24%),
+        linear-gradient(135deg, #eef3f8 0%, #ffffff 45%, #eef5ff 100%);
+      display: grid;
+      place-items: center;
+      padding: 26px;
+    }
+
+    .stage {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: minmax(360px, 430px) 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      height: 844px;
+      margin: 0 auto;
+      border-radius: 42px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 10px solid #111827;
+      position: relative;
+    }
+
+    .screen {
+      height: 100%;
+      overflow: auto;
+      background: var(--surface);
+      scrollbar-width: thin;
+      scrollbar-color: #c7d0dd transparent;
+    }
+
+    .status-bar {
+      height: 48px;
+      padding: 14px 22px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: rgba(255,255,255,0.96);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #111827;
+      font-size: 13px;
+    }
+
+    .battery {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 16px;
+      padding: 0 4px;
+      color: #fff;
+      border-radius: 5px;
+      background: #16c84e;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .appbar {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 24px;
+      background: rgba(255,255,255,0.96);
+      position: sticky;
+      top: 48px;
+      z-index: 19;
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid transparent;
+    }
+
+    .appbar.is-scrolled { border-bottom-color: var(--line); }
+
+    .back {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 16px;
+      background: transparent;
+      color: #4b5563;
+      font-size: 34px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .back:hover { background: #f1f5f9; transform: translateX(-2px); }
+
+    .title {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .content {
+      padding: 20px 18px 32px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--card-shadow);
+      padding: 20px;
+    }
+
+    .hero {
+      min-height: 152px;
+      display: grid;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      right: -42px;
+      top: -46px;
+      background: radial-gradient(circle, var(--state-soft), transparent 70%);
+      opacity: 0.9;
+    }
+
+    .chip-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--state-line);
+      background: var(--state-bg);
+      color: var(--state-color);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 13%, transparent);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.045em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.42;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+    }
+
+    .rows { display: grid; gap: 12px; }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 15px;
+    }
+
+    .row span:first-child { color: var(--muted); }
+    .row strong { text-align: right; font-size: 16px; letter-spacing: -0.02em; }
+
+    .meter {
+      height: 8px;
+      border-radius: 999px;
+      background: #e9eef5;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .meter i {
+      display: block;
+      width: var(--meter, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--state-color), color-mix(in srgb, var(--state-color) 58%, #fff));
+      transition: width .28s ease;
+    }
+
+    .hint-list {
+      margin: 0;
+      padding-left: 1.1em;
+      color: var(--muted);
+      line-height: 1.46;
+      font-size: 15px;
+    }
+
+    .hint-list li + li { margin-top: 8px; }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 0;
+      min-height: 48px;
+      border-radius: 15px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease;
+      user-select: none;
+    }
+
+    .btn:active { transform: scale(.98); }
+    .btn.primary { background: #050505; color: #fff; box-shadow: 0 10px 22px rgba(0,0,0,.18); }
+    .btn.secondary { background: #eef2f7; color: #111827; }
+    .btn.ghost { background: transparent; color: var(--accent); min-height: 40px; justify-content: flex-start; padding: 0; }
+    .btn.danger { background: #fee2e2; color: #b91c1c; }
+    .btn.success { background: #dcfce7; color: #047857; }
+    .btn[disabled] { opacity: .46; cursor: not-allowed; box-shadow: none; }
+
+    .capability-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .capability {
+      border-radius: 18px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+      min-height: 104px;
+    }
+
+    .capability b { font-size: 14px; }
+    .capability small { color: var(--muted); line-height: 1.35; }
+
+    .icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--state-bg);
+      color: var(--state-color);
+      font-weight: 900;
+    }
+
+    .accordion {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .accordion button {
+      width: 100%;
+      padding: 14px 16px;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .log {
+      border-top: 1px solid var(--line);
+      padding: 12px 16px 16px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .accordion.open .log { display: block; }
+
+    .panel {
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(203, 213, 225, .8);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: -0.045em;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .state-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .state-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 18px;
+      padding: 13px 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: border .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+    .state-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(15, 23, 42, .08); }
+    .state-btn.active { border-color: var(--state-color); box-shadow: 0 0 0 3px var(--state-bg); }
+    .state-btn b { display: block; margin-bottom: 4px; font-size: 14px; }
+    .state-btn small { color: var(--muted); line-height: 1.35; }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      padding: 0 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .switch-row:first-child { border-top: 0; }
+
+    .switch-text b { display: block; margin-bottom: 4px; }
+    .switch-text small { color: var(--muted); line-height: 1.45; }
+
+    .switch {
+      width: 54px;
+      height: 32px;
+      border: 0;
+      border-radius: 999px;
+      padding: 3px;
+      background: #cbd5e1;
+      cursor: pointer;
+      transition: background .18s ease;
+      flex: 0 0 auto;
+    }
+
+    .switch i {
+      display: block;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(15,23,42,.22);
+      transition: transform .18s ease;
+    }
+
+    .switch.on { background: var(--success); }
+    .switch.on i { transform: translateX(22px); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%) translateY(120px);
+      background: #111827;
+      color: #fff;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 800;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, .24);
+      transition: transform .25s ease;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, .36);
+      display: none;
+      align-items: end;
+      z-index: 60;
+    }
+
+    .modal-backdrop.show { display: flex; }
+
+    .sheet {
+      width: 100%;
+      border-radius: 28px 28px 0 0;
+      background: #fff;
+      padding: 18px;
+      box-shadow: 0 -20px 45px rgba(15, 23, 42, .18);
+      animation: rise .22s ease;
+    }
+
+    @keyframes rise { from { transform: translateY(40px); opacity: .5; } to { transform: translateY(0); opacity: 1; } }
+
+    .sheet h3 { margin: 0 0 8px; font-size: 21px; letter-spacing: -0.04em; }
+    .sheet p { margin: 0 0 16px; color: var(--muted); line-height: 1.45; }
+
+    .loading-line {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #eef2f7, #dbe5f0, #eef2f7);
+      background-size: 240% 100%;
+      animation: shimmer 1s infinite linear;
+    }
+
+    @keyframes shimmer { to { background-position: -240% 0; } }
+
+    body[data-state="disabled"] {
+      --state-color: #64748b;
+      --state-bg: #f1f5f9;
+      --state-line: #cbd5e1;
+      --state-soft: rgba(100, 116, 139, .25);
+    }
+    body[data-state="ready"] {
+      --state-color: #047857;
+      --state-bg: #ecfdf5;
+      --state-line: #a7f3d0;
+      --state-soft: rgba(16, 185, 129, .28);
+    }
+    body[data-state="diagnosing"] {
+      --state-color: #0ea5e9;
+      --state-bg: #e0f2fe;
+      --state-line: #bae6fd;
+      --state-soft: rgba(14, 165, 233, .30);
+    }
+    body[data-state="blocked"] {
+      --state-color: #d97706;
+      --state-bg: #fffbeb;
+      --state-line: #fde68a;
+      --state-soft: rgba(245, 158, 11, .30);
+    }
+    body[data-state="error"] {
+      --state-color: #dc2626;
+      --state-bg: #fef2f2;
+      --state-line: #fecaca;
+      --state-soft: rgba(239, 68, 68, .28);
+    }
+    body[data-state="loading"] {
+      --state-color: #7c3aed;
+      --state-bg: #f5f3ff;
+      --state-line: #ddd6fe;
+      --state-soft: rgba(124, 58, 237, .24);
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 16px; align-items: start; }
+      .stage { grid-template-columns: 1fr; }
+      .panel { order: -1; }
+      .phone { height: 760px; }
+    }
+  </style>
+</head>
+<body data-state="blocked">
+  <main class="stage">
+    <section class="phone" aria-label="手机渲染预览">
+      <div class="screen" id="screen">
+        <div class="status-bar">
+          <span>22:13</span>
+          <span class="status-icons">◕ ● 📶 📶 <span class="battery">99</span> ⚡</span>
+        </div>
+        <header class="appbar" id="appbar">
+          <button class="back" type="button" aria-label="返回" onclick="showToast('返回上一页')">‹</button>
+          <div class="title">代理</div>
+        </header>
+
+        <div class="content">
+          <section class="card hero">
+            <div class="chip-row">
+              <span class="chip"><i class="dot"></i><span id="stateChip">未开放或未启用</span></span>
+              <span class="chip" id="sourceChip">REST + 页面诊断</span>
+            </div>
+            <h1>Agents</h1>
+            <p id="heroText">GitHub Copilot / Agents 暂无稳定仓库级 REST 摘要接口，当前展示页面诊断与可执行建议。</p>
+          </section>
+
+          <section class="card">
+            <h2 class="section-title">概览</h2>
+            <div class="rows">
+              <div class="row"><span>数据来源</span><strong id="dataSource">REST + GitHub 页面诊断</strong></div>
+              <div class="row"><span>默认分支</span><strong id="branchText">main</strong></div>
+              <div class="row"><span>可见性</span><strong id="visibilityText">public</strong></div>
+              <div class="row"><span>仓库级入口</span><strong id="entryText">未发现</strong></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2 class="section-title">诊断</h2>
+            <div class="rows" id="diagnosisRows">
+              <div class="row"><span>诊断状态</span><strong id="diagStatus">未开放或未启用</strong></div>
+              <div class="row"><span>页面状态码</span><strong id="statusCode">404</strong></div>
+              <div class="row"><span>页面信号数</span><strong id="signalCount">0</strong></div>
+              <div class="row"><span>能力覆盖</span><strong id="coverage">18%</strong></div>
+            </div>
+            <div class="meter"><i id="coverageMeter" style="--meter:18%"></i></div>
+          </section>
+
+          <section class="card">
+            <h2 class="section-title">功能实现</h2>
+            <div class="capability-grid">
+              <article class="capability">
+                <span class="icon-badge">A</span>
+                <b>状态识别</b>
+                <small>根据 REST、页面状态码、功能入口信号合成多状态。</small>
+              </article>
+              <article class="capability">
+                <span class="icon-badge">↻</span>
+                <b>重新诊断</b>
+                <small>触发刷新，展示 loading、成功、失败与受限状态。</small>
+              </article>
+              <article class="capability">
+                <span class="icon-badge">⚙</span>
+                <b>仓库设置</b>
+                <small>跳转 GitHub 对应设置页或 Copilot / Agents 页面。</small>
+              </article>
+              <article class="capability">
+                <span class="icon-badge">⌘</span>
+                <b>操作建议</b>
+                <small>按错误类型给出启用、授权、组织策略建议。</small>
+              </article>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2 class="section-title">提示</h2>
+            <ul class="hint-list" id="hints"></ul>
+          </section>
+
+          <section class="card">
+            <h2 class="section-title">可执行操作</h2>
+            <p style="margin:0 0 14px;color:var(--muted);line-height:1.45">查看、刷新或模拟与仓库自动化相关的 GitHub 页面。</p>
+            <div class="actions">
+              <button class="btn primary" id="primaryAction" type="button">在 GitHub 打开</button>
+              <button class="btn secondary" id="refreshAction" type="button">重新诊断</button>
+              <button class="btn secondary" id="copyAction" type="button">复制诊断</button>
+              <button class="btn secondary" id="settingsAction" type="button">仓库设置</button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="accordion" id="logBox">
+              <button type="button" onclick="toggleLog()">调试输出链路 <span>⌄</span></button>
+              <div class="log" id="logText"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="modal-backdrop" id="modal">
+        <div class="sheet">
+          <h3 id="modalTitle">打开 GitHub</h3>
+          <p id="modalText">这里可以接入真实 Intent / CustomTabs，打开仓库的 Copilot / Agents 或设置页面。</p>
+          <div class="actions">
+            <button class="btn primary" type="button" onclick="closeModal(); showToast('已确认操作')">确认</button>
+            <button class="btn secondary" type="button" onclick="closeModal()">取消</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="方案控制台">
+      <div>
+        <h2>Agents 页面重绘方案</h2>
+        <p>左侧是接近移动端真实比例的渲染预览。这里提供多项态切换、功能开关、分支 / 可见性输入和操作模拟，便于确认 UI 状态机与交互文案。</p>
+      </div>
+
+      <section>
+        <h3 class="section-title">多项态预览</h3>
+        <div class="state-buttons" id="stateButtons"></div>
+      </section>
+
+      <section>
+        <h3 class="section-title">仓库上下文</h3>
+        <div class="control-grid">
+          <div class="field">
+            <label for="branchInput">默认分支</label>
+            <input id="branchInput" value="main" />
+          </div>
+          <div class="field">
+            <label for="visibilityInput">可见性</label>
+            <select id="visibilityInput">
+              <option value="public">public</option>
+              <option value="private">private</option>
+              <option value="internal">internal</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 class="section-title">功能开关</h3>
+        <div class="switch-row">
+          <div class="switch-text">
+            <b>启用仓库级 Agents 入口</b>
+            <small>打开后自动切到“可用”状态，并显示可执行入口。</small>
+          </div>
+          <button class="switch" id="enableSwitch" type="button" aria-label="启用仓库级 Agents"><i></i></button>
+        </div>
+        <div class="switch-row">
+          <div class="switch-text">
+            <b>显示开发诊断</b>
+            <small>控制页面底部调试输出链路是否默认展开。</small>
+          </div>
+          <button class="switch" id="debugSwitch" type="button" aria-label="显示开发诊断"><i></i></button>
+        </div>
+        <div class="switch-row">
+          <div class="switch-text">
+            <b>保留原始响应</b>
+            <small>用于调试 404 / 403 / 空页面等边界场景。</small>
+          </div>
+          <button class="switch on" id="rawSwitch" type="button" aria-label="保留原始响应"><i></i></button>
+        </div>
+      </section>
+
+      <section>
+        <h3 class="section-title">设计说明</h3>
+        <p>建议在真实实现中把状态合成拆成独立模型：REST 能力、页面探测、组织策略、仓库权限和用户授权分别给出信号，UI 只消费聚合后的状态与建议动作。</p>
+      </section>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast">已复制</div>
+
+  <script>
+    const stateMap = {
+      disabled: {
+        label: '未启用', short: '未启用', desc: '未配置仓库级 Agents 功能。', code: '—', signals: 0, coverage: 8,
+        entry: '未开启', source: '本地配置', primary: '启用功能', hero: 'Agents 功能尚未启用。启用后可展示仓库级自动化入口与诊断结果。',
+        hints: ['当前仅展示配置占位信息。', '建议操作：启用仓库级 Agents 开关后重新诊断。']
+      },
+      ready: {
+        label: '可用', short: '可用', desc: '仓库级入口与页面信号均可读取。', code: '200', signals: 7, coverage: 92,
+        entry: '已发现', source: 'REST + 页面信号', primary: '打开 Agents', hero: '仓库级 Agents 入口已可用，可直接查看 Copilot / Agents 配置与自动化状态。',
+        hints: ['页面返回 HTTP 200，并检测到可用入口。', '可继续接入 Actions、Issues 或仓库规则联动。']
+      },
+      diagnosing: {
+        label: '诊断中', short: '诊断中', desc: '正在刷新 REST 与页面探测结果。', code: '...', signals: '...', coverage: 46,
+        entry: '检测中', source: '实时诊断', primary: '诊断中…', hero: '正在检查仓库配置、页面入口、组织策略与当前账号权限。',
+        hints: ['正在请求摘要接口并解析页面信号。', '请等待诊断完成，期间操作按钮会进入保护状态。']
+      },
+      blocked: {
+        label: '未开放或未启用', short: '受限', desc: '页面 404，仓库或账号可能没有入口。', code: '404', signals: 0, coverage: 18,
+        entry: '未发现', source: 'REST + GitHub 页面诊断', primary: '在 GitHub 打开', hero: 'GitHub Copilot / Agents 暂无稳定仓库级 REST 摘要接口，当前展示页面诊断与可执行建议。',
+        hints: ['Copilot / Agents 页面返回 HTTP 404，当前仓库或账号可能没有该功能入口。', '页面诊断：GitHub 返回 HTTP 404，原始响应已保留在调试输出链路中。', '建议操作：到 GitHub 网页端检查 Copilot、组织策略和仓库设置。']
+      },
+      error: {
+        label: '读取失败', short: '失败', desc: '网络、授权或 GitHub 响应异常。', code: '403 / 5xx', signals: 1, coverage: 24,
+        entry: '异常', source: 'REST 错误', primary: '查看错误', hero: '当前无法稳定读取 Agents 状态，可能是授权、网络或 GitHub 服务响应异常。',
+        hints: ['检查登录状态、Token scope 与组织策略。', '若为 403，建议重新授权或切换拥有仓库权限的账号。', '若为 5xx，可稍后重试并保留原始响应用于排查。']
+      },
+      loading: {
+        label: '加载中', short: '加载', desc: '页面骨架屏和接口加载态。', code: '...', signals: '...', coverage: 34,
+        entry: '加载中', source: '加载中', primary: '加载中…', hero: '正在加载 Agents 页面，请稍候。',
+        hints: ['展示骨架屏或进度提示，避免用户误以为页面卡死。', '加载超时后应进入读取失败状态，并提供重试入口。']
+      }
+    };
+
+    const stateOrder = ['disabled', 'ready', 'diagnosing', 'blocked', 'error', 'loading'];
+    let currentState = 'blocked';
+
+    const $ = (id) => document.getElementById(id);
+
+    function renderStateButtons() {
+      $('stateButtons').innerHTML = stateOrder.map(key => `
+        <button class="state-btn ${key === currentState ? 'active' : ''}" type="button" data-state="${key}">
+          <b>${stateMap[key].label}</b>
+          <small>${stateMap[key].desc}</small>
+        </button>
+      `).join('');
+      document.querySelectorAll('.state-btn').forEach(btn => {
+        btn.addEventListener('click', () => setState(btn.dataset.state));
+      });
+    }
+
+    function setState(key) {
+      currentState = key;
+      const s = stateMap[key];
+      document.body.dataset.state = key;
+      $('stateChip').textContent = s.label;
+      $('sourceChip').textContent = s.source;
+      $('dataSource').textContent = s.source;
+      $('diagStatus').textContent = s.label;
+      $('statusCode').textContent = s.code;
+      $('signalCount').textContent = s.signals;
+      $('coverage').textContent = `${s.coverage}%`;
+      $('coverageMeter').style.setProperty('--meter', `${s.coverage}%`);
+      $('entryText').textContent = s.entry;
+      $('heroText').textContent = s.hero;
+      $('primaryAction').textContent = s.primary;
+      $('primaryAction').disabled = key === 'diagnosing' || key === 'loading';
+      $('refreshAction').disabled = key === 'diagnosing';
+      $('hints').innerHTML = s.hints.map(item => `<li>${item}</li>`).join('');
+      $('logText').textContent = buildLogText(key);
+      $('enableSwitch').classList.toggle('on', key === 'ready');
+      renderStateButtons();
+
+      if (key === 'loading') {
+        $('diagnosisRows').querySelectorAll('strong').forEach(el => el.innerHTML = '<span class="loading-line" style="display:block;width:76px"></span>');
+        setTimeout(() => setState('blocked'), 1200);
+      }
+    }
+
+    function buildLogText(key) {
+      const branch = $('branchInput')?.value || 'main';
+      const visibility = $('visibilityInput')?.value || 'public';
+      const s = stateMap[key];
+      return [
+        `repo.visibility=${visibility}`,
+        `repo.default_branch=${branch}`,
+        `agents.summary.source=${s.source}`,
+        `github.page.status=${s.code}`,
+        `github.page.signals=${s.signals}`,
+        `ui.state=${key}`,
+        `raw_response_retained=${$('rawSwitch')?.classList.contains('on') ? 'true' : 'false'}`
+      ].join('\n');
+    }
+
+    function showToast(text) {
+      const toast = $('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    function openModal(title, text) {
+      $('modalTitle').textContent = title;
+      $('modalText').textContent = text;
+      $('modal').classList.add('show');
+    }
+
+    function closeModal() {
+      $('modal').classList.remove('show');
+    }
+
+    function toggleLog() {
+      $('logBox').classList.toggle('open');
+    }
+
+    $('primaryAction').addEventListener('click', () => {
+      if (currentState === 'disabled') {
+        setState('ready');
+        showToast('已启用 Agents 入口');
+      } else if (currentState === 'error') {
+        openModal('错误详情', '这里可展示 HTTP 状态、GitHub API 响应和授权排查建议。');
+      } else {
+        openModal('打开 GitHub', '这里可以接入真实 Intent / CustomTabs，打开仓库的 Copilot / Agents 页面。');
+      }
+    });
+
+    $('refreshAction').addEventListener('click', () => {
+      setState('diagnosing');
+      setTimeout(() => {
+        setState(Math.random() > 0.45 ? 'ready' : 'blocked');
+        showToast('诊断已刷新');
+      }, 1100);
+    });
+
+    $('copyAction').addEventListener('click', async () => {
+      const text = buildLogText(currentState);
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('诊断信息已复制');
+      } catch (_) {
+        showToast('当前浏览器不支持复制');
+      }
+    });
+
+    $('settingsAction').addEventListener('click', () => {
+      openModal('仓库设置', '这里可以跳转到 GitHub 仓库 Settings / Copilot / Actions 权限设置页。');
+    });
+
+    $('enableSwitch').addEventListener('click', () => setState(currentState === 'ready' ? 'disabled' : 'ready'));
+    $('debugSwitch').addEventListener('click', (event) => {
+      event.currentTarget.classList.toggle('on');
+      $('logBox').classList.toggle('open', event.currentTarget.classList.contains('on'));
+    });
+    $('rawSwitch').addEventListener('click', (event) => {
+      event.currentTarget.classList.toggle('on');
+      $('logText').textContent = buildLogText(currentState);
+    });
+
+    $('branchInput').addEventListener('input', (event) => {
+      $('branchText').textContent = event.target.value || 'main';
+      $('logText').textContent = buildLogText(currentState);
+    });
+
+    $('visibilityInput').addEventListener('change', (event) => {
+      $('visibilityText').textContent = event.target.value;
+      $('logText').textContent = buildLogText(currentState);
+    });
+
+    $('screen').addEventListener('scroll', () => {
+      $('appbar').classList.toggle('is-scrolled', $('screen').scrollTop > 8);
+    });
+
+    $('modal').addEventListener('click', (event) => {
+      if (event.target.id === 'modal') closeModal();
+    });
+
+    renderStateButtons();
+    setState(currentState);
+  </script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub App Icon Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #111318;
+      --card: #1b1d24;
+      --card-2: #232631;
+      --text: #f3f4f8;
+      --muted: #aeb3c2;
+      --line: rgba(255,255,255,.10);
+      --orange: #ff8a00;
+      --coral: #ff7043;
+      --purple: #7c4dff;
+      --deep-purple: #512da8;
+      --blue: #2979ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255,138,0,.20), transparent 28%),
+        radial-gradient(circle at 82% 8%, rgba(124,77,255,.18), transparent 30%),
+        linear-gradient(180deg, #101116 0%, #151720 100%);
+      font-family: Inter, Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 44px 20px 20px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .toolbar {
+      max-width: 1160px;
+      margin: 16px auto 0;
+      padding: 0 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    main {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 18px 20px 56px;
+    }
+
+    .section-title {
+      margin: 34px 0 16px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035));
+      box-shadow: 0 18px 44px rgba(0,0,0,.26);
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .preview-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .icon-shell {
+      width: 96px;
+      height: 96px;
+      border-radius: 25px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.22),
+        0 16px 30px rgba(0,0,0,.34);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-shell.round { border-radius: 50%; }
+    .icon-shell.squircle { border-radius: 28px; }
+
+    .sunset-1 { background: linear-gradient(135deg, #ff8a00 0%, #ff7043 42%, #7c4dff 100%); }
+    .sunset-2 { background: radial-gradient(circle at 35% 28%, #ffd166 0 13%, transparent 14%), linear-gradient(145deg, #ff7043 0%, #8e24aa 54%, #1a237e 100%); }
+    .dark-dev { background: radial-gradient(circle at 70% 24%, rgba(255,138,0,.78) 0 10%, transparent 11%), linear-gradient(145deg, #10131d 0%, #222638 60%, #3f2b96 100%); }
+    .repo-blue { background: linear-gradient(145deg, #1e293b 0%, #0f766e 45%, #2979ff 100%); }
+    .mono { background: linear-gradient(145deg, #24292f 0%, #111827 100%); }
+
+    .material-symbols-rounded {
+      font-family: 'Material Symbols Rounded';
+      font-weight: 600;
+      font-style: normal;
+      font-size: 54px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 600,
+        'GRAD' 0,
+        'opsz' 48;
+      color: white;
+      text-shadow: 0 3px 12px rgba(0,0,0,.28);
+    }
+
+    .filled { font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48; }
+    .bold { font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 48; }
+
+    .name {
+      font-size: 18px;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      margin: 0 0 6px;
+    }
+
+    .desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .rank {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+      color: #ffd166;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .sizes {
+      display: flex;
+      align-items: end;
+      gap: 18px;
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      overflow-x: auto;
+    }
+
+    .size-item {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      min-width: 70px;
+    }
+
+    .mini-icon {
+      display: grid;
+      place-items: center;
+      border-radius: 22%;
+      background: linear-gradient(135deg, #ff8a00 0%, #ff7043 42%, #7c4dff 100%);
+      box-shadow: 0 10px 22px rgba(0,0,0,.32);
+      overflow: hidden;
+    }
+
+    .mini-icon .material-symbols-rounded { font-size: 58%; }
+
+    .recommend {
+      border-color: rgba(255,209,102,.5);
+      background:
+        linear-gradient(180deg, rgba(255,209,102,.10), rgba(255,255,255,.035));
+    }
+
+    .combo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .combo {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px 12px;
+      background: rgba(255,255,255,.045);
+    }
+
+    .combo .label {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      border-radius: 20px;
+    }
+
+    a { color: #ffd166; }
+    code { color: #ffd166; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SunsetGitHub 图标候选预览</h1>
+    <p class="subtitle">
+      这是基于 Google 官方 Material Symbols Rounded 做的本地预览页。优先看图标在小尺寸下是否清楚，
+      以及是否适合和“日落 / GitHub 客户端 / 代码仓库”三个意象结合。
+    </p>
+  </header>
+
+  <div class="toolbar">
+    <span class="pill">官方库：<a href="https://fonts.google.com/icons" target="_blank">fonts.google.com/icons</a></span>
+    <span class="pill">建议风格：Material Symbols Rounded</span>
+    <span class="pill">推荐背景：橙紫日落渐变</span>
+  </div>
+
+  <main>
+    <h2 class="section-title">候选图标</h2>
+    <section class="grid">
+      <article class="card recommend">
+        <div class="preview-row">
+          <div class="icon-shell sunset-1"><span class="material-symbols-rounded bold">code</span></div>
+          <div>
+            <p class="name">code</p>
+            <p class="desc">最稳。代码、源码、开发者工具感都很直观，小尺寸也最清楚。</p>
+            <span class="rank">★★★★★ 首推</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell sunset-2"><span class="material-symbols-rounded bold">folder_open</span></div>
+          <div>
+            <p class="name">folder_open</p>
+            <p class="desc">强调仓库文件浏览，语义贴近项目目录，但品牌感略普通。</p>
+            <span class="rank">★★★★☆ 仓库感强</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell dark-dev"><span class="material-symbols-rounded bold">terminal</span></div>
+          <div>
+            <p class="name">terminal</p>
+            <p class="desc">开发者气质强，偏工具 App。可能让人误以为是终端软件。</p>
+            <span class="rank">★★★★☆ 工具感强</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell repo-blue"><span class="material-symbols-rounded bold">account_tree</span></div>
+          <div>
+            <p class="name">account_tree</p>
+            <p class="desc">分支、结构、Git 味道更明显；线条较多，小图标会略碎。</p>
+            <span class="rank">★★★☆☆ Git 分支感</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell mono"><span class="material-symbols-rounded bold">data_object</span></div>
+          <div>
+            <p class="name">data_object</p>
+            <p class="desc">技术感更强，比 code 更独特；但普通用户理解成本稍高。</p>
+            <span class="rank">★★★☆☆ 技术感</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell sunset-1"><span class="material-symbols-rounded bold">hub</span></div>
+          <div>
+            <p class="name">hub</p>
+            <p class="desc">和 GitHub 的 Hub 有抽象关联，但单看不够像代码仓库客户端。</p>
+            <span class="rank">★★★☆☆ 抽象品牌</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell sunset-2"><span class="material-symbols-rounded filled">sunny</span></div>
+          <div>
+            <p class="name">sunny</p>
+            <p class="desc">呼应 Sunset，但单独用容易像天气或主题 App，适合做点缀。</p>
+            <span class="rank">★★☆☆☆ 只适合辅助</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="preview-row">
+          <div class="icon-shell dark-dev"><span class="material-symbols-rounded bold">cloud_sync</span></div>
+          <div>
+            <p class="name">cloud_sync</p>
+            <p class="desc">表达上传、拉取、同步，但不像 GitHub 客户端主标识。</p>
+            <span class="rank">★★☆☆☆ 同步功能</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <h2 class="section-title">推荐组合：日落背景 + code</h2>
+    <section class="combo-grid">
+      <div class="combo">
+        <div class="icon-shell sunset-1 squircle"><span class="material-symbols-rounded bold">code</span></div>
+        <div class="label">默认方圆图标<br><code>#FF8A00 → #7C4DFF</code></div>
+      </div>
+      <div class="combo">
+        <div class="icon-shell sunset-2 squircle"><span class="material-symbols-rounded bold">code</span></div>
+        <div class="label">带太阳点缀<br>更贴近 Sunset</div>
+      </div>
+      <div class="combo">
+        <div class="icon-shell dark-dev squircle"><span class="material-symbols-rounded bold">code</span></div>
+        <div class="label">深色开发者风<br>更像 GitHub 生态</div>
+      </div>
+      <div class="combo">
+        <div class="icon-shell sunset-1 round"><span class="material-symbols-rounded bold">code</span></div>
+        <div class="label">圆形启动图标预览<br>适合 Round Icon</div>
+      </div>
+    </section>
+
+    <h2 class="section-title">小尺寸检查</h2>
+    <section class="sizes">
+      <div class="size-item">
+        <div class="mini-icon" style="width: 144px; height: 144px;"><span class="material-symbols-rounded bold">code</span></div>
+        <span>144px</span>
+      </div>
+      <div class="size-item">
+        <div class="mini-icon" style="width: 96px; height: 96px;"><span class="material-symbols-rounded bold">code</span></div>
+        <span>96px</span>
+      </div>
+      <div class="size-item">
+        <div class="mini-icon" style="width: 72px; height: 72px;"><span class="material-symbols-rounded bold">code</span></div>
+        <span>72px</span>
+      </div>
+      <div class="size-item">
+        <div class="mini-icon" style="width: 48px; height: 48px;"><span class="material-symbols-rounded bold">code</span></div>
+        <span>48px</span>
+      </div>
+      <div class="size-item">
+        <div class="mini-icon" style="width: 36px; height: 36px;"><span class="material-symbols-rounded bold">code</span></div>
+        <span>36px</span>
+      </div>
+    </section>
+
+    <h2 class="section-title">结论</h2>
+    <div class="note">
+      我建议最终用 <code>code</code> 作为前景符号，配橙紫日落渐变背景。
+      这个方案最像一个独立品牌，而不是直接借 GitHub 标志；同时桌面图标、启动图标、小尺寸状态下都比较清楚。
+      如果你想更强调“仓库浏览”，第二选择是 <code>folder_open</code>。
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agents Mobile UX Preview</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #f6f8fa;
+      --surface: #ffffff;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --border: #d0d7de;
+      --divider: #d8dee4;
+      --chip: #eff2f5;
+      --selected: #eaeef2;
+      --accent: #0969da;
+      --accent-soft: #ddf4ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --success-border: #aceebb;
+      --danger: #cf222e;
+      --danger-soft: #ffebe9;
+      --danger-border: #ffcecb;
+      --attention: #bc4c00;
+      --attention-soft: #fff1e5;
+      --done: #8250df;
+      --done-soft: #fbefff;
+      --done-border: #ecd8ff;
+      --shadow: 0 28px 64px rgba(27, 31, 36, .18);
+      --radius-lg: 18px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px;
+      color: var(--text);
+      background: radial-gradient(circle at 20% 0%, #fff 0, #f6f8fa 34%, #eaeef2 100%);
+    }
+
+    .preview-toggle { position: absolute; opacity: 0; pointer-events: none; }
+
+    .layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .phone {
+      position: sticky;
+      top: 24px;
+      width: 390px;
+      min-height: 844px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 36px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .segmented { background: var(--canvas); }
+    /* Repository-level chrome styles removed from this content-page preview. */
+
+    .icon-btn, .query-action, .sheet-trigger, label.session-row, .detail-action, .drawer-row {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    /* Removed unused repo row and tab styles from the trimmed preview. */
+
+    .page, .detail-page { padding: 18px; }
+    .heading { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .heading h1 { margin: 0; font-size: 25px; letter-spacing: -.02em; }
+    .repo-context { margin: 0 0 8px 52px; color: var(--muted); font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .heading.agents-heading h1 { flex: 1; font-size: 28px; }
+    .state-chip { min-height: 28px; display: inline-grid; place-items: center; padding: 0 10px; border: 1px solid var(--success-border); border-radius: 999px; background: var(--success-soft); color: var(--success); font-size: 12px; font-weight: 800; white-space: nowrap; }
+
+    .query {
+      display: flex;
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .query code { flex: 1; padding: 0 12px; display: flex; align-items: center; font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .token-blue { background: #b6e3ff; border-radius: 4px; padding: 0 2px; }
+    .token-purple { background: #ecd8ff; color: #6639ba; border-radius: 4px; padding: 0 2px; }
+    .query-action { width: 44px; display: grid; place-items: center; border-left: 1px solid var(--border); color: var(--muted); background: var(--canvas); }
+
+    .session-shell, .detail-card, .detail-actions {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .segmented { display: flex; align-items: center; min-height: 56px; border-bottom: 1px solid var(--divider); padding: 0 14px; gap: 16px; }
+    .segment { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+    .segment.active { color: var(--text); font-weight: 800; }
+    .count { min-width: 32px; height: 24px; padding: 0 9px; display: inline-grid; place-items: center; border-radius: 999px; background: var(--chip); color: var(--text); font-weight: 700; }
+    .spacer { flex: 1; }
+    .sheet-trigger { color: var(--muted); padding: 8px 10px; border-radius: 999px; }
+
+    .session-row {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--divider);
+      color: inherit;
+      text-decoration: none;
+    }
+    .session-row:active { background: var(--canvas); }
+    .session-row:last-child { border-bottom: 0; }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid var(--done-border);
+      background: var(--done-soft);
+      color: var(--done);
+      flex: 0 0 auto;
+    }
+    .avatar.cli { background: #222932; color: white; border-color: #8c959f; }
+    .avatar.vs { background: var(--accent-soft); color: var(--accent); border-color: #add5ff; }
+
+    .session-main { flex: 1; min-width: 0; }
+    .session-title { font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+    .chips, .detail-meta { display: flex; gap: 6px; flex-wrap: nowrap; overflow: hidden; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; max-width: 112px; padding: 3px 7px; border: 1px solid #eaeef2; border-radius: 999px; background: var(--canvas); color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .summary { color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .session-side { display: flex; flex-direction: column; align-items: end; gap: 8px; flex: 0 0 auto; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; border: 1px solid var(--success-border); color: var(--success); background: var(--success-soft); }
+    .pill.fail { border-color: var(--danger-border); color: var(--danger); background: var(--danger-soft); }
+    .pill.run { border-color: var(--done-border); color: var(--done); background: var(--done-soft); }
+    .chev { color: var(--muted); font-size: 24px; }
+
+    .detail-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .detail-title { flex: 1; min-width: 0; font-size: 21px; font-weight: 850; line-height: 1.2; }
+    .detail-head { display: flex; gap: 12px; padding: 16px; border-bottom: 1px solid var(--divider); background: var(--canvas); }
+    .detail-head-main { flex: 1; min-width: 0; }
+    .detail-head-title { font-weight: 850; line-height: 1.25; margin-bottom: 8px; }
+    .detail-meta { flex-wrap: wrap; }
+    .detail-row { display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #eef1f4; align-items: start; }
+    .detail-row:last-child { border-bottom: 0; }
+    .detail-icon { color: var(--muted); text-align: center; }
+    .detail-label { color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+    .detail-value { color: var(--text); line-height: 1.45; }
+    .detail-actions { margin-top: 14px; }
+    .detail-action { min-height: 48px; display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid var(--divider); color: var(--text); text-decoration: none; }
+    .detail-action:last-child { border-bottom: 0; }
+    .detail-action span:first-child { color: var(--muted); text-align: center; }
+
+    .drawer { position: absolute; z-index: 12; left: 0; top: 0; bottom: 0; width: 322px; padding: 22px 16px; background: var(--surface); border-top-right-radius: 22px; box-shadow: 18px 0 36px rgba(27,31,36,.18); }
+    .drawer-row { position: relative; min-height: 48px; padding: 0 12px; display: flex; align-items: center; gap: 14px; border-radius: 10px; font-size: 16px; }
+    .drawer-row.selected { background: var(--selected); font-weight: 800; }
+    .drawer-row.selected::before { content: ""; position: absolute; left: -16px; width: 4px; top: 8px; bottom: 8px; border-radius: 999px; background: var(--accent); }
+    .divider { height: 1px; background: var(--divider); margin: 0 0 14px; }
+
+    .bottom-sheet { position: absolute; z-index: 18; left: 0; right: 0; bottom: 0; border-top-left-radius: 24px; border-top-right-radius: 24px; background: var(--surface); box-shadow: 0 -24px 44px rgba(27,31,36,.20); padding: 10px 16px 26px; border-top: 1px solid var(--border); }
+    .handle { width: 42px; height: 4px; border-radius: 999px; background: var(--border); margin: 0 auto 14px; }
+    .sheet-title { font-size: 20px; font-weight: 850; margin-bottom: 8px; }
+    .option { display: grid; grid-template-columns: 28px 22px 1fr auto; gap: 8px; align-items: center; min-height: 48px; border-radius: 10px; padding: 5px 2px; }
+    .check { color: var(--success); font-weight: 900; text-align: center; font-size: 17px; }
+    .option-icon { color: var(--muted); text-align: center; }
+    .option-title { font-size: 16px; color: var(--text); }
+    .option-sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .option.selected .option-title { font-weight: 800; }
+    .sheet-divider { height: 1px; background: var(--divider); margin: 6px 0; }
+
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 22px; box-shadow: 0 16px 38px rgba(27,31,36,.10); }
+    .panel h1 { margin: 0 0 12px; font-size: 25px; }
+    .panel h2 { margin: 26px 0 10px; font-size: 17px; }
+    .panel p, .panel li { color: var(--muted); line-height: 1.65; font-size: 15px; }
+    .panel code { background: var(--chip); padding: 2px 6px; border-radius: 6px; color: var(--text); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .legend span { border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px; color: var(--muted); background: var(--canvas); font-size: 13px; }
+    .mode-tabs { display: flex; gap: 8px; margin: 16px 0 18px; flex-wrap: wrap; }
+    .mode-tabs label { cursor: pointer; user-select: none; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); padding: 8px 12px; color: var(--muted); font-weight: 700; }
+    .preview-toggle { position: absolute; opacity: 0; pointer-events: none; }
+    #mode-list:checked ~ .layout .mode-tabs label[for="mode-list"],
+    #mode-detail:checked ~ .layout .mode-tabs label[for="mode-detail"],
+    #mode-drawer:checked ~ .layout .mode-tabs label[for="mode-drawer"],
+    #mode-sheet:checked ~ .layout .mode-tabs label[for="mode-sheet"] { background: var(--accent); color: white; border-color: var(--accent); }
+    .mock { display: none; }
+    #mode-list:checked ~ .layout #mock-list,
+    #mode-detail:checked ~ .layout #mock-detail,
+    #mode-drawer:checked ~ .layout #mock-drawer,
+    #mode-sheet:checked ~ .layout #mock-sheet { display: block; }
+
+    @media (max-width: 940px) {
+      body { padding: 14px; }
+      .layout { grid-template-columns: 1fr; justify-items: center; }
+      .phone { position: relative; top: 0; }
+      .panel { width: min(100%, 390px); }
+    }
+  </style>
+</head>
+<body>
+  <input class="preview-toggle" type="radio" name="preview-mode" id="mode-list" checked>
+  <input class="preview-toggle" type="radio" name="preview-mode" id="mode-detail">
+  <input class="preview-toggle" type="radio" name="preview-mode" id="mode-drawer">
+  <input class="preview-toggle" type="radio" name="preview-mode" id="mode-sheet">
+
+  <main class="layout">
+    <section class="phone">
+      <!-- Repository-level chrome intentionally omitted for this content-page preview. -->
+
+      <section class="mock" id="mock-list">
+        <div class="page">
+          <div class="repo-context">SunsetRNE/ReSukiSU_CI</div>
+          <div class="heading agents-heading"><label class="icon-btn" for="mode-drawer" role="button">☰</label><h1>Sessions</h1><span class="state-chip">Available</span></div>
+          <div class="query"><code>is:<span class="token-blue">open</span>&nbsp;author:<span class="token-purple">@me</span></code><div class="query-action">⌕</div></div>
+          <div class="session-shell">
+            <div class="segmented"><span class="segment active">Active <span class="count">2</span></span><span class="segment">Completed <span class="count">8</span></span><span class="spacer"></span><label class="sheet-trigger" for="mode-sheet">···</label></div>
+            <label class="session-row" for="mode-detail" role="button"><div class="avatar">CA</div><div class="session-main"><div class="session-title">Implement repository agents official layout</div><div class="chips"><span class="chip">⌘ Cloud</span><span class="chip">⑂ main</span><span class="chip">⟳ 今天</span><span class="chip">⑃ PR #42</span></div><div class="summary">Rendering official-style sessions with filters, details and linked target actions.</div></div><div class="session-side"><span class="pill run">⟳ Running</span><span class="chev">›</span></div></label>
+            <label class="session-row" for="mode-detail" role="button"><div class="avatar vs">VS</div><div class="session-main"><div class="session-title">Review sidebar and mobile filter behavior</div><div class="chips"><span class="chip">⌘ VS Code</span><span class="chip">♙ @me</span><span class="chip">⑂ feature/agents</span></div><div class="summary">Needs user attention because the target branch has changed.</div></div><div class="session-side"><span class="pill fail">! Attention</span><span class="chev">›</span></div></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="mock" id="mock-detail">
+        <div class="detail-page">
+          <div class="detail-toolbar"><label class="icon-btn" for="mode-list" role="button">‹</label><div class="detail-title">Session detail</div><label class="icon-btn" for="mode-drawer" role="button">☰</label></div>
+          <section class="detail-card">
+            <div class="detail-head"><div class="avatar">CA</div><div class="detail-head-main"><div class="detail-head-title">Implement repository agents official layout</div><div class="detail-meta"><span class="chip">⌘ Cloud Agents</span><span class="chip">✓ Completed</span><span class="chip">⟳ 今天</span></div></div></div>
+            <div class="detail-row"><span class="detail-icon">✓</span><div><div class="detail-label">Status</div><div class="detail-value">Completed</div></div></div>
+            <div class="detail-row"><span class="detail-icon">♙</span><div><div class="detail-label">Author</div><div class="detail-value">@me</div></div></div>
+            <div class="detail-row"><span class="detail-icon">⑂</span><div><div class="detail-label">Branch</div><div class="detail-value">feature/agents-official-redraw</div></div></div>
+            <div class="detail-row"><span class="detail-icon">⑃</span><div><div class="detail-label">Target</div><div class="detail-value">PR #42 · Agents sidebar and filters</div></div></div>
+            <div class="detail-row"><span class="detail-icon">ⓘ</span><div><div class="detail-label">Summary</div><div class="detail-value">Rendering official-style sessions with filters, details, linked target actions and compact metadata chips.</div></div></div>
+          </section>
+          <section class="detail-actions"><label class="detail-action" for="mode-sheet" role="button"><span>⌕</span><strong>Filter by this status</strong><span>›</span></label><label class="detail-action" for="mode-sheet" role="button"><span>♙</span><strong>Filter by author @me</strong><span>›</span></label><div class="detail-action"><span>↗</span><strong>Open linked target</strong><span>›</span></div></section>
+        </div>
+      </section>
+
+      <section class="mock" id="mock-drawer">
+        <div class="page"><div class="repo-context">SunsetRNE/ReSukiSU_CI</div><div class="heading agents-heading"><label class="icon-btn" for="mode-list" role="button">‹</label><h1>Sessions</h1><span class="state-chip">Available</span></div><div class="query"><code>is:<span class="token-blue">open</span>&nbsp;author:<span class="token-purple">@me</span></code><div class="query-action">⌕</div></div></div>
+        <aside class="drawer"><div class="drawer-row selected"><span>♙</span><span>Created by me</span></div><div class="drawer-row"><span>!</span><span>Needs attention</span></div><div class="divider"></div><div class="drawer-row"><span>⚙</span><span>Configure</span></div><div class="drawer-row"><span>▣</span><span>Customize environment</span></div><div class="drawer-row"><span>☷</span><span>Give feedback</span></div></aside>
+      </section>
+
+      <section class="mock" id="mock-sheet">
+        <div class="page"><div class="repo-context">SunsetRNE/ReSukiSU_CI</div><div class="heading agents-heading"><label class="icon-btn" for="mode-list" role="button">‹</label><h1>Sessions</h1><span class="state-chip">Available</span></div><div class="query"><code>is:<span class="token-blue">open</span>&nbsp;status:<span class="token-purple">completed</span></code><div class="query-action">⌕</div></div><div class="session-shell"><div class="empty"><strong>Filter menu preview</strong><p>BottomSheet keeps checkmark at the far left.</p></div></div></div>
+        <div class="bottom-sheet"><div class="handle"></div><div class="sheet-title">Status</div><div class="option"><span class="check"></span><span class="option-icon">ⓘ</span><div><div class="option-title">Any status</div><div class="option-sub">Show all sessions</div></div><span></span></div><div class="sheet-divider"></div><div class="option"><span class="check"></span><span class="option-icon">⟳</span><div><div class="option-title">In progress</div><div class="option-sub">status:in-progress</div></div><span></span></div><div class="option selected"><span class="check">✓</span><span class="option-icon">✓</span><div><div class="option-title">Completed</div><div class="option-sub">status:completed</div></div><span></span></div><div class="option"><span class="check"></span><span class="option-icon">!</span><div><div class="option-title">Failed</div><div class="option-sub">status:failed</div></div><span></span></div><div class="option"><span class="check"></span><span class="option-icon">×</span><div><div class="option-title">Cancelled</div><div class="option-sub">status:cancelled</div></div><span></span></div></div>
+      </section>
+    </section>
+
+    <aside class="panel">
+      <h1>Agents 内容页精简预览</h1>
+      <p>这个预览聚焦当前 Agents 内容页本体：保留仓库标签、Sessions、搜索、列表/详情和筛选层，删去仓库顶部栏、仓库头像行和 Code / Pull requests / Agents tabs 等外层参考装饰。</p>
+      <div class="mode-tabs"><label for="mode-list">Session 列表</label><label for="mode-detail">Session 详情</label><label for="mode-drawer">Sidebar</label><label for="mode-sheet">BottomSheet</label></div>
+      <h2>当前建议</h2>
+      <ul><li>顶部只保留 <code>owner/repo</code>、Sessions 标题和状态 chip，避免重复仓库级导航。</li><li>App 内优先实现 BottomSheet Sidebar，不急着做真正横向 Drawer。</li><li>筛选项采用 <code>✓ + icon + text</code> 固定顺序，避免勾选出现在中间。</li><li>Session 行可点击进入详情，详情页再提供筛选和外链动作。</li><li>Sidebar 移除 Copilot app 推广卡片，仅保留高频导航和配置入口。</li></ul>
+      <div class="legend"><span>trimmed top chrome</span><span>✓ check column</span><span>⌘ semantic icon</span><span>query token subtitle</span><span>detail flow</span></div>
+    </aside>
+  </main>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:fillViewport="true"
+    tools:context=".ui.repo.RepositoryReleaseCreateFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/page_horizontal_padding"
+        android:paddingVertical="8dp">
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SunsetGitHub.Material.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardUseCompatPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_repository_release_create_context"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                        tools:text="octocat/Hello-World" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_repository_release_create_submit"
+                        style="@style/Widget.SunsetGitHub.Material.PrimaryButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="0dp"
+                        android:paddingHorizontal="14dp"
+                        android:text="@string/repository_release_create_submit" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/repository_release_create_subtitle"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_text_secondary" />
+
+                <!-- 标题 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/repository_release_create_name_section"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_text_secondary" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_repository_release_create_name"
+                    style="@style/Widget.SunsetGitHub.Material.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:hint="@string/repository_release_create_name_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_repository_release_create_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:textColor="@color/github_text_primary"
+                        android:textColorHint="@color/github_text_muted" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 目标分支 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/repository_release_create_target_section"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_text_secondary" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_repository_release_create_branch"
+                    style="@style/Widget.SunsetGitHub.Material.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardBackgroundColor="@color/github_subtle_background"
+                    app:cardUseCompatPadding="false">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="7dp">
+
+                            <TextView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_repository_release_branch_badge"
+                                android:gravity="center"
+                                android:text="⑂"
+                                android:textColor="@color/github_accent"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/text_repository_release_create_branch_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                                    android:textColor="@color/github_text_primary"
+                                    tools:text="main" />
+
+                                <TextView
+                                    android:id="@+id/text_repository_release_create_branch_meta"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                                    android:textColor="@color/github_text_secondary"
+                                    tools:text="默认主分支 · 可发布" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/container_repository_release_create_branches"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 标签 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/repository_release_create_tag_section"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_repository_release_create_new_tag"
+                            style="@style/Widget.SunsetGitHub.Material.Card"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            app:cardBackgroundColor="@color/github_success_soft"
+                            app:cardUseCompatPadding="false"
+                            app:strokeColor="@color/github_success">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="42dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="8dp">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:background="@drawable/bg_repository_release_tag_check_selected"
+                                    android:gravity="center"
+                                    android:text="✓"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                                    android:textColor="@color/github_surface"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edit_repository_release_create_tag"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="7dp"
+                                    android:layout_weight="1"
+                                    android:background="@null"
+                                    android:hint="@string/repository_release_create_tag_hint"
+                                    android:inputType="text"
+                                    android:minHeight="0dp"
+                                    android:padding="0dp"
+                                    android:textColor="@color/github_text_primary"
+                                    android:textColorHint="@color/github_text_muted" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/layout_repository_release_create_tag"
+                            style="@style/Widget.SunsetGitHub.Material.TextInput"
+                            android:layout_width="1dp"
+                            android:layout_height="1dp"
+                            android:visibility="invisible" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/repository_release_create_previous_tag_section"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            style="@style/Widget.SunsetGitHub.Material.Card"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            app:cardBackgroundColor="@color/github_surface"
+                            app:cardUseCompatPadding="false">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="42dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="8dp">
+
+                                <TextView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:background="@drawable/bg_repository_release_tag_check_unselected"
+                                    android:gravity="center" />
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/text_repository_release_create_previous_tag"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="7dp"
+                                    android:layout_weight="1"
+                                    android:background="@null"
+                                    android:clickable="false"
+                                    android:focusable="false"
+                                    android:inputType="none"
+                                    android:minHeight="0dp"
+                                    android:padding="0dp"
+                                    android:textColor="@color/github_text_primary"
+                                    android:textColorHint="@color/github_text_muted"
+                                    tools:text="v1.7.4 · 自动推荐" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 说明 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/repository_release_create_body_section"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_text_secondary" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="28dp"
+                            android:background="@drawable/bg_repository_release_markdown_chip"
+                            android:gravity="center"
+                            android:paddingHorizontal="10dp"
+                            android:text="@string/repository_release_create_chip_markdown"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_accent" />
+
+                        <com.Sunset.REN.GitHub.ui.components.SunsetChipButton
+                            android:id="@+id/button_repository_release_markdown_bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="28dp"
+                            android:layout_marginStart="6dp"
+                            android:text="B"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_primary"
+                            android:textStyle="bold" />
+
+                        <com.Sunset.REN.GitHub.ui.components.SunsetChipButton
+                            android:id="@+id/button_repository_release_markdown_link"
+                            android:layout_width="wrap_content"
+                            android:layout_height="28dp"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/repository_release_create_chip_link"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_primary" />
+
+                        <com.Sunset.REN.GitHub.ui.components.SunsetChipButton
+                            android:id="@+id/button_repository_release_markdown_list"
+                            android:layout_width="wrap_content"
+                            android:layout_height="28dp"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/repository_release_create_chip_list"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_primary" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_repository_release_create_body"
+                    style="@style/Widget.SunsetGitHub.Material.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:hint="@string/repository_release_create_body_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_repository_release_create_body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:minLines="4"
+                        android:textColor="@color/github_text_primary"
+                        android:textColorHint="@color/github_text_muted" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/github_divider" />
+
+                <!-- 附件 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repository_release_create_assets_section"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_secondary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_repository_release_create_add_asset"
+                        style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="0dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="@string/repository_release_create_add_asset" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_repository_release_create_assets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/github_divider" />
+
+                <!-- 选项：设为最新 / 预发布 / 存为草稿 -->
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.SunsetGitHub.Material.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="@color/github_subtle_background"
+                    app:cardUseCompatPadding="false">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="6dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="2dp"
+                            android:paddingBottom="6dp"
+                            android:text="@string/repository_release_create_type_section"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.Sunset.REN.GitHub.ui.components.SunsetSegmentButton
+                                android:id="@+id/button_repository_release_type_release"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_marginEnd="3dp"
+                                android:layout_weight="1"
+                                android:text="@string/repository_release_create_type_release"
+                                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body" />
+
+                            <com.Sunset.REN.GitHub.ui.components.SunsetSegmentButton
+                                android:id="@+id/button_repository_release_type_preview"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_marginHorizontal="3dp"
+                                android:layout_weight="1"
+                                android:text="@string/repository_release_create_type_preview"
+                                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body" />
+
+                            <com.Sunset.REN.GitHub.ui.components.SunsetSegmentButton
+                                android:id="@+id/button_repository_release_type_draft"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_marginStart="3dp"
+                                android:layout_weight="1"
+                                android:text="@string/repository_release_create_type_draft"
+                                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body" />
+                        </LinearLayout>
+
+                        <com.Sunset.REN.GitHub.ui.components.SunsetToggleSwitch
+                            android:id="@+id/switch_repository_release_create_latest"
+                            android:layout_width="1dp"
+                            android:layout_height="1dp"
+                            android:visibility="gone" />
+
+                        <com.Sunset.REN.GitHub.ui.components.SunsetToggleSwitch
+                            android:id="@+id/switch_repository_release_create_prerelease"
+                            android:layout_width="1dp"
+                            android:layout_height="1dp"
+                            android:visibility="gone" />
+
+                        <com.Sunset.REN.GitHub.ui.components.SunsetToggleSwitch
+                            android:id="@+id/switch_repository_release_create_draft"
+                            android:layout_width="1dp"
+                            android:layout_height="1dp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/text_repository_release_create_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_danger"
+                    android:visibility="gone"
+                    tools:text="创建发布版本失败：……"
+                    tools:visibility="visible" />
+
+                <!-- 提交操作已移到页面右上角。 -->
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

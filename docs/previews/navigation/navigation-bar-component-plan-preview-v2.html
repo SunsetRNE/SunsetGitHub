@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Bar Component Spec v2</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --canvas: #ffffff;
+      --text: #1f2328;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --line: rgba(31,35,40,.12);
+      --line-strong: rgba(31,35,40,.22);
+      --surface: rgba(255,255,255,.82);
+      --surface-solid: #ffffff;
+      --ink: #0d1117;
+      --blue: #0969da;
+      --blue-soft: #ddf4ff;
+      --green: #1a7f37;
+      --green-soft: #dafbe1;
+      --purple: #8250df;
+      --purple-soft: #f0e7ff;
+      --orange: #bc4c00;
+      --orange-soft: #fff1e5;
+      --red: #cf222e;
+      --red-soft: #ffebe9;
+      --shadow: 0 16px 48px rgba(31,35,40,.12);
+      --shadow-soft: 0 8px 28px rgba(31,35,40,.08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        linear-gradient(180deg, rgba(221,244,255,.6), transparent 360px),
+        radial-gradient(circle at 85px 120px, rgba(9,105,218,.16), transparent 270px),
+        radial-gradient(circle at calc(100% - 90px) 60px, rgba(26,127,55,.12), transparent 270px),
+        var(--bg);
+      line-height: 1.55;
+    }
+
+    .page { max-width: 1200px; margin: 0 auto; padding: 28px 18px 72px; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(330px, .98fr); gap: 22px; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow-soft); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .hero-copy { padding: 30px; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 999px; background: var(--blue-soft); color: #0550ae; font-size: 12px; font-weight: 800; margin-bottom: 14px; }
+    h1 { margin: 0 0 14px; font-size: clamp(32px, 5vw, 58px); line-height: 1.03; letter-spacing: -1.6px; }
+    h2 { margin: 0 0 12px; font-size: 27px; letter-spacing: -.5px; }
+    h3 { margin: 0 0 8px; font-size: 17px; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    strong { color: var(--text); }
+
+    .navlinks { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border-radius: 12px; background: var(--surface-solid); color: var(--text); border: 1px solid var(--line); font-weight: 750; text-decoration: none; }
+    .btn.primary { background: var(--blue); border-color: var(--blue); color: white; }
+
+    .phone-panel { padding: 18px; display: grid; place-items: center; }
+    .phone { width: min(390px, 100%); aspect-ratio: 9 / 18.8; padding: 13px; border-radius: 42px; background: linear-gradient(145deg, #24292f, #0d1117); box-shadow: 0 26px 80px rgba(1,4,9,.28); }
+    .screen { position: relative; height: 100%; border-radius: 31px; overflow: hidden; background: linear-gradient(180deg, #ffffff, #f6f8fa); }
+    .status { height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 11px; font-weight: 800; }
+    .appbar { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid rgba(31,35,40,.08); background: rgba(255,255,255,.82); }
+    .mark { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #24292f; color: white; font-weight: 900; }
+    .list { position: absolute; inset: 88px 0 0; padding: 14px 14px 132px; overflow: hidden; }
+    .row { padding: 14px; border: 1px solid rgba(31,35,40,.09); border-radius: 16px; background: rgba(255,255,255,.84); margin-bottom: 10px; }
+    .bar { height: 10px; border-radius: 999px; background: #d8dee4; margin-top: 10px; }
+    .w60 { width: 60%; } .w76 { width: 76%; } .w42 { width: 42%; }
+    .glass-nav { position: absolute; left: 14px; right: 14px; bottom: 18px; height: 74px; padding: 8px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; border-radius: 28px; background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.48)); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 18px 42px rgba(31,35,40,.2), inset 0 1px 0 rgba(255,255,255,.86); backdrop-filter: blur(22px) saturate(1.45); -webkit-backdrop-filter: blur(22px) saturate(1.45); }
+    .navitem { border-radius: 20px; display: grid; place-items: center; align-content: center; gap: 2px; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .navitem span { font-size: 18px; line-height: 1; }
+    .navitem.active { color: var(--blue); background: rgba(9,105,218,.12); }
+
+    .section { margin-top: 22px; }
+    .section.card { padding: 24px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .mini { padding: 18px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.72); }
+    .tag { display: inline-flex; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 850; margin-bottom: 10px; }
+    .blue { background: var(--blue-soft); color: #0550ae; } .green { background: var(--green-soft); color: #116329; } .purple { background: var(--purple-soft); color: #6639ba; } .orange { background: var(--orange-soft); color: #9a3412; } .red { background: var(--red-soft); color: #a40e26; }
+
+    .matrix { width: 100%; border-collapse: collapse; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: white; margin-top: 12px; }
+    .matrix th, .matrix td { padding: 12px 13px; border-bottom: 1px solid rgba(31,35,40,.08); text-align: left; vertical-align: top; font-size: 13.5px; }
+    .matrix th { background: #f6f8fa; color: var(--text); font-size: 12px; letter-spacing: .2px; }
+    .matrix tr:last-child td { border-bottom: none; }
+
+    .layers { display: grid; gap: 9px; margin-top: 14px; }
+    .layer { display: grid; grid-template-columns: 145px 1fr; gap: 12px; padding: 12px; border-radius: 15px; border: 1px solid var(--line); background: white; }
+    .layer .name { font-weight: 900; color: var(--blue); }
+
+    pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 12.5px; line-height: 1.55; color: #c9d1d9; }
+    .code { padding: 18px; border-radius: 18px; background: #0d1117; border: 1px solid rgba(240,246,252,.12); overflow: hidden; }
+    .code-title { color: #f0f6fc; font-weight: 900; margin-bottom: 10px; display: flex; justify-content: space-between; gap: 10px; }
+    .pill { padding: 3px 7px; border-radius: 999px; color: #79c0ff; background: rgba(56,139,253,.14); font-size: 11px; white-space: nowrap; }
+
+    .flow { display: grid; gap: 11px; margin-top: 12px; }
+    .step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 14px; border-radius: 17px; background: white; border: 1px solid var(--line); }
+    .num { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; color: white; font-weight: 950; background: linear-gradient(135deg, #0969da, #1a7f37); }
+    .callout { padding: 16px; border-radius: 18px; background: rgba(221,244,255,.72); border: 1px solid rgba(9,105,218,.24); margin-top: 14px; }
+    .callout.warn { background: rgba(255,241,229,.8); border-color: rgba(188,76,0,.22); }
+    .callout.danger { background: rgba(255,235,233,.78); border-color: rgba(207,34,46,.22); }
+    .callout.ok { background: rgba(218,251,225,.78); border-color: rgba(26,127,55,.22); }
+
+    .state-preview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .state-card { min-height: 160px; position: relative; overflow: hidden; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(180deg, #fff, #f6f8fa); padding: 12px; }
+    .state-content { display: grid; gap: 7px; margin-top: 8px; }
+    .state-content i { height: 8px; border-radius: 99px; background: #d8dee4; display: block; }
+    .state-nav { position: absolute; left: 10px; right: 10px; bottom: 9px; height: 38px; border-radius: 16px; background: white; border: 1px solid var(--line); box-shadow: 0 8px 20px rgba(31,35,40,.1); }
+    .state-nav.float { left: 18px; right: 18px; bottom: 13px; background: rgba(255,255,255,.68); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .state-nav.hidden { display: none; }
+    .state-nav.glass { background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.42)); border-color: rgba(255,255,255,.72); }
+
+    .footer { color: var(--subtle); font-size: 13px; text-align: center; margin-top: 28px; }
+
+    @media (max-width: 920px) {
+      .hero, .grid2 { grid-template-columns: 1fr; }
+      .grid3, .state-preview { grid-template-columns: 1fr; }
+      .layer { grid-template-columns: 1fr; }
+      .hero-copy { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy card">
+        <div class="eyebrow">Spec v2 · 更接近可执行实现文档</div>
+        <h1>独立导航栏组件，不只是换个壳</h1>
+        <p>上一版的问题是偏“方向”和“展示”，但真正难点在物理渲染边界：谁画背景、谁管理玻璃、谁发布 inset、谁持有菜单、谁负责降级。本版把这些边界补齐。</p>
+        <p><strong>核心决策：</strong>导航栏必须成为一个 overlay 物理组件，内部拥有 backdrop、material、stroke、menu 和 touch zone；Activity 只接入 Host，Fragment 不再被导航栏实现细节污染。</p>
+        <div class="navlinks">
+          <a class="btn primary" href="#missing">补齐点</a>
+          <a class="btn" href="#contract">组件契约</a>
+          <a class="btn" href="#states">状态矩阵</a>
+          <a class="btn" href="#migration">迁移路线</a>
+        </div>
+      </div>
+      <div class="phone-panel card">
+        <div class="phone">
+          <div class="screen">
+            <div class="status"><span>9:41</span><span>5G 100%</span></div>
+            <div class="appbar"><span class="mark">G</span><strong>Repository</strong><span>⋮</span></div>
+            <div class="list">
+              <div class="row"><strong>Code surface</strong><i class="bar w76"></i><i class="bar w42"></i></div>
+              <div class="row"><strong>Scrollable content behind nav</strong><i class="bar w60"></i><i class="bar w76"></i></div>
+              <div class="row"><strong>Backdrop sample zone</strong><i class="bar w42"></i><i class="bar w76"></i></div>
+            </div>
+            <div class="glass-nav">
+              <div class="navitem active"><span>⌘</span>Code</div>
+              <div class="navitem"><span>●</span>Issues</div>
+              <div class="navitem"><span>↻</span>Actions</div>
+              <div class="navitem"><span>⚙</span>Settings</div>
+              <div class="navitem"><span>⋯</span>More</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card" id="missing">
+      <h2>一、上一版不完善在哪里</h2>
+      <div class="grid3">
+        <div class="mini"><span class="tag red">缺口</span><h3>没有定义物理层级</h3><p>只说了 AppNavigationBarLayout，但没有明确 backdrop、material、stroke、menu、touch zone 的绘制顺序和所有权。</p></div>
+        <div class="mini"><span class="tag red">缺口</span><h3>没有状态矩阵</h3><p>Docked、Floating、Hidden、Solid、FakeGlass、Glass、登录态、仓库态之间如何组合还不够清楚。</p></div>
+        <div class="mini"><span class="tag red">缺口</span><h3>没有降级策略</h3><p>玻璃在 Android 28 到 36 上不能按一个实现走，需要明确 fake glass、RenderEffect、snapshot 的切换条件。</p></div>
+        <div class="mini"><span class="tag red">缺口</span><h3>没有生命周期边界</h3><p>组件什么时候 attach NavHost、什么时候 release backdrop、什么时候重新计算 inset，需要写成契约。</p></div>
+        <div class="mini"><span class="tag red">缺口</span><h3>没有迁移护栏</h3><p>哪些旧类保留、哪些先不删、哪些行为必须先用测试锁住，还不够硬。</p></div>
+        <div class="mini"><span class="tag red">缺口</span><h3>没有视觉验收</h3><p>需要明确怎么判断“底色一致”和“玻璃成立”，否则很容易改成另一种错觉。</p></div>
+      </div>
+    </section>
+
+    <section class="section card" id="contract">
+      <h2>二、组件契约</h2>
+      <p>把导航栏当成一个可渲染 surface，而不是 BottomNavigationView 的包装器。它的公开 API 应该稳定、少、明确。</p>
+      <div class="grid2">
+        <div class="code">
+          <div class="code-title">AppNavigationBarLayout <span class="pill">View contract</span></div>
+<pre>class AppNavigationBarLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : FrameLayout(context, attrs) {
+
+    fun render(state: AppNavigationBarState)
+
+    fun setEventListener(
+        listener: (AppNavigationBarEvent) -> Unit
+    )
+
+    fun attachBackdropHost(host: ViewGroup)
+
+    fun setInsetsChangedListener(
+        listener: (AppNavigationBarInsets) -> Unit
+    )
+
+    fun release()
+}</pre>
+        </div>
+        <div class="code">
+          <div class="code-title">AppNavigationBarHost <span class="pill">Host contract</span></div>
+<pre>class AppNavigationBarHost(
+    private val navController: NavController,
+    private val navigationBar: AppNavigationBarLayout,
+    private val destinationPolicy: NavigationBarDestinationPolicy,
+    private val sectionPolicy: RepositorySectionDestinationPolicy,
+    private val preferences: RepositoryNavigationPreferencesRepository,
+    private val showMoreSections: () -> Unit
+) {
+    fun setAuthorized(value: Boolean)
+    fun setFloatingEnabled(value: Boolean)
+    fun onDestinationChanged(id: Int, args: Bundle?)
+    fun refresh()
+    fun release()
+}</pre>
+        </div>
+      </div>
+
+      <div class="callout ok"><strong>边界：</strong>View 只知道“怎么画”和“用户点了什么”；Host 只知道“当前应该是什么状态”和“事件该导航到哪里”；Policy 只知道 R.id 与规则映射。</div>
+    </section>
+
+    <section class="section card">
+      <h2>三、物理渲染层级</h2>
+      <p>这是悬浮和玻璃能否做稳的核心。组件内部必须有固定的层级顺序，后续所有材质都在这个顺序上替换。</p>
+      <div class="layers">
+        <div class="layer"><div class="name">Layer 0 Host Content</div><div>NavHost / Fragment 内容。组件不拥有它，但可以 attach 作为 backdrop 来源或 inset 应用目标。</div></div>
+        <div class="layer"><div class="name">Layer 1 Hit Slop</div><div>悬浮栏外扩触摸安全区。透明，但属于组件，避免圆角外点击穿透造成误触。</div></div>
+        <div class="layer"><div class="name">Layer 2 Backdrop</div><div>Solid surface、FakeGlass tint、未来 snapshot blur 或 RenderEffect 承载层。</div></div>
+        <div class="layer"><div class="name">Layer 3 Material</div><div>圆角裁剪、阴影、elevation overlay 控制、透明度和饱和度策略。</div></div>
+        <div class="layer"><div class="name">Layer 4 Stroke</div><div>Docked 模式是顶部 divider；Floating/Glass 模式是圆角边框和高光。</div></div>
+        <div class="layer"><div class="name">Layer 5 Menu</div><div>BottomNavigationView 或未来自绘 menu，负责 item、label、selection indicator。</div></div>
+      </div>
+    </section>
+
+    <section class="section card" id="states">
+      <h2>四、状态矩阵</h2>
+      <p>状态矩阵让实现不靠猜。每个 destination 最终解析成 visibility、placement、material、menu、avoidance。</p>
+      <div class="state-preview">
+        <div class="state-card"><strong>Docked Solid</strong><div class="state-content"><i></i><i class="w76"></i><i class="w42"></i></div><div class="state-nav"></div></div>
+        <div class="state-card"><strong>Floating Solid</strong><div class="state-content"><i></i><i class="w60"></i><i></i></div><div class="state-nav float"></div></div>
+        <div class="state-card"><strong>Floating Glass</strong><div class="state-content"><i></i><i class="w76"></i><i class="w42"></i></div><div class="state-nav float glass"></div></div>
+        <div class="state-card"><strong>Hidden</strong><div class="state-content"><i></i><i class="w60"></i><i></i><i class="w42"></i></div><div class="state-nav hidden"></div></div>
+      </div>
+
+      <table class="matrix">
+        <thead><tr><th>场景</th><th>Visibility</th><th>Placement</th><th>Material</th><th>Menu</th><th>Content avoidance</th></tr></thead>
+        <tbody>
+          <tr><td>主导航页，未开启悬浮</td><td>Visible</td><td>Docked</td><td>Solid</td><td>Main</td><td>ReserveDockedSpace</td></tr>
+          <tr><td>主导航页，开启悬浮</td><td>Visible</td><td>Floating</td><td>FakeGlass 或 Glass</td><td>Main</td><td>ReserveFloatingTouchSpace</td></tr>
+          <tr><td>仓库详情 / 仓库分区</td><td>Visible</td><td>由偏好决定</td><td>由主题和能力决定</td><td>RepositorySections</td><td>同 placement</td></tr>
+          <tr><td>登录流程 / 未登记目的地</td><td>Hidden</td><td>Docked</td><td>Solid</td><td>Main</td><td>None</td></tr>
+          <tr><td>他人 profile 详情</td><td>Hidden</td><td>Docked</td><td>Solid</td><td>Main</td><td>None</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section card">
+      <h2>五、玻璃能力分级</h2>
+      <table class="matrix">
+        <thead><tr><th>能力</th><th>启用条件</th><th>实现</th><th>必须保证</th></tr></thead>
+        <tbody>
+          <tr><td>Solid</td><td>默认，所有设备</td><td>主题 surface + stroke + shadow</td><td>颜色与页面 canvas 一致，无透明错层</td></tr>
+          <tr><td>FakeGlass</td><td>悬浮开启，所有设备</td><td>半透明 tint + stroke + shadow + rounded clip</td><td>稳定、低成本、无截图</td></tr>
+          <tr><td>RenderEffectGlass</td><td>API 31+ 且性能允许</td><td>RenderEffect / snapshot renderer</td><td>可降级，滚动不掉帧</td></tr>
+          <tr><td>SnapshotGlass</td><td>实验开关</td><td>低频捕获 content host 区域并模糊</td><td>生命周期可释放，不能常驻大 bitmap</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn"><strong>重要：</strong>Android 的 RenderEffect 模糊 View 自身内容，不天然等于 iOS 式 backdrop blur。要真模糊背后内容，需要 snapshot 或专门 backdrop host。因此第一版实现 FakeGlass 更靠谱。</div>
+    </section>
+
+    <section class="section card">
+      <h2>六、关键实现决策</h2>
+      <div class="grid2">
+        <div class="mini"><span class="tag blue">Decision 1</span><h3>Activity 采用 overlay root</h3><p>NavHost 作为底层内容，AppNavigationBarLayout 作为底部 overlay。组件发布 inset，不再把底栏放进内容流。</p></div>
+        <div class="mini"><span class="tag blue">Decision 2</span><h3>先保留 BottomNavigationView</h3><p>第一阶段不自绘 item。先把物理边界和状态模型做稳，再考虑完全自绘菜单以获得更强玻璃控制。</p></div>
+        <div class="mini"><span class="tag blue">Decision 3</span><h3>目的地策略纯 Kotlin</h3><p>NavigationBarDestinationPolicy 和 RepositorySectionDestinationPolicy 不依赖 View，便于单元测试锁行为。</p></div>
+        <div class="mini"><span class="tag blue">Decision 4</span><h3>未钉选分区临时入栏</h3><p>从 More 打开未钉选分区时，临时替换最后一个快捷槽，保证当前分区可见且可高亮。</p></div>
+      </div>
+    </section>
+
+    <section class="section card" id="migration">
+      <h2>七、迁移路线</h2>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div><h3>加纯模型，不改 UI</h3><p>新增 State、Event、Menu、Material、Insets、DestinationPolicy，并补最小单测。</p></div></div>
+        <div class="step"><div class="num">2</div><div><h3>加 AppNavigationBarLayout</h3><p>内部先复制现有 BottomNavigationView 物理结构：backdrop、stroke、navView。旧实现暂时保留。</p></div></div>
+        <div class="step"><div class="num">3</div><div><h3>把 activity_main.xml 替换为 overlay 结构</h3><p>用单个组件替代 nav_view_container、divider、navView，MainActivity 改为绑定组件。</p></div></div>
+        <div class="step"><div class="num">4</div><div><h3>HostController 改事件驱动</h3><p>Host 生成 state，View 发 event。删除外部 menu.clear、inflateMenu、selectedItemId 直接操作。</p></div></div>
+        <div class="step"><div class="num">5</div><div><h3>迁移内容 inset</h3><p>组件根据测量高度和 placement 发布 AppNavigationBarInsets，统一由 ContentInsetApplier 应用。</p></div></div>
+        <div class="step"><div class="num">6</div><div><h3>启用 FakeGlass</h3><p>做圆角、stroke、高光、shadow、透明 tint。先验收视觉一致性，不做真 blur。</p></div></div>
+        <div class="step"><div class="num">7</div><div><h3>清理旧 surface 层</h3><p>行为稳定后删除 MaterialBottomNavigationBarSurface、旧 Renderer/MenuSurface 或让它们成为组件私有实现。</p></div></div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <h2>八、测试与验收</h2>
+      <table class="matrix">
+        <thead><tr><th>类别</th><th>要测什么</th><th>验收标准</th></tr></thead>
+        <tbody>
+          <tr><td>策略单测</td><td>destination -> visibility / placement / repository section</td><td>所有 mobile_navigation 中目标页都有明确预期</td></tr>
+          <tr><td>菜单单测</td><td>快捷分区、More、未钉选当前分区</td><td>当前分区始终能高亮，More 不抢选中态</td></tr>
+          <tr><td>Inset 验证</td><td>Docked/Floating/Hidden 切换</td><td>内容不被遮挡，切页无一帧底色闪烁</td></tr>
+          <tr><td>视觉验收</td><td>浅色/深色、仓库页/主导航页、长列表底部</td><td>底色连续，玻璃边界清晰，无露出 Activity canvas 的断层</td></tr>
+          <tr><td>性能验收</td><td>滚动列表 + 悬浮 FakeGlass</td><td>不引入截图，不增加明显掉帧</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section card">
+      <h2>九、第一轮不做什么</h2>
+      <div class="callout danger"><strong>不要第一轮做真 backdrop blur。</strong>真模糊需要 snapshot 生命周期、滚动同步、内存释放、API 降级和性能保护。第一轮只完成独立组件、状态契约、FakeGlass 和 inset 统一。</div>
+      <div class="callout danger"><strong>不要同时自绘导航 item。</strong>继续用 BottomNavigationView 保住行为和可访问性。等物理组件稳定，再决定是否替换为自绘 menu。</div>
+    </section>
+
+    <section class="section card">
+      <h2>十、最终判断</h2>
+      <p>更完整的方案应该把“导航栏功能”和“导航栏材质”分开：功能由 Host + Policy + MenuModel 管，材质由 AppNavigationBarLayout + Renderer 管。这样悬浮、玻璃、底色一致性都落在一个独立物理组件里，而不是继续散在 Activity、Fragment 和多个 helper 中。</p>
+      <div class="callout ok"><strong>推荐执行顺序：</strong>先按 v2 做组件边界和 FakeGlass，达到底色一致；再考虑 RenderEffectGlass。这样路径更稳，返工概率小。</div>
+    </section>
+
+    <div class="footer">生成文件：docs/navigation-bar-component-plan-preview-v2.html</div>
+  </main>
+</body>
+</html>

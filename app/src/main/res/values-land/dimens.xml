@@ -1,0 +1,7 @@
+<resources>
+    <!-- 横屏进一步降低搜索替换面板高度，给正文编辑区让出空间 -->
+    <dimen name="local_file_preview_search_field_height">36dp</dimen>
+    <dimen name="local_file_preview_search_icon_button_size">32dp</dimen>
+    <dimen name="local_file_preview_search_action_button_height">32dp</dimen>
+    <dimen name="local_file_preview_search_option_height">28dp</dimen>
+</resources>

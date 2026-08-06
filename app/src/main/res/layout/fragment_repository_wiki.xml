@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_notification_chip_background"
+    tools:context=".ui.repo.RepositoryWikiFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:id="@+id/card_repository_wiki_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_repository_section_card"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progress_repository_wiki_state"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/text_repository_wiki_state_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/repository_wiki_loading_title"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                    android:textColor="@color/github_text_primary" />
+
+                <TextView
+                    android:id="@+id/text_repository_wiki_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                    android:textColor="@color/github_text_secondary"
+                    tools:text="@string/repository_wiki_loading" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_repository_wiki_retry"
+                    style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/repository_wiki_retry"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_repository_wiki_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/card_repository_wiki_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_repository_section_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:id="@+id/text_repository_wiki_owner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@string/repository_wiki_header_title"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_secondary"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/title_repository_wiki"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Title"
+                            android:textColor="@color/github_text_primary" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_status_chip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:background="@drawable/bg_repository_wiki_chip_success"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_success"
+                            android:textStyle="bold"
+                            tools:text="已同步" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/text_repository_wiki_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="2dp"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                        android:textColor="@color/github_text_secondary"
+                        tools:text="手机端保留 GitHub Wiki 完整能力：读、管、改、查、恢复。" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/button_repository_wiki_quick_pages"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="7dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_repository_wiki_quick_tile"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/text_repository_wiki_quick_pages"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="—"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                                    android:textColor="@color/github_text_primary"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/repository_wiki_metric_pages_label"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                                    android:textColor="@color/github_text_muted" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/button_repository_wiki_quick_status"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_repository_wiki_quick_tile"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/text_repository_wiki_quick_health"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/repository_wiki_metric_health_good"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                                    android:textColor="@color/github_text_primary"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/repository_wiki_metric_status_label"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                                    android:textColor="@color/github_text_muted" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/button_repository_wiki_quick_permission"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="7dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_repository_wiki_quick_tile"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/text_repository_wiki_quick_permission"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/repository_wiki_permission_read"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                                    android:textColor="@color/github_text_primary"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/repository_wiki_permission_label"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                                    android:textColor="@color/github_text_muted" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/button_repository_wiki_quick_editor"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_repository_wiki_quick_tile"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/text_repository_wiki_quick_editor"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/repository_wiki_action_edit"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                                    android:textColor="@color/github_text_primary"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/repository_wiki_home_page"
+                                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                                    android:textColor="@color/github_text_muted" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:id="@+id/scroll_repository_wiki_segments"
+                    android:layout_width='match_parent'
+                    android:layout_height='wrap_content'
+                    android:layout_marginTop='12dp'
+                    android:clipToPadding='false'
+                    android:overScrollMode='never'
+                    android:scrollbars='none'>
+
+                    <LinearLayout
+                        android:layout_width='wrap_content'
+                        android:layout_height='wrap_content'
+                        android:orientation='horizontal'>
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_read"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_repository_wiki_segment_selected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_read"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_pages"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_repository_wiki_segment_unselected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_pages"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_history"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_repository_wiki_segment_unselected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_history"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_repository_wiki_segment_unselected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_status"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_offline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_repository_wiki_segment_unselected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_offline"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_empty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_repository_wiki_segment_unselected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_empty"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/text_repository_wiki_segment_create"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_repository_wiki_segment_unselected"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:text="@string/repository_wiki_tab_new"
+                            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                            android:textColor="@color/github_text_secondary"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:id="@+id/container_repository_wiki_overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_section_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_wiki_pages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_section_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_wiki_notices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_section_card"
+                    android:orientation="vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/container_repository_wiki_actions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_repository_section_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/text_repository_wiki_actions_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repository_settings_actions_title"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                        android:textColor="@color/github_text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/repository_wiki_actions_description"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_secondary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_repository_wiki_open_in_github"
+                        style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/repository_section_open_in_github" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

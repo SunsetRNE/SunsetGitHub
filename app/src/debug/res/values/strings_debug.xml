@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Debug-only string overrides.
+
+        A-scheme resource policy:
+        - src/main/res contains the shared, formal UI copy used by both Debug and Release.
+        - src/debug/res may only contain small, intentional development-only overrides.
+        - Do not duplicate ordinary UI strings from src/main/res here; Debug resources override main.
+        - The app_name string must stay in src/main/res so Debug and Release app names remain identical.
+    -->
+</resources>

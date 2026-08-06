@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SunsetGitHub - C 方案完整效果：Go to file 命令面板</title>
+  <style>
+    :root {
+      --canvas: #ffffff;
+      --surface: #ffffff;
+      --subtle: #f6f8fa;
+      --subtle-2: #eef2f6;
+      --border: #d0d7de;
+      --divider: #d8dee4;
+      --text: #24292f;
+      --secondary: #57606a;
+      --muted: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf0ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --danger: #cf222e;
+      --shadow-card: 0 1px 0 rgba(27, 31, 36, .04);
+      --shadow-float: 0 18px 42px rgba(27, 31, 36, .14);
+      --radius-card: 20px;
+      --radius-control: 14px;
+      --bottom-nav-height: 74px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, #eef6ff 0, transparent 38%),
+        linear-gradient(180deg, #f6f8fa 0%, #ffffff 44%);
+      color: var(--text);
+    }
+
+    button, input { font: inherit; }
+    button { cursor: default; }
+
+    .phone {
+      width: min(430px, 100%);
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--canvas);
+      position: relative;
+      overflow-x: hidden;
+      border-left: 1px solid rgba(208, 215, 222, .65);
+      border-right: 1px solid rgba(208, 215, 222, .65);
+    }
+
+    .statusbar {
+      height: 34px;
+      padding: 8px 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #0d1117;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .1px;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #111;
+    }
+
+    .battery {
+      height: 18px;
+      min-width: 26px;
+      padding: 0 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      border: 2px solid #111;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .topbar {
+      height: 82px;
+      padding: 10px 22px 18px;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) 38px;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.94);
+    }
+
+    .back, .top-icon {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      color: var(--secondary);
+    }
+
+    .back { font-size: 36px; line-height: 1; transform: translateY(-1px); }
+    .top-icon { font-size: 24px; }
+
+    .title {
+      min-width: 0;
+      font-size: 24px;
+      font-weight: 850;
+      letter-spacing: -.4px;
+      line-height: 1.12;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .content {
+      padding: 0 10px calc(var(--bottom-nav-height) + 44px);
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .repo-card { padding: 17px 14px 14px; }
+
+    .repo-head {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, #b7f5d1 0%, #75db9d 100%);
+      border: 1px solid var(--border);
+      font-weight: 950;
+    }
+
+    .repo-name {
+      min-width: 0;
+      font-size: 24px;
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -.35px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-meta {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 43px;
+      height: 43px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--secondary);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .description {
+      margin: 15px 0 12px;
+      color: var(--secondary);
+      font-size: 17px;
+    }
+
+    .tag-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 9px 10px 10px;
+    }
+
+    .section-label {
+      margin-bottom: 7px;
+      color: var(--secondary);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .chip {
+      min-height: 25px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--secondary);
+      padding: 2px 10px;
+      font-size: 13px;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .chip.success {
+      color: var(--success);
+      background: var(--success-soft);
+      border-color: transparent;
+    }
+
+    .stats {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .stat {
+      min-height: 45px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(208,215,222,.7);
+      color: var(--secondary);
+      font-size: 15px;
+    }
+
+    .stat:last-child { border-right: 0; }
+
+    .command-card {
+      padding: 14px;
+      border-color: #b6d7ff;
+      background: linear-gradient(180deg, #f7fbff 0%, #ffffff 42%);
+      box-shadow: 0 8px 24px rgba(9, 105, 218, .08);
+    }
+
+    .command-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .command-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -.25px;
+      line-height: 1.16;
+    }
+
+    .command-copy {
+      color: var(--secondary);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+
+    .shortcut {
+      min-width: 42px;
+      height: 28px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      box-shadow: inset 0 -1px 0 rgba(27,31,36,.08);
+    }
+
+    .search-shell {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .search-row {
+      min-height: 56px;
+      padding: 0 12px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .search-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: var(--subtle);
+      color: var(--secondary);
+      font-size: 16px;
+    }
+
+    .search-input-wrap {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+
+    .search-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .03em;
+    }
+
+    .search-query {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 750;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .create-button {
+      height: 38px;
+      border-radius: 13px;
+      border: 1px solid #0d1117;
+      background: #0d1117;
+      color: #fff;
+      padding: 0 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(13,17,23,.13);
+    }
+
+    .filter-row {
+      min-height: 43px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid rgba(216,222,228,.7);
+    }
+
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .filter-pill.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: #add5ff;
+    }
+
+    .result-group {
+      padding: 10px 0 4px;
+    }
+
+    .group-heading {
+      padding: 0 13px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .03em;
+    }
+
+    .result-row {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 13px;
+      border-top: 1px solid rgba(216,222,228,.66);
+    }
+
+    .result-row.selected {
+      background: linear-gradient(90deg, rgba(221,240,255,.9) 0%, rgba(255,255,255,0) 88%);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .file-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: var(--subtle);
+      color: var(--secondary);
+      font-size: 15px;
+    }
+
+    .file-icon.folder { color: #54aeef; background: #eef6ff; }
+    .file-icon.kotlin { color: #8250df; background: #fbefff; }
+    .file-icon.markdown { color: var(--accent); background: #ddf0ff; }
+
+    .result-main { min-width: 0; }
+
+    .result-title {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 6px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    mark {
+      background: #fff8c5;
+      color: inherit;
+      border-radius: 4px;
+      padding: 0 1px;
+    }
+
+    .result-path {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-meta {
+      display: grid;
+      justify-items: end;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .score {
+      min-width: 34px;
+      height: 20px;
+      padding: 0 7px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--subtle);
+      color: var(--secondary);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .quick-actions {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .quick-action {
+      min-height: 54px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      align-items: center;
+      gap: 9px;
+      padding: 9px;
+    }
+
+    .quick-action-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--subtle);
+      color: var(--secondary);
+      font-size: 16px;
+    }
+
+    .quick-action-title {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .quick-action-sub {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .directory-card { padding: 0; }
+
+    .dir-head {
+      padding: 16px 16px 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .dir-title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      line-height: 1.18;
+    }
+
+    .dir-meta {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .mini-go {
+      height: 38px;
+      min-width: 82px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .file-list { border-top: 1px solid var(--divider); }
+
+    .file-row {
+      min-height: 58px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto 20px;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(216,222,228,.72);
+      font-size: 18px;
+    }
+
+    .file-row:last-child { border-bottom: 0; }
+    .file-row .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .folder-color { color: #54aeef; }
+    .doc-color { color: var(--secondary); }
+    .size { color: var(--secondary); font-size: 14px; }
+    .chev { color: var(--secondary); font-size: 25px; }
+
+    .create-sheet {
+      padding: 15px 14px 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+    }
+
+    .sheet-handle {
+      width: 42px;
+      height: 5px;
+      border-radius: 99px;
+      background: #d8dee4;
+      margin: 0 auto 12px;
+    }
+
+    .sheet-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .sheet-title h2 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: -.2px;
+    }
+
+    .branch-pill {
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 9px;
+      color: var(--secondary);
+      background: var(--subtle);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .field label {
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .02em;
+    }
+
+    .fake-input {
+      min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 11px 12px;
+      color: var(--text);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .fake-placeholder { color: var(--muted); }
+
+    .commit-box {
+      margin-top: 12px;
+      border-radius: 16px;
+      background: var(--subtle);
+      padding: 10px 11px;
+      color: var(--secondary);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .sheet-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .secondary-button, .primary-button {
+      height: 42px;
+      flex: 1;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .secondary-button {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: #fff;
+    }
+
+    .primary-button {
+      border: 1px solid #0d1117;
+      color: #fff;
+      background: #0d1117;
+    }
+
+    .design-note {
+      padding: 13px 15px;
+      border: 1px solid #add5ff;
+      border-radius: var(--radius-card);
+      background: #f6fbff;
+      color: var(--secondary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .design-note strong { color: var(--text); }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: min(396px, calc(100% - 18px));
+      height: var(--bottom-nav-height);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow-float);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      z-index: 9;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-item {
+      text-align: center;
+      color: #0d1117;
+      font-size: 12px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .nav-icon {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      font-weight: 850;
+    }
+
+    .floating-preview {
+      position: fixed;
+      left: 50%;
+      top: 128px;
+      transform: translateX(-50%);
+      width: min(394px, calc(100% - 30px));
+      border-radius: 24px;
+      border: 1px solid rgba(173, 213, 255, .9);
+      background: rgba(255,255,255,.96);
+      box-shadow: var(--shadow-float);
+      z-index: 12;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      pointer-events: none;
+    }
+
+    .floating-top {
+      min-height: 50px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .floating-top .query {
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 850;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .esc {
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--subtle);
+      font-size: 11px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .floating-results .result-row {
+      min-height: 52px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    .overlay-label {
+      padding: 8px 12px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      background: linear-gradient(180deg, #fff 0%, #f6fbff 100%);
+    }
+
+    @media (max-width: 390px) {
+      .title { font-size: 22px; }
+      .repo-name { font-size: 22px; }
+      .icon-btn { width: 40px; height: 40px; }
+      .search-row { grid-template-columns: 28px minmax(0, 1fr); }
+      .create-button { grid-column: 1 / -1; width: 100%; justify-content: center; margin-bottom: 10px; }
+      .quick-actions { grid-template-columns: 1fr; }
+      .floating-preview { top: 118px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <div class="statusbar">
+      <div>00:09</div>
+      <div class="status-icons"><span>◔</span><span>◕</span><span>▮▮▮</span><span class="battery">57</span></div>
+    </div>
+
+    <header class="topbar">
+      <button class="back" aria-label="返回">‹</button>
+      <div class="title">SunsetRNE/SunsetGitHub</div>
+      <button class="top-icon" aria-label="更多">⋯</button>
+    </header>
+
+    <section class="content">
+      <article class="card repo-card">
+        <div class="repo-head">
+          <div class="avatar">S</div>
+          <div>
+            <div class="repo-name">SunsetGtiHub</div>
+            <div class="repo-meta">SunsetRNE · User · main</div>
+          </div>
+          <div class="repo-actions">
+            <button class="icon-btn" aria-label="打开 GitHub">↗</button>
+            <button class="icon-btn" aria-label="Star">☆</button>
+            <button class="icon-btn" aria-label="Watch">◉</button>
+          </div>
+        </div>
+        <div class="description">暂无仓库简介</div>
+        <div class="tag-box">
+          <div class="section-label">仓库标签</div>
+          <div class="chips"><span class="chip success">公开</span><span class="chip">主要语言：Kotlin</span></div>
+        </div>
+        <div class="stats">
+          <div class="stat">★ 0</div><div class="stat">⑂ 0</div><div class="stat">Issue 0</div><div class="stat">👁 0</div>
+        </div>
+      </article>
+
+      <article class="card command-card">
+        <div class="command-header">
+          <div>
+            <div class="eyebrow">Go to file</div>
+            <div class="command-title">搜索优先的文件命令面板</div>
+            <div class="command-copy">进入仓库后优先暴露文件搜索；没有命中时直接引导创建新文件，路径、分支、提交信息在同一流程内完成。</div>
+          </div>
+          <div class="shortcut">t</div>
+        </div>
+
+        <div class="search-shell">
+          <div class="search-row">
+            <div class="search-icon">🔎</div>
+            <div class="search-input-wrap">
+              <div class="search-label">当前目录 / main</div>
+              <div class="search-query"><mark>repo</mark>sitory / file / markdown</div>
+            </div>
+            <button class="create-button">＋ Create new file</button>
+          </div>
+
+          <div class="filter-row">
+            <span class="filter-pill active">全部 12</span>
+            <span class="filter-pill">目录 3</span>
+            <span class="filter-pill">Kotlin 5</span>
+            <span class="filter-pill">Markdown 2</span>
+            <span class="filter-pill">配置 4</span>
+          </div>
+
+          <div class="result-group">
+            <div class="group-heading"><span>最佳匹配</span><span>按路径相关度排序</span></div>
+            <div class="result-row selected">
+              <div class="file-icon kotlin">Kt</div>
+              <div class="result-main">
+                <div class="result-title"><mark>Repository</mark>DetailFragment.kt</div>
+                <div class="result-path">app/src/main/kotlin/com/Sunset/REN/GitHub/ui/repo/</div>
+              </div>
+              <div class="result-meta"><span class="score">98</span><span>打开</span></div>
+            </div>
+            <div class="result-row">
+              <div class="file-icon kotlin">Kt</div>
+              <div class="result-main">
+                <div class="result-title"><mark>Repository</mark>FileAdapter.kt</div>
+                <div class="result-path">app/src/main/kotlin/com/Sunset/REN/GitHub/ui/repo/</div>
+              </div>
+              <div class="result-meta"><span class="score">91</span><span>打开</span></div>
+            </div>
+            <div class="result-row">
+              <div class="file-icon markdown">MD</div>
+              <div class="result-main">
+                <div class="result-title">README.md</div>
+                <div class="result-path">/README.md</div>
+              </div>
+              <div class="result-meta"><span class="score">84</span><span>预览</span></div>
+            </div>
+            <div class="result-row">
+              <div class="file-icon folder">📁</div>
+              <div class="result-main">
+                <div class="result-title">repo</div>
+                <div class="result-path">app/src/main/kotlin/com/Sunset/REN/GitHub/ui/repo/</div>
+              </div>
+              <div class="result-meta"><span class="score">77</span><span>进入</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <div class="quick-action">
+            <div class="quick-action-icon">＋</div>
+            <div><div class="quick-action-title">创建当前目录文件</div><div class="quick-action-sub">默认路径：/</div></div>
+          </div>
+          <div class="quick-action">
+            <div class="quick-action-icon">⌘</div>
+            <div><div class="quick-action-title">命令式跳转</div><div class="quick-action-sub">支持路径片段和文件名</div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card directory-card">
+        <div class="dir-head">
+          <div>
+            <div class="dir-title">根目录</div>
+            <div class="dir-meta">共 12 项 · 3 个目录 · 9 个文件</div>
+          </div>
+          <button class="mini-go">🔎 Go</button>
+        </div>
+        <div class="file-list">
+          <div class="file-row"><span class="folder-color">📁</span><span class="name">app</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="folder-color">📁</span><span class="name">docs</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="folder-color">📁</span><span class="name">gradle</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="doc-color">📄</span><span class="name">.gitattributes</span><span class="size">276 B</span><span class="chev">›</span></div>
+          <div class="file-row"><span class="doc-color">📄</span><span class="name">.gitignore</span><span class="size">316 B</span><span class="chev">›</span></div>
+        </div>
+      </article>
+
+      <article class="create-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">
+          <h2>Create new file</h2>
+          <span class="branch-pill">⑂ main</span>
+        </div>
+        <div class="field">
+          <label>文件路径</label>
+          <div class="fake-input"><span>docs/repository-file-actions.md</span><span class="fake-placeholder">当前仓库</span></div>
+        </div>
+        <div class="field">
+          <label>提交信息</label>
+          <div class="fake-input"><span>Add repository file actions proposal</span><span>✎</span></div>
+        </div>
+        <div class="commit-box">创建流程建议走 BottomSheet：路径输入 → 内容编辑 → commit message → 分支冲突检查。若搜索无结果，可直接把搜索词带入文件名输入框。</div>
+        <div class="sheet-actions">
+          <button class="secondary-button">取消</button>
+          <button class="primary-button">继续编辑内容</button>
+        </div>
+      </article>
+
+      <section class="design-note">
+        <strong>C 方案强化重点：</strong>把 Go to file 从“按钮”升级为仓库代码页的核心入口；Create new file 不再孤立出现，而是作为搜索无结果、当前目录快捷动作、命令面板右侧主按钮三处联动。视觉上继续复用现有 GitHub 色板、圆角 Card、描边控件、黑色主按钮和浮动底栏。
+      </section>
+    </section>
+
+    <aside class="floating-preview" aria-label="命令面板浮层预览">
+      <div class="floating-top">
+        <span>🔎</span>
+        <div class="query">MainActivity / repo / README</div>
+        <span class="esc">ESC</span>
+      </div>
+      <div class="floating-results">
+        <div class="result-row selected">
+          <div class="file-icon kotlin">Kt</div>
+          <div class="result-main"><div class="result-title">MainActivity.kt</div><div class="result-path">app/src/main/kotlin/com/Sunset/REN/GitHub/</div></div>
+          <div class="result-meta"><span class="score">↵</span></div>
+        </div>
+        <div class="result-row">
+          <div class="file-icon markdown">MD</div>
+          <div class="result-main"><div class="result-title">README.md</div><div class="result-path">/README.md</div></div>
+          <div class="result-meta"><span class="score">2</span></div>
+        </div>
+      </div>
+      <div class="overlay-label">浮层态示例：点击 Go、按 t 或聚焦搜索时弹出；页面内搜索卡片则作为默认常驻入口。</div>
+    </aside>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active"><div class="nav-icon">‹›</div><div>代码</div></div>
+      <div class="nav-item"><div class="nav-icon">○</div><div>议题</div></div>
+      <div class="nav-item"><div class="nav-icon">↻</div><div>工作流</div></div>
+      <div class="nav-item"><div class="nav-icon">⚙</div><div>设置</div></div>
+      <div class="nav-item"><div class="nav-icon">☰</div><div>更多</div></div>
+    </nav>
+  </main>
+</body>
+</html>

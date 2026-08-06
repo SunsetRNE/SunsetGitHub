@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SunsetGitHub - Create new file / Go to file 方案样板</title>
+  <style>
+    :root {
+      --canvas: #ffffff;
+      --surface: #ffffff;
+      --border: #d0d7de;
+      --border-strong: #8c959f;
+      --divider: #d8dee4;
+      --text: #24292f;
+      --secondary: #57606a;
+      --muted: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf0ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --chip: #eff2f5;
+      --shadow: 0 16px 34px rgba(27, 31, 36, .10);
+      --radius-card: 20px;
+      --radius-control: 14px;
+      --safe-bottom: 26px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% 0%, #eef6ff 0, transparent 34%),
+        linear-gradient(180deg, #f6f8fa 0%, #ffffff 38%);
+    }
+
+    .page {
+      width: min(430px, 100%);
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--canvas);
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid rgba(208, 215, 222, .65);
+      border-right: 1px solid rgba(208, 215, 222, .65);
+    }
+
+    .statusbar {
+      height: 34px;
+      padding: 8px 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 750;
+      letter-spacing: .2px;
+      color: #0d1117;
+    }
+
+    .status-icons { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+    .battery { border: 2px solid #111; border-radius: 5px; padding: 0 4px; font-size: 11px; line-height: 16px; }
+
+    .topbar {
+      height: 82px;
+      padding: 10px 22px 18px;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,.92);
+    }
+
+    .back {
+      width: 34px;
+      height: 34px;
+      border-radius: 99px;
+      display: grid;
+      place-items: center;
+      font-size: 32px;
+      color: var(--secondary);
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.12;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .content {
+      padding: 0 10px 118px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      box-shadow: 0 0 0 1px rgba(27,31,36,.015);
+      overflow: hidden;
+    }
+
+    .repo-card { padding: 18px 14px 14px; }
+
+    .repo-head {
+      display: grid;
+      grid-template-columns: 46px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, #b7f5d1, #75db9d);
+      border: 1px solid var(--border);
+      font-weight: 900;
+    }
+
+    .repo-name {
+      font-size: 24px;
+      font-weight: 850;
+      letter-spacing: -.3px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .repo-meta { margin-top: 4px; color: var(--muted); font-size: 15px; }
+
+    .icon-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #fff;
+      color: var(--secondary);
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: 700;
+    }
+
+    .description { color: var(--secondary); font-size: 17px; margin: 16px 0 12px; }
+
+    .tag-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 9px 10px 10px;
+    }
+
+    .section-label { color: var(--secondary); font-size: 14px; font-weight: 750; margin-bottom: 7px; }
+
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 13px;
+      color: var(--secondary);
+      line-height: 1.4;
+    }
+
+    .chip.success { color: var(--success); background: var(--success-soft); border-color: transparent; }
+
+    .stats {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+    }
+
+    .stat {
+      min-height: 46px;
+      display: grid;
+      place-items: center;
+      color: var(--secondary);
+      border-right: 1px solid rgba(208,215,222,.65);
+      font-size: 15px;
+      gap: 2px;
+    }
+    .stat:last-child { border-right: 0; }
+
+    .directory { padding: 0; }
+    .dir-head { padding: 16px 16px 12px; }
+    .dir-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .dir-meta { color: var(--muted); font-size: 15px; }
+
+    .file-list { border-top: 1px solid var(--divider); }
+    .file-row {
+      min-height: 58px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 28px 1fr auto 20px;
+      gap: 8px;
+      align-items: center;
+      border-bottom: 1px solid rgba(216,222,228,.75);
+      font-size: 18px;
+    }
+    .file-row:last-child { border-bottom: 0; }
+    .folder { color: #54aeef; }
+    .doc { color: var(--secondary); }
+    .size { color: var(--secondary); font-size: 14px; }
+    .chev { color: var(--secondary); font-size: 26px; }
+
+    .proposal {
+      padding: 16px;
+    }
+
+    .proposal h2 {
+      margin: 0 0 6px;
+      font-size: 19px;
+      letter-spacing: -.2px;
+    }
+
+    .proposal-desc {
+      color: var(--secondary);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 13px;
+    }
+
+    .toolbar-row { display: flex; gap: 8px; align-items: stretch; }
+
+    .btn {
+      height: 42px;
+      border-radius: var(--radius-control);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-weight: 750;
+      font-size: 14px;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .btn.primary {
+      border-color: #0d1117;
+      background: #0d1117;
+      color: white;
+      box-shadow: 0 3px 10px rgba(13,17,23,.10);
+    }
+
+    .btn.accent {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn.flex { flex: 1; }
+    .btn.icon-only { width: 42px; padding: 0; }
+
+    .mini-note {
+      margin-top: 10px;
+      border-radius: 13px;
+      background: #f6f8fa;
+      color: var(--secondary);
+      padding: 10px 11px;
+      font-size: 13px;
+      line-height: 1.38;
+    }
+
+    .dir-titlebar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .compact-actions { display: flex; gap: 6px; padding-top: 1px; }
+    .compact-actions .btn { height: 36px; border-radius: 12px; font-size: 13px; padding: 0 10px; }
+
+    .search-panel {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .search-input {
+      height: 48px;
+      padding: 0 13px;
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      gap: 9px;
+      align-items: center;
+      border-bottom: 1px solid var(--divider);
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .quick-results { display: grid; }
+    .quick-row {
+      min-height: 45px;
+      padding: 0 13px;
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border-bottom: 1px solid rgba(216,222,228,.65);
+      font-size: 14px;
+    }
+    .quick-row:last-child { border-bottom: 0; }
+    .path { color: var(--muted); font-size: 12px; }
+
+    .split-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .split-row {
+      min-height: 54px;
+      padding: 0 13px;
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid var(--divider);
+    }
+    .split-row:last-child { border-bottom: 0; }
+    .split-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      background: #f6f8fa;
+      display: grid;
+      place-items: center;
+    }
+    .split-title { font-size: 15px; font-weight: 750; }
+    .split-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .recommendation {
+      border: 1px solid var(--accent-soft);
+      background: linear-gradient(180deg, #f6fbff 0%, #fff 100%);
+      border-radius: var(--radius-card);
+      padding: 14px 15px;
+      color: var(--secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .recommendation strong { color: var(--text); }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: min(396px, calc(100% - 18px));
+      height: 72px;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      z-index: 5;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-item {
+      text-align: center;
+      color: #0d1117;
+      font-size: 12px;
+      display: grid;
+      gap: 3px;
+    }
+    .nav-item .nav-icon { font-size: 24px; line-height: 1; }
+    .nav-item.active { color: var(--accent); font-weight: 750; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      padding: 0 8px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 750;
+      color: var(--accent);
+      background: var(--accent-soft);
+      margin-left: 6px;
+      vertical-align: 2px;
+    }
+
+    @media (max-width: 390px) {
+      .title { font-size: 22px; }
+      .repo-name { font-size: 22px; }
+      .icon-btn { width: 40px; height: 40px; }
+      .btn { padding: 0 10px; font-size: 13px; }
+      .compact-actions .btn span.optional { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="statusbar">
+      <div>00:09</div>
+      <div class="status-icons"><span>◔</span><span>◕</span><span>▮▮▮</span><span class="battery">57</span></div>
+    </div>
+
+    <header class="topbar">
+      <div class="back">‹</div>
+      <div class="title">SunsetRNE/SunsetGitHub</div>
+    </header>
+
+    <section class="content">
+      <article class="card repo-card">
+        <div class="repo-head">
+          <div class="avatar">S</div>
+          <div>
+            <div class="repo-name">SunsetGtiHub</div>
+            <div class="repo-meta">SunsetRNE · User · main</div>
+          </div>
+          <div class="icon-actions">
+            <button class="icon-btn" aria-label="Open">↗</button>
+            <button class="icon-btn" aria-label="Star">☆</button>
+            <button class="icon-btn" aria-label="Watch">◉</button>
+          </div>
+        </div>
+        <div class="description">暂无仓库简介</div>
+        <div class="tag-box">
+          <div class="section-label">仓库标签</div>
+          <div class="chips"><span class="chip success">公开</span><span class="chip">主要语言：Kotlin</span></div>
+        </div>
+        <div class="stats">
+          <div class="stat">★ 0</div><div class="stat">⑂ 0</div><div class="stat">Issue 0</div><div class="stat">👁 0</div>
+        </div>
+      </article>
+
+      <article class="card proposal">
+        <h2>方案 A：GitHub 网页版对标操作栏 <span class="badge">推荐</span></h2>
+        <div class="proposal-desc">放在仓库信息卡片之后、目录卡片之前。层级清晰，用户在进入文件列表前先看到“找文件 / 创建文件”的主要动作。</div>
+        <div class="toolbar-row">
+          <button class="btn flex">🔎 Go to file</button>
+          <button class="btn primary flex">＋ Create new file</button>
+          <button class="btn icon-only">⋯</button>
+        </div>
+        <div class="mini-note">适合当前截图：不挤压“根目录”标题；复用已有 OutlinedButton、GlobalButton、IconButton 风格。更多菜单可承载 Upload files、New folder 等后续 GitHub 对标动作。</div>
+      </article>
+
+      <article class="card directory">
+        <div class="dir-head">
+          <div class="dir-titlebar">
+            <div>
+              <div class="dir-title">根目录</div>
+              <div class="dir-meta">共 12 项 · 3 个目录 · 9 个文件</div>
+            </div>
+            <div class="compact-actions">
+              <button class="btn">🔎 <span class="optional">Go</span></button>
+              <button class="btn primary">＋ <span class="optional">New</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="file-list">
+          <div class="file-row"><span class="folder">📁</span><span>app</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="folder">📁</span><span>docs</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="folder">📁</span><span>gradle</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="doc">📄</span><span>.gitattributes</span><span class="size">276 B</span><span class="chev">›</span></div>
+          <div class="file-row"><span class="doc">📄</span><span>.gitignore</span><span class="size">316 B</span><span class="chev">›</span></div>
+        </div>
+      </article>
+
+      <article class="card proposal">
+        <h2>方案 B：目录标题栏紧凑动作</h2>
+        <div class="proposal-desc">把两个功能固定在“根目录”标题右侧，和当前内容区强绑定。优点是节省纵向空间；缺点是小屏文字需要折叠为图标或短文案。</div>
+        <div class="mini-note">建议实现：宽屏显示 “Go / New”，窄屏显示图标；点击 New 后弹出 bottom sheet，列出 Create new file、Upload file、Create folder。</div>
+      </article>
+
+      <article class="card proposal">
+        <h2>方案 C：搜索优先命令面板</h2>
+        <div class="proposal-desc">当“Go to file”是高频动作时，可把搜索框做成轻量命令面板；创建文件作为同一面板里的主操作或空状态动作。</div>
+        <div class="search-panel">
+          <div class="search-input"><span>🔎</span><span>输入文件名、路径或符号…</span><button class="btn primary">＋ 新建</button></div>
+          <div class="quick-results">
+            <div class="quick-row"><span class="folder">📁</span><div><strong>app</strong><div class="path">app/</div></div><span class="chev">›</span></div>
+            <div class="quick-row"><span class="doc">📄</span><div><strong>README.md</strong><div class="path">/README.md</div></div><span class="chev">›</span></div>
+            <div class="quick-row"><span class="doc">📄</span><div><strong>MainActivity.kt</strong><div class="path">app/src/main/kotlin/…</div></div><span class="chev">›</span></div>
+          </div>
+        </div>
+        <div class="mini-note">适合文件数量变多后的体验：可后续接入 GitHub contents tree 缓存、本地模糊搜索、路径补全。</div>
+      </article>
+
+      <article class="card proposal">
+        <h2>方案 D：更多菜单分层，不改变主列表</h2>
+        <div class="proposal-desc">保留当前界面极简，只在目录卡片或顶部三点中加入“文件操作”入口。适合想降低首屏复杂度的版本。</div>
+        <div class="split-card">
+          <div class="split-row"><div class="split-icon">🔎</div><div><div class="split-title">Go to file</div><div class="split-sub">搜索仓库内文件并快速跳转</div></div><span class="chev">›</span></div>
+          <div class="split-row"><div class="split-icon">＋</div><div><div class="split-title">Create new file</div><div class="split-sub">在当前目录或指定路径创建文件</div></div><span class="chev">›</span></div>
+          <div class="split-row"><div class="split-icon">⬆</div><div><div class="split-title">Upload files</div><div class="split-sub">作为后续 GitHub 网页版对标扩展</div></div><span class="chev">›</span></div>
+        </div>
+      </article>
+
+      <section class="recommendation">
+        <strong>落地建议：</strong>优先采用方案 A：在仓库卡片与目录卡片之间增加一条动作栏，Create new file 使用黑色主按钮，Go to file 使用描边按钮；同时保留方案 B 的紧凑图标布局作为横屏/窄屏降级。这样最贴近 GitHub 网页版，也最容易复用当前项目已有 Card、Button、IconButton、TextInput 和 BottomSheet 设计体系。
+      </section>
+    </section>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active"><div class="nav-icon">‹›</div><div>代码</div></div>
+      <div class="nav-item"><div class="nav-icon">○</div><div>议题</div></div>
+      <div class="nav-item"><div class="nav-icon">↻</div><div>工作流</div></div>
+      <div class="nav-item"><div class="nav-icon">⚙</div><div>设置</div></div>
+      <div class="nav-item"><div class="nav-icon">☰</div><div>更多</div></div>
+    </nav>
+  </main>
+</body>
+</html>

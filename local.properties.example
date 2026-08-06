@@ -1,0 +1,16 @@
+# SunsetGitHub local configuration template.
+# Copy needed keys to local.properties and keep real values out of commits.
+
+# Android SDK path. setup_android_env.sh updates this automatically in local.properties.
+sdk.dir=/path/to/android/sdk
+
+# Device Flow client_id is optional. Token login works without it.
+# Device Flow only needs client_id; do not add client_secret or redirect_uri keys.
+github.oauth.client.id=
+
+# Release signing. Required only when you want assembleRelease to produce a signed APK.
+# release.store.file can be absolute, or relative to the repository root.
+release.store.file=
+release.store.password=
+release.key.alias=
+release.key.password=

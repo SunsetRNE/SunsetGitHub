@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>仓库页信息密度改造预览 - SunsetGitHub</title>
+  <style>
+    :root {
+      --canvas: #f6f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --border: #d8dee4;
+      --border-soft: #eaeef2;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf4ff;
+      --danger: #cf222e;
+      --shadow: 0 10px 30px rgba(27, 31, 36, .08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shell: #89e051;
+      --kotlin: #a97bff;
+      --c: #555555;
+      --make: #427819;
+      --python: #3572A5;
+      --java: #b07219;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eef5ff 0%, #f8fafc 45%, #fff 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", sans-serif;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 22px;
+    }
+    h1 { margin: 0 0 10px; font-size: 28px; letter-spacing: -.02em; }
+    .lead { margin: 0 0 16px; color: var(--muted); line-height: 1.7; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 7px 10px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255,255,255,.72);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .notes {
+      background: rgba(255,255,255,.74);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .notes h2 { margin: 0 0 8px; font-size: 16px; }
+    .notes ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.75; font-size: 14px; }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+    .phone {
+      width: 100%;
+      max-width: 370px;
+      margin: 0 auto;
+      background: var(--canvas);
+      border: 1px solid rgba(175,184,193,.55);
+      border-radius: 34px;
+      box-shadow: 0 26px 60px rgba(27, 31, 36, .16);
+      overflow: hidden;
+    }
+    .phone-head {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      font-weight: 700;
+      font-size: 13px;
+      background: #fff;
+    }
+    .status-dots { color: #111; letter-spacing: 1px; }
+    .screen { padding: 16px 16px 20px; min-height: 720px; position: relative; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .toolbar h3 { margin: 0; font-size: 26px; letter-spacing: -.03em; }
+    .actions { display: flex; gap: 12px; font-size: 27px; font-weight: 500; align-items: center; }
+    .search-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .search {
+      flex: 1;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: var(--subtle);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+    }
+    .sort-chip, .filter-chip {
+      height: 34px;
+      min-width: 34px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .section-label {
+      color: var(--subtle);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 2px 8px;
+    }
+    .repo-list { display: flex; flex-direction: column; gap: 9px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 13px 14px 11px;
+      box-shadow: 0 1px 0 rgba(27,31,36,.04);
+    }
+    .card.compact { padding: 11px 12px 10px; border-radius: 15px; }
+    .repo-top { display: flex; gap: 10px; align-items: flex-start; }
+    .repo-main { flex: 1; min-width: 0; }
+    .repo-name {
+      font-size: 16px;
+      line-height: 1.28;
+      font-weight: 760;
+      letter-spacing: -.015em;
+      word-break: break-word;
+    }
+    .owner { color: var(--muted); font-weight: 650; }
+    .desc {
+      color: var(--muted);
+      line-height: 1.42;
+      font-size: 13px;
+      margin-top: 5px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .compact .desc { -webkit-line-clamp: 1; }
+    .repo-actions { display: flex; gap: 4px; color: var(--subtle); font-size: 18px; padding-top: 1px; }
+    .star-on { color: var(--accent); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+      color: var(--subtle);
+      font-size: 12px;
+      margin-top: 9px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--shell); margin-right: 4px; }
+    .lang-bar {
+      height: 7px;
+      overflow: hidden;
+      display: flex;
+      border-radius: 999px;
+      background: #eaeef2;
+      margin-top: 10px;
+    }
+    .seg { height: 100%; }
+    .legend { display: flex; flex-wrap: wrap; gap: 7px 10px; margin-top: 8px; color: var(--subtle); font-size: 11px; }
+    .legend-item { display: inline-flex; align-items: center; min-width: 0; }
+    .legend .dot { width: 7px; height: 7px; }
+    .updated { margin-left: auto; color: #8c959f; }
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 4px;
+      margin-top: 16px;
+      padding: 10px 8px;
+      border: 1px solid var(--border-soft);
+      border-radius: 24px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -8px 24px rgba(27,31,36,.08);
+      text-align: center;
+      font-size: 12px;
+    }
+    .nav-item { color: #111; }
+    .nav-item.active { color: var(--accent); font-weight: 700; }
+    .nav-icon { display: block; font-size: 21px; margin-bottom: 2px; }
+    .variant-title { margin: 0 0 8px; text-align: center; font-size: 15px; color: var(--muted); }
+    .tiny-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 13px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+    }
+    .tiny-name { font-weight: 750; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tiny-meta { margin-top: 3px; color: var(--subtle); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tiny-bar { width: 78px; height: 6px; border-radius: 999px; overflow: hidden; display: flex; background: #eaeef2; }
+    @media (max-width: 980px) {
+      .hero, .preview-grid { grid-template-columns: 1fr; }
+      .phone { max-width: 390px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <h1>仓库页信息密度改造预览</h1>
+        <p class="lead">目标是在现有 SunsetGitHub / Primer 风格上压缩卡片高度、减少大留白，并把语言构成从“单语言文本”升级为可扫读的比例条。下面给出三种可选密度：推荐默认使用“平衡紧凑卡片”，列表很长时切换“极速列表”。</p>
+        <div class="pill-row">
+          <span class="pill">Compose LazyColumn</span>
+          <span class="pill">语言比例条</span>
+          <span class="pill">卡片高度约 -28% ~ -45%</span>
+          <span class="pill">减少阴影和嵌套</span>
+          <span class="pill">稳定 key + 预排序</span>
+        </div>
+      </div>
+      <aside class="notes">
+        <h2>实现建议</h2>
+        <ul>
+          <li>列表项保持纯 Compose，避免每项 AndroidView / 复杂 Shape。</li>
+          <li>语言颜色和百分比在 ViewModel 层预计算，UI 层只绘制。</li>
+          <li>描述默认 1～2 行，完整信息进入详情页。</li>
+          <li>排序/搜索结果使用 remember 缓存，避免每次重组重复 filter + sort。</li>
+          <li>加载语言接口并发限流，先显示基础仓库，再渐进补语言条。</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="preview-grid">
+      <div>
+        <p class="variant-title">方案 A：平衡紧凑卡片，推荐</p>
+        <div class="phone">
+          <div class="phone-head"><span>12:02</span><span class="status-dots">◉ 45%</span></div>
+          <div class="screen">
+            <div class="toolbar"><h3>仓库</h3><div class="actions"><span>＋</span><span>⟳</span></div></div>
+            <div class="search-row"><div class="search">搜索仓库 / 语言 / 描述</div><button class="sort-chip">⇅</button></div>
+            <div class="section-label"><span>已加载 42 个仓库</span><span>默认 · 置顶优先</span></div>
+            <div class="repo-list">
+              <article class="card compact">
+                <div class="repo-top">
+                  <div class="repo-main">
+                    <div class="repo-name"><span class="owner">SunsetRNE/</span>oppo_oplus_realme_sm8650</div>
+                    <div class="desc">An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8650 series in a completely new way.</div>
+                  </div>
+                  <div class="repo-actions"><span class="star-on">★</span><span>♡</span></div>
+                </div>
+                <div class="lang-bar"><span class="seg" style="width:82%;background:var(--shell)"></span><span class="seg" style="width:10%;background:var(--make)"></span><span class="seg" style="width:8%;background:var(--c)"></span></div>
+                <div class="meta"><span><i class="dot" style="background:var(--shell)"></i>Shell 82%</span><span>★ 6</span><span>⑂ 2</span><span>main</span><span class="updated">2d</span></div>
+              </article>
+              <article class="card compact">
+                <div class="repo-top"><div class="repo-main"><div class="repo-name"><span class="owner">SunsetRNE/</span>oppo_oplus_realme_sm8750</div><div class="desc">Automatic kernel builder for Snapdragon sm8750 series.</div></div><div class="repo-actions"><span class="star-on">★</span><span>♡</span></div></div>
+                <div class="lang-bar"><span class="seg" style="width:88%;background:var(--shell)"></span><span class="seg" style="width:7%;background:var(--make)"></span><span class="seg" style="width:5%;background:var(--python)"></span></div>
+                <div class="meta"><span><i class="dot" style="background:var(--shell)"></i>Shell 88%</span><span>★ 2</span><span>main</span><span class="updated">5d</span></div>
+              </article>
+              <article class="card compact">
+                <div class="repo-top"><div class="repo-main"><div class="repo-name"><span class="owner">SunsetREN/</span>SunsetGitHub</div><div class="desc">Mobile GitHub client for repository browsing, markdown preview, issues and local workspace flows.</div></div><div class="repo-actions"><span>☆</span><span style="color:var(--danger)">♥</span></div></div>
+                <div class="lang-bar"><span class="seg" style="width:74%;background:var(--kotlin)"></span><span class="seg" style="width:18%;background:var(--java)"></span><span class="seg" style="width:8%;background:var(--python)"></span></div>
+                <div class="legend"><span class="legend-item"><i class="dot" style="background:var(--kotlin)"></i>Kotlin 74%</span><span class="legend-item"><i class="dot" style="background:var(--java)"></i>Java 18%</span><span>★ 18</span><span>⑂ 4</span></div>
+              </article>
+            </div>
+            <nav class="bottom-nav"><div class="nav-item"><span class="nav-icon">⌂</span>首页</div><div class="nav-item active"><span class="nav-icon">▦</span>仓库</div><div class="nav-item"><span class="nav-icon">●</span>通知</div><div class="nav-item"><span class="nav-icon">⚙</span>设置</div></nav>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="variant-title">方案 B：信息增强卡片，适合收藏/置顶页</p>
+        <div class="phone">
+          <div class="phone-head"><span>12:02</span><span class="status-dots">◉ 45%</span></div>
+          <div class="screen">
+            <div class="toolbar"><h3>仓库</h3><div class="actions"><span>＋</span><span>⟳</span></div></div>
+            <div class="search-row"><div class="search">搜索仓库</div><button class="filter-chip">语言</button><button class="sort-chip">⇅</button></div>
+            <div class="section-label"><span>置顶 3 · 收藏 12</span><span>按活跃排序</span></div>
+            <div class="repo-list">
+              <article class="card">
+                <div class="repo-top"><div class="repo-main"><div class="repo-name"><span class="owner">SunsetRNE/</span>oppo_oplus_realme_sm8650</div><div class="desc">An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8650 series in a completely new way.</div></div><div class="repo-actions"><span class="star-on">★</span><span>♡</span></div></div>
+                <div class="lang-bar"><span class="seg" style="width:82%;background:var(--shell)"></span><span class="seg" style="width:10%;background:var(--make)"></span><span class="seg" style="width:8%;background:var(--c)"></span></div>
+                <div class="legend"><span class="legend-item"><i class="dot" style="background:var(--shell)"></i>Shell 82%</span><span class="legend-item"><i class="dot" style="background:var(--make)"></i>Makefile 10%</span><span class="legend-item"><i class="dot" style="background:var(--c)"></i>C 8%</span></div>
+                <div class="meta"><span>★ 6</span><span>Fork 2</span><span>main</span><span>更新 2 天前</span></div>
+              </article>
+              <article class="card">
+                <div class="repo-top"><div class="repo-main"><div class="repo-name"><span class="owner">SunsetREN/</span>SunsetGitHub</div><div class="desc">Android GitHub client with Compose-first repository dashboard and local file manager.</div></div><div class="repo-actions"><span>☆</span><span style="color:var(--danger)">♥</span></div></div>
+                <div class="lang-bar"><span class="seg" style="width:74%;background:var(--kotlin)"></span><span class="seg" style="width:18%;background:var(--java)"></span><span class="seg" style="width:8%;background:var(--python)"></span></div>
+                <div class="legend"><span class="legend-item"><i class="dot" style="background:var(--kotlin)"></i>Kotlin 74%</span><span class="legend-item"><i class="dot" style="background:var(--java)"></i>Java 18%</span><span class="legend-item"><i class="dot" style="background:var(--python)"></i>Python 8%</span></div>
+                <div class="meta"><span>★ 18</span><span>Fork 4</span><span>main</span><span>更新 1 小时前</span></div>
+              </article>
+            </div>
+            <nav class="bottom-nav"><div class="nav-item"><span class="nav-icon">⌂</span>首页</div><div class="nav-item active"><span class="nav-icon">▦</span>仓库</div><div class="nav-item"><span class="nav-icon">●</span>通知</div><div class="nav-item"><span class="nav-icon">⚙</span>设置</div></nav>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="variant-title">方案 C：极速列表，长列表模式</p>
+        <div class="phone">
+          <div class="phone-head"><span>12:02</span><span class="status-dots">◉ 45%</span></div>
+          <div class="screen">
+            <div class="toolbar"><h3>仓库</h3><div class="actions"><span>＋</span><span>⟳</span></div></div>
+            <div class="search-row"><div class="search">搜索</div><button class="sort-chip">⇅</button></div>
+            <div class="section-label"><span>42 repositories</span><span>compact</span></div>
+            <div class="repo-list">
+              <div class="tiny-card"><div><div class="tiny-name">SunsetRNE/oppo_oplus_realme_sm8650</div><div class="tiny-meta">Shell · ★ 6 · Fork 2 · main</div></div><div class="tiny-bar"><span class="seg" style="width:82%;background:var(--shell)"></span><span class="seg" style="width:18%;background:var(--make)"></span></div></div>
+              <div class="tiny-card"><div><div class="tiny-name">SunsetRNE/oppo_oplus_realme_sm8750</div><div class="tiny-meta">Shell · ★ 2 · main</div></div><div class="tiny-bar"><span class="seg" style="width:88%;background:var(--shell)"></span><span class="seg" style="width:12%;background:var(--python)"></span></div></div>
+              <div class="tiny-card"><div><div class="tiny-name">SunsetREN/SunsetGitHub</div><div class="tiny-meta">Kotlin · ★ 18 · Fork 4 · main</div></div><div class="tiny-bar"><span class="seg" style="width:74%;background:var(--kotlin)"></span><span class="seg" style="width:18%;background:var(--java)"></span><span class="seg" style="width:8%;background:var(--python)"></span></div></div>
+              <div class="tiny-card"><div><div class="tiny-name">SunsetREN/workspace-sync</div><div class="tiny-meta">Kotlin · Issue 3 · dev</div></div><div class="tiny-bar"><span class="seg" style="width:70%;background:var(--kotlin)"></span><span class="seg" style="width:30%;background:var(--python)"></span></div></div>
+              <div class="tiny-card"><div><div class="tiny-name">SunsetREN/markdown-preview</div><div class="tiny-meta">Java · ★ 4 · main</div></div><div class="tiny-bar"><span class="seg" style="width:64%;background:var(--java)"></span><span class="seg" style="width:36%;background:var(--kotlin)"></span></div></div>
+              <div class="tiny-card"><div><div class="tiny-name">SunsetRNE/kernel-tools</div><div class="tiny-meta">Shell · Fork 1 · stable</div></div><div class="tiny-bar"><span class="seg" style="width:91%;background:var(--shell)"></span><span class="seg" style="width:9%;background:var(--c)"></span></div></div>
+              <div class="tiny-card"><div><div class="tiny-name">SunsetREN/issue-lab</div><div class="tiny-meta">Kotlin · Issue 8</div></div><div class="tiny-bar"><span class="seg" style="width:80%;background:var(--kotlin)"></span><span class="seg" style="width:20%;background:var(--java)"></span></div></div>
+            </div>
+            <nav class="bottom-nav"><div class="nav-item"><span class="nav-icon">⌂</span>首页</div><div class="nav-item active"><span class="nav-icon">▦</span>仓库</div><div class="nav-item"><span class="nav-icon">●</span>通知</div><div class="nav-item"><span class="nav-icon">⚙</span>设置</div></nav>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

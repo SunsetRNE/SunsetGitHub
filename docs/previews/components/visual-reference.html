@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SunsetGitHub Visual Reference</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #ffffff;
+      --surface: #ffffff;
+      --subtle: #ffffff;
+      --border: #d0d7de;
+      --border-strong: #8c959f;
+      --divider: #d8dee4;
+      --text-primary: #24292f;
+      --text-secondary: #57606a;
+      --text-muted: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf0ff;
+      --accent-soft-border: #add5ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --success-border: #aceebb;
+      --attention: #bc4c00;
+      --attention-soft: #fff1e5;
+      --attention-border: #ffd8b5;
+      --danger: #cf222e;
+      --danger-soft: #ffebe9;
+      --danger-border: #ffcecb;
+      --done: #8250df;
+      --done-soft: #fbefff;
+      --done-border: #ecd8ff;
+      --chip-bg: #eff2f5;
+      --button-global: #000000;
+      --button-global-text: #ffffff;
+      --nav-floating: rgba(255,255,255,.92);
+      --shadow: 0 16px 42px rgba(31,35,40,.12);
+      --page-x: 8px;
+      --page-y: 12px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --card-padding: 12px;
+      --card-radius: 12px;
+      --button-radius: 8px;
+      --input-radius: 10px;
+      --floating-radius: 22px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --canvas: #0d1117;
+      --surface: #161b22;
+      --subtle: #0d1117;
+      --border: #30363d;
+      --border-strong: #8b949e;
+      --divider: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #7d8590;
+      --accent: #58a6ff;
+      --accent-soft: rgba(47,129,247,.2);
+      --accent-soft-border: #1f6feb;
+      --success: #3fb950;
+      --success-soft: rgba(38,166,65,.2);
+      --success-border: #238636;
+      --attention: #d29922;
+      --attention-soft: rgba(210,153,34,.2);
+      --attention-border: #9e6a03;
+      --danger: #ff7b72;
+      --danger-soft: rgba(248,81,73,.2);
+      --danger-border: #da3633;
+      --done: #bc8cff;
+      --done-soft: rgba(163,113,247,.2);
+      --done-border: #8957e5;
+      --chip-bg: #21262d;
+      --button-global: #000000;
+      --button-global-text: #ffffff;
+      --nav-floating: rgba(22,27,34,.92);
+      --shadow: 0 16px 42px rgba(1,4,9,.42);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    code { font-family: var(--mono); font-size: .92em; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: var(--button-global);
+      color: var(--button-global-text);
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .theme-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 4px;
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 18px;
+    }
+
+    .theme-switch button {
+      border: 0;
+      border-radius: 7px;
+      padding: 8px 10px;
+      color: var(--text-secondary);
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .theme-switch button.active {
+      background: var(--surface);
+      color: var(--text-primary);
+      box-shadow: inset 0 0 0 1px var(--border);
+      font-weight: 700;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 3px;
+      margin-top: 12px;
+    }
+
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text-secondary);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .nav-list a:hover { background: var(--chip-bg); color: var(--text-primary); }
+    .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+    .nav-dot.accent { background: var(--accent); }
+    .nav-dot.success { background: var(--success); }
+    .nav-dot.attention { background: var(--attention); }
+    .nav-dot.danger { background: var(--danger); }
+    .nav-dot.done { background: var(--done); }
+
+    main {
+      min-width: 0;
+      padding: 26px clamp(16px, 4vw, 46px) 54px;
+    }
+
+    .hero {
+      max-width: 1080px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 12px 0 0;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    .section {
+      max-width: 1080px;
+      margin: 0 0 34px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .section h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .section-note {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .grid { display: grid; gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .card-meta { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+    .body-copy { color: var(--text-secondary); margin: 10px 0 0; }
+
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+    .swatch {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .swatch-chip { height: 52px; border-bottom: 1px solid var(--border); }
+    .swatch-body { padding: 10px; }
+    .swatch-name { font-weight: 700; font-size: 13px; }
+    .swatch-value { color: var(--text-muted); font-family: var(--mono); font-size: 12px; margin-top: 2px; }
+
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    .token-table th, .token-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--divider);
+      text-align: left;
+      vertical-align: top;
+    }
+    .token-table th { color: var(--text-muted); font-size: 12px; font-weight: 700; }
+    .token-table tr:last-child td { border-bottom: 0; }
+
+    .button-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .btn {
+      min-height: 36px;
+      border-radius: var(--button-radius);
+      border: 1px solid transparent;
+      padding: 8px 13px;
+      font: inherit;
+      font-weight: 700;
+      cursor: default;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .btn.global { background: var(--button-global); color: var(--button-global-text); }
+    .btn.primary { background: var(--accent); color: #fff; }
+    .btn.outline { background: var(--surface); color: var(--text-primary); border-color: var(--border); }
+    .btn.text { background: transparent; color: var(--accent); }
+    .btn.disabled { opacity: .55; }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .input-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .input-field input,
+    .input-field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--input-radius);
+      background: var(--surface);
+      color: var(--text-primary);
+      padding: 10px 11px;
+      font: inherit;
+      outline: 0;
+    }
+    .input-field input:focus,
+    .input-field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: var(--chip-bg);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      min-height: 24px;
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+    .chip.accent { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft-border); }
+    .chip.success { background: var(--success-soft); color: var(--success); border-color: var(--success-border); }
+    .chip.attention { background: var(--attention-soft); color: var(--attention); border-color: var(--attention-border); }
+    .chip.danger { background: var(--danger-soft); color: var(--danger); border-color: var(--danger-border); }
+    .chip.done { background: var(--done-soft); color: var(--done); border-color: var(--done-border); }
+
+    .mobile-frame {
+      width: min(100%, 390px);
+      border: 1px solid var(--border-strong);
+      border-radius: 26px;
+      background: var(--canvas);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .phone-status {
+      height: 22px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--divider);
+    }
+    .top-app-bar {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--divider);
+    }
+    .top-app-bar strong { font-size: 17px; }
+    .phone-page { padding: var(--page-y) var(--page-x) 82px; display: grid; gap: var(--card-spacing, 12px); }
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      min-height: 64px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    .nav-item {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 3px;
+      color: var(--button-global);
+      font-size: 11px;
+    }
+    [data-theme="dark"] .nav-item { color: #000; }
+    .nav-item.active { color: var(--accent); font-weight: 700; }
+    .nav-icon { font-size: 18px; line-height: 1; }
+    .floating-nav {
+      margin: -78px 8px 12px;
+      min-height: 56px;
+      border: 1px solid var(--border);
+      border-radius: var(--floating-radius);
+      background: var(--nav-floating);
+      backdrop-filter: blur(14px);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      box-shadow: var(--shadow);
+    }
+
+    .repo-head { display: flex; gap: 10px; align-items: start; }
+    .repo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--chip-bg);
+      color: var(--accent);
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+    .repo-title { margin: 0; font-size: 15px; font-weight: 800; }
+    .repo-desc { margin: 8px 0 0; color: var(--text-secondary); }
+    .repo-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; color: var(--text-muted); font-size: 12px; }
+
+    .profile-cover {
+      height: 66px;
+      border-radius: 12px 12px 0 0;
+      background: linear-gradient(135deg, var(--accent-soft), var(--success-soft));
+      border-bottom: 1px solid var(--border);
+    }
+    .avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 3px solid var(--surface);
+      background: var(--button-global);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      margin: -38px 0 8px 16px;
+    }
+    .profile-body { padding: 0 16px 15px; }
+    .profile-name { font-size: 22px; font-weight: 800; line-height: 1.1; }
+    .profile-login { color: var(--text-secondary); margin-top: 2px; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .stat {
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+    }
+    .stat strong { display: block; font-size: 16px; }
+    .stat span { color: var(--text-muted); font-size: 11px; }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+    .settings-row:last-child { border-bottom: 0; }
+    .switch {
+      width: 44px;
+      height: 32px;
+      border-radius: 999px;
+      background: transparent;
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .switch::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 7px;
+      height: 18px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 32%, var(--surface));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      right: 2px;
+      top: 5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 2px 4px rgba(31,35,40,.24);
+    }
+    .switch.off::before {
+      background: #9ea3a8;
+      box-shadow: none;
+      opacity: .82;
+    }
+    .switch.off::after {
+      left: 2px;
+      right: auto;
+      background: #eeeeee;
+      box-shadow: 0 2px 4px rgba(31,35,40,.2);
+    }
+
+    .skeleton-line {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--chip-bg), var(--divider), var(--chip-bg));
+    }
+
+    .resource-map {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .resource-map li {
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .resource-map code:first-child { color: var(--accent); font-weight: 700; min-width: 210px; }
+    .resource-map span { color: var(--text-secondary); }
+
+    .css-vars {
+      display: block;
+      overflow: auto;
+      max-height: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-secondary);
+      font-family: var(--mono);
+      font-size: 12px;
+      white-space: pre;
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+      main { padding-top: 20px; }
+      .grid.two, .grid.three, .grid.four { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="app" data-theme="light">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">SG</div>
+        <div>
+          <h1>SunsetGitHub</h1>
+          <p>视觉调整参考页</p>
+        </div>
+      </div>
+
+      <div class="theme-switch" aria-label="Theme preview switcher">
+        <button type="button" class="active" data-set-theme="light">Light</button>
+        <button type="button" data-set-theme="dark">Dark</button>
+      </div>
+
+      <p class="section-note">此文件根据 Android 资源整理：<code>colors.xml</code>、<code>values-night/colors.xml</code>、<code>themes.xml</code>、<code>styles.xml</code>、<code>dimens.xml</code>。</p>
+
+      <nav class="nav-list" aria-label="Page sections">
+        <a href="#palette"><span class="nav-dot accent"></span>颜色 Token</a>
+        <a href="#components"><span class="nav-dot success"></span>默认组件</a>
+        <a href="#screens"><span class="nav-dot attention"></span>移动端组合预览</a>
+        <a href="#settings"><span class="nav-dot done"></span>设定项映射</a>
+        <a href="#variables"><span class="nav-dot danger"></span>快速调色区</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">GitHub Primer Inspired Android UI</p>
+        <h2>默认色彩、组件和页面状态参考</h2>
+        <p>用于在正式修改 Android 资源前快速观察色彩层级、按钮、卡片、输入框、标签、导航栏和设置页组件的整体效果。页面里的 CSS 变量名称尽量对应现有 Android resource 名称。</p>
+      </section>
+
+      <section class="section" id="palette">
+        <div class="section-head">
+          <div>
+            <h3>颜色 Token</h3>
+            <p class="section-note">对应 <code>app/src/main/res/values/colors.xml</code> 与 <code>values-night/colors.xml</code>。</p>
+          </div>
+        </div>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-chip" style="background:var(--canvas)"></div><div class="swatch-body"><div class="swatch-name">github_canvas</div><div class="swatch-value">--canvas</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--surface)"></div><div class="swatch-body"><div class="swatch-name">github_surface</div><div class="swatch-value">--surface</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--border)"></div><div class="swatch-body"><div class="swatch-name">github_border</div><div class="swatch-value">--border</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--text-primary)"></div><div class="swatch-body"><div class="swatch-name">github_text_primary</div><div class="swatch-value">--text-primary</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--text-secondary)"></div><div class="swatch-body"><div class="swatch-name">github_text_secondary</div><div class="swatch-value">--text-secondary</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--text-muted)"></div><div class="swatch-body"><div class="swatch-name">github_text_muted</div><div class="swatch-value">--text-muted</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--accent)"></div><div class="swatch-body"><div class="swatch-name">github_accent</div><div class="swatch-value">--accent</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--success)"></div><div class="swatch-body"><div class="swatch-name">github_success</div><div class="swatch-value">--success</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--attention)"></div><div class="swatch-body"><div class="swatch-name">github_attention</div><div class="swatch-value">--attention</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--danger)"></div><div class="swatch-body"><div class="swatch-name">github_danger</div><div class="swatch-value">--danger</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--done)"></div><div class="swatch-body"><div class="swatch-name">github_done</div><div class="swatch-value">--done</div></div></div>
+          <div class="swatch"><div class="swatch-chip" style="background:var(--chip-bg)"></div><div class="swatch-body"><div class="swatch-name">github_chip_background</div><div class="swatch-value">--chip-bg</div></div></div>
+        </div>
+      </section>
+
+      <section class="section" id="components">
+        <div class="section-head">
+          <div>
+            <h3>默认组件</h3>
+            <p class="section-note">参考 <code>Widget.SunsetGitHub.Material.*</code> 与 <code>TextAppearance.SunsetGitHub.Material.*</code>。</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="card">
+            <p class="card-title">按钮</p>
+            <p class="card-meta">GlobalButton 当前为黑底白字；PrimaryButton 使用 accent 蓝。</p>
+            <div class="button-row" style="margin-top:12px">
+              <button class="btn global">全局按钮</button>
+              <button class="btn primary">主操作</button>
+              <button class="btn outline">描边按钮</button>
+              <button class="btn text">文本按钮</button>
+              <button class="btn outline icon-btn">↻</button>
+              <button class="btn global disabled">禁用</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">输入框</p>
+            <p class="card-meta">OutlinedBox，圆角 10dp，边框使用 github_border。</p>
+            <div class="grid" style="margin-top:12px">
+              <div class="input-field">
+                <label>仓库名称</label>
+                <input value="SunsetGitHub" aria-label="Repository name preview">
+              </div>
+              <div class="input-field">
+                <label>描述</label>
+                <textarea rows="3" aria-label="Description preview">移动端 GitHub 客户端，支持仓库、Issues、文件和个人页浏览。</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">标签与状态</p>
+            <p class="card-meta">用于 Issues、Actions、仓库语言和状态说明。</p>
+            <div class="chip-row" style="margin-top:12px">
+              <span class="chip">Kotlin</span>
+              <span class="chip accent">Open</span>
+              <span class="chip success">Success</span>
+              <span class="chip attention">Queued</span>
+              <span class="chip danger">Failed</span>
+              <span class="chip done">Merged</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">文字层级</p>
+            <p class="card-meta">Title / RepositoryName / Body / Meta / Pill。</p>
+            <div style="margin-top:12px">
+              <div style="font-size:20px;font-weight:800;color:var(--text-primary)">Title: 仓库详情</div>
+              <div style="font-size:16px;font-weight:800;color:var(--text-primary);margin-top:6px">RepositoryName: SunsetREN/SunsetGitHub</div>
+              <div style="color:var(--text-secondary);margin-top:6px">Body: 这是正文说明文本，用于描述仓库、设置项和页面状态。</div>
+              <div style="color:var(--text-muted);font-size:12px;margin-top:6px">Meta: updated 2 hours ago · Kotlin · 93 commits</div>
+              <div style="color:var(--text-secondary);font-size:10px;margin-top:8px">Pill: compact metadata</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="screens">
+        <div class="section-head">
+          <div>
+            <h3>移动端组合预览</h3>
+            <p class="section-note">模拟主 Activity 顶栏、页面 canvas、MaterialCardView、底部导航和浮动导航。</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="mobile-frame">
+            <div class="phone-status"></div>
+            <div class="top-app-bar"><strong>Repositories</strong><span style="color:var(--accent);font-weight:800">＋</span></div>
+            <div class="phone-page">
+              <div class="card">
+                <div class="repo-head">
+                  <div class="repo-icon">R</div>
+                  <div>
+                    <p class="repo-title">SunsetREN/SunsetGitHub</p>
+                    <div class="card-meta">Public · main</div>
+                  </div>
+                </div>
+                <p class="repo-desc">A Kotlin Android GitHub client with repository browsing, Markdown preview, Issues and profile views.</p>
+                <div class="repo-stats"><span>● Kotlin</span><span>★ 128</span><span>⑂ 12</span><span>Updated today</span></div>
+              </div>
+
+              <div class="card">
+                <p class="card-title">Actions</p>
+                <p class="card-meta">Manually triggered 15 hours ago</p>
+                <div class="chip-row" style="margin-top:10px"><span class="chip success">completed</span><span class="chip">6m 32s</span></div>
+              </div>
+
+              <div class="card">
+                <div class="skeleton-line" style="width:80%"></div>
+                <div class="skeleton-line" style="width:55%;margin-top:8px"></div>
+                <div class="skeleton-line" style="width:68%;margin-top:8px"></div>
+              </div>
+            </div>
+            <div class="bottom-nav">
+              <div class="nav-item"><span class="nav-icon">⌂</span><span>Home</span></div>
+              <div class="nav-item active"><span class="nav-icon">▤</span><span>Repos</span></div>
+              <div class="nav-item"><span class="nav-icon">⌕</span><span>Search</span></div>
+              <div class="nav-item"><span class="nav-icon">◌</span><span>Inbox</span></div>
+              <div class="nav-item"><span class="nav-icon">⚙</span><span>Settings</span></div>
+            </div>
+          </div>
+
+          <div class="mobile-frame">
+            <div class="phone-status"></div>
+            <div class="top-app-bar"><strong>Profile</strong><span style="color:var(--text-muted)">⋯</span></div>
+            <div class="phone-page">
+              <div class="card" style="padding:0;overflow:hidden">
+                <div class="profile-cover"></div>
+                <div class="avatar">OC</div>
+                <div class="profile-body">
+                  <div class="profile-name">The Octocat</div>
+                  <div class="profile-login">@octocat</div>
+                  <p class="body-copy">GitHub mascot account used for product demos and repository examples.</p>
+                  <div class="stat-grid">
+                    <div class="stat"><strong>42</strong><span>Repos</span></div>
+                    <div class="stat"><strong>12k</strong><span>Followers</span></div>
+                    <div class="stat"><strong>8</strong><span>Stars</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <p class="card-title">Settings</p>
+                <div class="settings-row"><div><strong>Floating navigation</strong><div class="card-meta">Enable floating bottom bar.</div></div><span class="switch"></span></div>
+                <div class="settings-row"><div><strong>Sora editor</strong><div class="card-meta">Use enhanced code editor.</div></div><span class="switch"></span></div>
+              </div>
+            </div>
+            <div class="floating-nav">
+              <div class="nav-item active"><span class="nav-icon">⌂</span><span>Home</span></div>
+              <div class="nav-item"><span class="nav-icon">▤</span><span>Repos</span></div>
+              <div class="nav-item"><span class="nav-icon">⌕</span><span>Search</span></div>
+              <div class="nav-item"><span class="nav-icon">◌</span><span>Inbox</span></div>
+              <div class="nav-item"><span class="nav-icon">⚙</span><span>Set</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="settings">
+        <div class="section-head">
+          <div>
+            <h3>设定项映射</h3>
+            <p class="section-note">调整 Android 默认视觉时优先看这些资源。</p>
+          </div>
+        </div>
+        <ul class="resource-map">
+          <li><code>@color/github_canvas</code><span>页面背景、Activity 根背景、暗色模式基底。</span></li>
+          <li><code>@color/github_surface</code><span>Toolbar、卡片、弹窗、系统栏、底部导航背景。</span></li>
+          <li><code>@color/github_accent</code><span>主品牌色、选中导航、PrimaryButton、链接、Dialog 按钮。</span></li>
+          <li><code>@style/Widget.SunsetGitHub.Material.GlobalButton</code><span>全局默认 MaterialButton，目前黑底白字。</span></li>
+          <li><code>@style/Widget.SunsetGitHub.Material.PrimaryButton</code><span>明确主操作按钮，使用 accent 色。</span></li>
+          <li><code>@style/Widget.SunsetGitHub.Material.Card</code><span>默认卡片：surface 背景、12dp 圆角、1dp border、0dp elevation。</span></li>
+          <li><code>@style/Widget.SunsetGitHub.Material.TextInput</code><span>默认输入框：OutlinedBox、10dp 圆角、muted hint。</span></li>
+          <li><code>@style/Widget.SunsetGitHub.Material.BottomNavigation</code><span>底部导航背景、item icon/text tint、label 模式。</span></li>
+          <li><code>@dimen/card_corner_radius</code><span>默认卡片圆角，当前 12dp。</span></li>
+          <li><code>@dimen/page_horizontal_padding</code><span>页面横向 padding，当前 8dp。</span></li>
+        </ul>
+      </section>
+
+      <section class="section" id="variables">
+        <div class="section-head">
+          <div>
+            <h3>快速调色区</h3>
+            <p class="section-note">可以先改下面这些 CSS 变量预览方向，再同步到 Android XML 资源。</p>
+          </div>
+        </div>
+        <pre class="css-vars">:root {
+  --canvas: #ffffff;              /* @color/github_canvas */
+  --surface: #ffffff;             /* @color/github_surface */
+  --border: #d0d7de;              /* @color/github_border */
+  --text-primary: #24292f;        /* @color/github_text_primary */
+  --text-secondary: #57606a;      /* @color/github_text_secondary */
+  --text-muted: #6e7781;          /* @color/github_text_muted */
+  --accent: #0969da;              /* @color/github_accent */
+  --success: #1a7f37;             /* @color/github_success */
+  --attention: #bc4c00;           /* @color/github_attention */
+  --danger: #cf222e;              /* @color/github_danger */
+  --done: #8250df;                /* @color/github_done */
+  --chip-bg: #eff2f5;             /* @color/github_chip_background */
+  --button-global: #000000;       /* GlobalButton backgroundTint */
+  --card-radius: 12px;            /* @dimen/card_corner_radius */
+  --button-radius: 8px;           /* GlobalButton / PrimaryButton cornerRadius */
+  --input-radius: 10px;           /* TextInputLayout box corner radius */
+}</pre>
+      </section>
+
+      <section class="section">
+        <table class="token-table">
+          <thead><tr><th>当前默认</th><th>设计含义</th><th>修改建议</th></tr></thead>
+          <tbody>
+            <tr><td><code>colorPrimary = github_surface</code></td><td>顶栏/系统栏更像内容容器，而不是强品牌色。</td><td>若想更品牌化，可只改 toolbar 背景，避免全局 primary 影响 Dialog、Ripple 和系统控件。</td></tr>
+            <tr><td><code>GlobalButton = black</code></td><td>接近 GitHub 的高对比默认操作按钮。</td><td>若觉得过重，可改为 outline 风格或使用 <code>github_accent</code>。</td></tr>
+            <tr><td><code>Card elevation = 0dp</code></td><td>以边框分层，符合 GitHub Primer 风格。</td><td>若要 Material 阴影感，提高 elevation 时也要降低边框存在感。</td></tr>
+            <tr><td><code>page_horizontal_padding = 8dp</code></td><td>移动端信息密度较高。</td><td>若页面显拥挤，可尝试 12dp 或 16dp，并同步卡片内边距。</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const app = document.getElementById('app');
+    const buttons = document.querySelectorAll('[data-set-theme]');
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const theme = button.dataset.setTheme;
+        app.dataset.theme = theme;
+        buttons.forEach((item) => item.classList.toggle('active', item === button));
+      });
+    });
+  </script>
+</body>
+</html>

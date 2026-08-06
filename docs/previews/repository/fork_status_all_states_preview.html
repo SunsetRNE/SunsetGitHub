@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang='zh-CN'>
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover' />
+  <title>Fork 状态卡全状态预览</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f6f8fa;
+      --surface: #ffffff;
+      --surface-soft: #f6f8fa;
+      --text: #24292f;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --border: #d8dee4;
+      --border-soft: #eaeef2;
+      --black: #000000;
+      --black-hover: #24292f;
+      --white: #ffffff;
+      --blue: #0969da;
+      --blue-soft: #ddf4ff;
+      --green: #1a7f37;
+      --green-soft: #dafbe1;
+      --orange: #bc4c00;
+      --orange-soft: #fff1e5;
+      --red: #cf222e;
+      --red-soft: #ffebe9;
+      --purple: #8250df;
+      --purple-soft: #fbefff;
+      --shadow: 0 8px 24px rgba(140, 149, 159, 0.16);
+      --radius-xl: 24px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Microsoft YaHei, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+    }
+
+    .phone {
+      width: min(430px, 100%);
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 24px 14px 40px;
+      background: var(--surface);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 6px 20px;
+    }
+
+    .back {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 34px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .screen-title {
+      min-width: 0;
+      font-size: 24px;
+      font-weight: 760;
+      letter-spacing: -0.6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-card,
+    .state-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(27, 31, 36, 0.04);
+      overflow: hidden;
+    }
+
+    .repo-card { padding: 15px; margin-bottom: 18px; }
+
+    .repo-row {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b7f5ce, #f6fbff);
+      display: grid;
+      place-items: center;
+      color: #6a737d;
+      font-weight: 800;
+      border: 1px solid var(--border-soft);
+    }
+
+    .repo-name {
+      min-width: 0;
+      font-size: 21px;
+      font-weight: 780;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-meta {
+      margin-top: 3px;
+      color: var(--subtle);
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
+    .repo-desc {
+      margin: 14px 0 12px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .repo-stats {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      height: 36px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section-title {
+      margin: 20px 4px 10px;
+      color: var(--subtle);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .state-card {
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .state-card.emphasis {
+      background: linear-gradient(180deg, rgba(221, 244, 255, 0.58), rgba(255, 255, 255, 0) 66px), var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .state-card.warning {
+      background: linear-gradient(180deg, rgba(255, 241, 229, 0.75), rgba(255, 255, 255, 0) 66px), var(--surface);
+    }
+
+    .state-card.success {
+      background: linear-gradient(180deg, rgba(218, 251, 225, 0.65), rgba(255, 255, 255, 0) 66px), var(--surface);
+    }
+
+    .state-card.danger {
+      background: linear-gradient(180deg, rgba(255, 235, 233, 0.72), rgba(255, 255, 255, 0) 66px), var(--surface);
+    }
+
+    .state-head {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .state-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--blue);
+      background: var(--blue-soft);
+      border: 1px solid #b6e3ff;
+    }
+
+    .state-icon.green { color: var(--green); background: var(--green-soft); border-color: #aceebb; }
+    .state-icon.orange { color: var(--orange); background: var(--orange-soft); border-color: #ffd8b5; }
+    .state-icon.red { color: var(--red); background: var(--red-soft); border-color: #ffcecb; }
+    .state-icon.purple { color: var(--purple); background: var(--purple-soft); border-color: #ecd8ff; }
+    .state-icon.neutral { color: var(--muted); background: var(--surface-soft); border-color: var(--border); }
+
+    .kicker {
+      color: var(--subtle);
+      font-size: 12px;
+      font-weight: 760;
+      margin-bottom: 3px;
+    }
+
+    .state-title {
+      min-width: 0;
+      font-size: 19px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.25px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      color: var(--blue);
+      background: var(--blue-soft);
+      border: 1px solid #b6e3ff;
+    }
+
+    .pill.green { color: var(--green); background: var(--green-soft); border-color: #aceebb; }
+    .pill.orange { color: var(--orange); background: var(--orange-soft); border-color: #ffd8b5; }
+    .pill.red { color: var(--red); background: var(--red-soft); border-color: #ffcecb; }
+    .pill.purple { color: var(--purple); background: var(--purple-soft); border-color: #ecd8ff; }
+    .pill.neutral { color: var(--muted); background: var(--surface-soft); border-color: var(--border); }
+
+    .state-copy {
+      margin: 11px 0 13px 53px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .target {
+      color: var(--text);
+      font-weight: 720;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-left: 53px;
+    }
+
+    .btn {
+      min-height: 42px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 780;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 10px;
+    }
+
+    .btn.primary {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    .btn.warning {
+      color: var(--orange);
+      border-color: #ffd8b5;
+      background: rgba(255, 241, 229, 0.45);
+    }
+
+    .btn.disabled,
+    .btn:disabled {
+      opacity: 0.46;
+      pointer-events: none;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .note {
+      margin: 18px 4px 0;
+      color: var(--subtle);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 360px) {
+      .state-copy,
+      .actions { margin-left: 0; }
+      .actions { grid-template-columns: 1fr; }
+      .state-head { grid-template-columns: 38px minmax(0, 1fr); }
+      .pill { grid-column: 2; justify-self: start; margin-top: 5px; }
+      .state-icon { width: 38px; height: 38px; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #0d1117;
+        --surface: #161b22;
+        --surface-soft: #21262d;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --subtle: #7d8590;
+        --border: #30363d;
+        --border-soft: #21262d;
+        --black: #e6edf3;
+        --black-hover: #f0f6fc;
+        --white: #0d1117;
+        --blue-soft: rgba(88, 166, 255, 0.18);
+        --green-soft: rgba(46, 160, 67, 0.18);
+        --orange-soft: rgba(210, 153, 34, 0.18);
+        --red-soft: rgba(248, 81, 73, 0.18);
+        --purple-soft: rgba(188, 140, 255, 0.18);
+      }
+      .state-card.emphasis,
+      .state-card.warning,
+      .state-card.success,
+      .state-card.danger { background: var(--surface); }
+      .repo-card,
+      .state-card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class='phone'>
+    <header class='topbar'>
+      <button class='back' aria-label='返回'>‹</button>
+      <div class='screen-title'>SunsetRNE/oppo_oplus_realme_sm8650</div>
+    </header>
+
+    <section class='repo-card'>
+      <div class='repo-row'>
+        <div class='avatar'>H</div>
+        <div>
+          <div class='repo-name'>oppo_oplus_realme_sm8650</div>
+          <div class='repo-meta'>SunsetRNE · Fork · main</div>
+        </div>
+        <button class='icon-button'>↗</button>
+        <button class='icon-button'>★</button>
+      </div>
+      <p class='repo-desc'>An automatic kernel builder for Oppo/Oneplus/Realme Snapdragon sm8650 series in a complete workflow.</p>
+      <div class='repo-stats'><span>★ 5</span><span>⑂ 1</span><span>Issue 0</span><span>👁 5</span></div>
+    </section>
+
+    <div class='section-title'>Core states / 核心状态</div>
+
+    <section class='state-card emphasis'>
+      <div class='state-head'>
+        <div class='state-icon'>⑂</div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>领先源仓库 11 个提交</div></div>
+        <span class='pill orange'>可贡献</span>
+      </div>
+      <p class='state-copy'>当前分支可向 <span class='target'>cctv18/main</span> 贡献更改；同步前建议先确认是否还有上游更新。</p>
+      <div class='actions'><button class='btn primary'>⑂ 贡献更改</button><button class='btn'>⟳ 同步 Fork</button></div>
+    </section>
+
+    <section class='state-card warning'>
+      <div class='state-head'>
+        <div class='state-icon orange'>↓</div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>落后源仓库 4 个提交</div></div>
+        <span class='pill orange'>建议同步</span>
+      </div>
+      <p class='state-copy'>源仓库 <span class='target'>cctv18/main</span> 有新提交，建议先同步 Fork，再继续编辑或发起 PR。</p>
+      <div class='actions'><button class='btn primary'>⟳ 同步 Fork</button><button class='btn disabled'>⑂ 贡献更改</button></div>
+    </section>
+
+    <section class='state-card warning'>
+      <div class='state-head'>
+        <div class='state-icon orange'>↕</div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>分叉：领先 3 个，落后 5 个</div></div>
+        <span class='pill orange'>需谨慎</span>
+      </div>
+      <p class='state-copy'>你的 Fork 和源仓库都存在新提交。建议先贡献你的更改；直接同步可能遇到冲突。</p>
+      <div class='actions'><button class='btn primary'>⑂ 贡献更改</button><button class='btn warning'>⟳ 谨慎同步</button></div>
+    </section>
+
+    <section class='state-card success'>
+      <div class='state-head'>
+        <div class='state-icon green'>✓</div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>已与源仓库保持同步</div></div>
+        <span class='pill green'>已同步</span>
+      </div>
+      <p class='state-copy'>当前 Fork 与 <span class='target'>cctv18/main</span> 没有提交差异。此时不需要同步，也没有可贡献的领先提交。</p>
+      <div class='actions'><button class='btn disabled'>⑂ 贡献更改</button><button class='btn disabled'>⟳ 同步 Fork</button></div>
+    </section>
+
+    <div class='section-title'>Loading / 操作中</div>
+
+    <section class='state-card'>
+      <div class='state-head'>
+        <div class='state-icon neutral'><span class='spinner'></span></div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>正在检查 Fork 同步状态…</div></div>
+        <span class='pill neutral'>检查中</span>
+      </div>
+      <p class='state-copy'>正在比较源仓库与当前 Fork 的提交差异，完成前先禁用操作按钮。</p>
+      <div class='actions'><button class='btn primary disabled'>⑂ 贡献更改</button><button class='btn disabled'>⟳ 同步 Fork</button></div>
+    </section>
+
+    <section class='state-card'>
+      <div class='state-head'>
+        <div class='state-icon'><span class='spinner'></span></div>
+        <div><div class='kicker'>同步中</div><div class='state-title'>正在从源仓库同步提交…</div></div>
+        <span class='pill'>同步中</span>
+      </div>
+      <p class='state-copy'>同步完成后会重新刷新仓库状态。此时贡献按钮和同步按钮都应禁用，避免重复请求。</p>
+      <div class='actions'><button class='btn disabled'>⑂ 贡献更改</button><button class='btn primary disabled'><span class='spinner'></span> 同步中…</button></div>
+    </section>
+
+    <section class='state-card'>
+      <div class='state-head'>
+        <div class='state-icon purple'><span class='spinner'></span></div>
+        <div><div class='kicker'>创建 PR</div><div class='state-title'>正在创建贡献请求…</div></div>
+        <span class='pill purple'>创建中</span>
+      </div>
+      <p class='state-copy'>正在从当前 Fork 向源仓库创建 Pull Request，创建完成后显示查看 PR 操作。</p>
+      <div class='actions'><button class='btn primary disabled'><span class='spinner'></span> 创建中…</button><button class='btn disabled'>⟳ 同步 Fork</button></div>
+    </section>
+
+    <div class='section-title'>Result / 结果与异常</div>
+
+    <section class='state-card success'>
+      <div class='state-head'>
+        <div class='state-icon green'>✓</div>
+        <div><div class='kicker'>创建成功</div><div class='state-title'>PR #42 已创建</div></div>
+        <span class='pill green'>已提交</span>
+      </div>
+      <p class='state-copy'>Pull Request 已从 <span class='target'>SunsetRNE/main</span> 提交到 <span class='target'>cctv18/main</span>。</p>
+      <div class='actions'><button class='btn primary'>查看 PR</button><button class='btn'>继续浏览</button></div>
+    </section>
+
+    <section class='state-card success'>
+      <div class='state-head'>
+        <div class='state-icon green'>✓</div>
+        <div><div class='kicker'>同步成功</div><div class='state-title'>Fork 已同步</div></div>
+        <span class='pill green'>完成</span>
+      </div>
+      <p class='state-copy'>已拉取源仓库最新提交，正在刷新仓库详情与目录内容。</p>
+      <div class='actions'><button class='btn primary'>刷新状态</button><button class='btn'>查看提交</button></div>
+    </section>
+
+    <section class='state-card danger'>
+      <div class='state-head'>
+        <div class='state-icon red'>!</div>
+        <div><div class='kicker'>同步失败</div><div class='state-title'>Fork 同步遇到冲突</div></div>
+        <span class='pill red'>需处理</span>
+      </div>
+      <p class='state-copy'>GitHub 无法自动同步当前 Fork。可能需要到 GitHub 处理冲突，或先创建 PR 保存你的更改。</p>
+      <div class='actions'><button class='btn primary'>在 GitHub 处理</button><button class='btn'>重新检查</button></div>
+    </section>
+
+    <section class='state-card danger'>
+      <div class='state-head'>
+        <div class='state-icon red'>×</div>
+        <div><div class='kicker'>检查失败</div><div class='state-title'>无法获取同步状态</div></div>
+        <span class='pill red'>失败</span>
+      </div>
+      <p class='state-copy'>可能是网络异常、权限不足，或源仓库不可访问。保留重试入口，避免直接展示两个危险操作。</p>
+      <div class='actions'><button class='btn primary full'>重新检查</button></div>
+    </section>
+
+    <section class='state-card'>
+      <div class='state-head'>
+        <div class='state-icon neutral'>?</div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>源仓库信息不可用</div></div>
+        <span class='pill neutral'>未知</span>
+      </div>
+      <p class='state-copy'>当前仓库标记为 Fork，但没有可用的 parent/upstream 信息。只展示说明和重试，不展示贡献/同步。</p>
+      <div class='actions'><button class='btn primary full'>重新检查</button></div>
+    </section>
+
+    <section class='state-card'>
+      <div class='state-head'>
+        <div class='state-icon neutral'>○</div>
+        <div><div class='kicker'>Fork 状态</div><div class='state-title'>当前仓库不是 Fork</div></div>
+        <span class='pill neutral'>不显示</span>
+      </div>
+      <p class='state-copy'>正式落地时这个卡片应直接隐藏；这里保留为设计校验，确认非 Fork 场景不会误导用户。</p>
+      <div class='actions'><button class='btn disabled full'>无需操作</button></div>
+    </section>
+
+    <section class='state-card danger'>
+      <div class='state-head'>
+        <div class='state-icon red'>🔒</div>
+        <div><div class='kicker'>权限不足</div><div class='state-title'>无法同步或创建 PR</div></div>
+        <span class='pill red'>受限</span>
+      </div>
+      <p class='state-copy'>当前账号没有足够权限，或登录状态已失效。需要重新登录或切换有权限的账号。</p>
+      <div class='actions'><button class='btn primary'>重新登录</button><button class='btn disabled'>同步 Fork</button></div>
+    </section>
+
+    <p class='note'>落地建议：黑色按钮只给当前最推荐操作；另一个操作用描边或禁用态。这样既保留你想要的黑色按钮质感，又避免 Fork 同步和贡献 PR 两个语义相反的动作被误认为同等优先。</p>
+  </main>
+</body>
+</html>

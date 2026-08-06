@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:fillViewport="true"
+    tools:context=".ui.repo.RepositoryIssueCreateFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_issue_create_surface_strip"
+            android:gravity="center_vertical"
+            android:minHeight="38dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
+
+            <TextView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/bg_issue_create_repo_icon"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="#"
+                android:textColor="@color/github_text_muted"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_repository_issue_create_context"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.RepositoryName"
+                android:textSize="13sp"
+                tools:text="octocat/Hello-World" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/repository_issue_create_kind_issue"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                android:textColor="@color/github_text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_issue_create_surface_strip"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repository_issues_create_section_title"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_primary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_repository_issue_create_title_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_muted"
+                        tools:text="16 / 256" />
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_repository_issue_create_title"
+                    style="@style/Widget.SunsetGitHub.Material.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:hint="@string/repository_issues_create_title_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_repository_issue_create_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="38dp"
+                        android:gravity="center_vertical"
+                        android:inputType="textCapSentences"
+                        android:maxLength="256"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="0dp"
+                        android:textColor="@color/github_text_primary"
+                        android:textColorHint="@color/github_text_muted"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/divider_issue_create_group" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repository_issues_create_labels_section"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_primary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_repository_issue_create_labels_empty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repository_issues_create_labels_empty"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_muted"
+                        tools:text="已选 2" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:clipToPadding="false"
+                    android:fillViewport="false"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/container_repository_issue_create_labels"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:id="@+id/text_repository_issue_create_labels_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                    android:textColor="@color/github_attention"
+                    android:visibility="gone"
+                    tools:text="标签加载失败"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/divider_issue_create_group" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repository_issues_create_body_section"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_primary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repository_issue_create_chip_markdown"
+                        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                        android:textColor="@color/github_text_muted" />
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_repository_issue_create_body"
+                    style="@style/Widget.SunsetGitHub.Material.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:hint="@string/repository_issues_create_body_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_repository_issue_create_body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:minLines="9"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="9dp"
+                        android:textColor="@color/github_text_primary"
+                        android:textColorHint="@color/github_text_muted"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Body helper moved into the description hint. -->
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_repository_issue_create_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="12dp"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+            android:textColor="@color/github_danger"
+            android:visibility="gone"
+            tools:text="创建问题失败：……"
+            tools:visibility="visible" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="navigation_device_flow_intro" type="id" />
+    <item name="navigation_device_flow_code" type="id" />
+    <item name="navigation_token_choice" type="id" />
+    <item name="navigation_token_guide" type="id" />
+    <item name="app_log_fragment" type="id" />
+</resources>

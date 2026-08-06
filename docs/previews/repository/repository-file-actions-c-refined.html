@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SunsetGitHub - C 方案修正版：搜索优先代码页</title>
+  <style>
+    :root {
+      --canvas: #ffffff;
+      --page-bg: #f6f8fa;
+      --surface: #ffffff;
+      --subtle: #f6f8fa;
+      --subtle2: #eef2f6;
+      --border: #d0d7de;
+      --divider: #d8dee4;
+      --text: #24292f;
+      --secondary: #57606a;
+      --muted: #6e7781;
+      --accent: #0969da;
+      --accent-soft: #ddf0ff;
+      --accent-border: #add5ff;
+      --success: #1a7f37;
+      --success-soft: #dafbe1;
+      --danger: #cf222e;
+      --warning: #bc4c00;
+      --shadow-soft: 0 1px 2px rgba(27,31,36,.04);
+      --shadow-panel: 0 8px 28px rgba(27,31,36,.09);
+      --radius-card: 18px;
+      --radius-inner: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page-bg); color: var(--text); }
+    button, input { font: inherit; }
+    button { border: 0; }
+
+    .phone {
+      width: min(430px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--canvas);
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid rgba(208,215,222,.7);
+      border-right: 1px solid rgba(208,215,222,.7);
+    }
+
+    .statusbar {
+      height: 34px;
+      padding: 8px 22px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      color: #0d1117;
+    }
+    .sys-icons { display: flex; gap: 7px; align-items: center; font-size: 12px; }
+    .battery { height: 17px; min-width: 27px; border: 2px solid #111; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; }
+
+    .appbar {
+      height: 78px;
+      padding: 8px 18px 15px;
+      display: grid;
+      grid-template-columns: 38px minmax(0,1fr) 38px;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+    }
+    .nav-button {
+      width: 38px; height: 38px; border-radius: 999px; background: transparent; color: var(--secondary); display: grid; place-items: center; font-size: 30px;
+    }
+    .app-title { min-width: 0; font-size: 23px; line-height: 1.12; font-weight: 850; letter-spacing: -.35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .more { font-size: 24px; }
+
+    .scroll {
+      padding: 0 10px 112px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .repo-card { padding: 16px 14px 14px; }
+    .repo-head { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 10px; align-items: center; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg,#b7f5d1,#75db9d); color: #fff; font-weight: 900; border: 1px solid var(--border); }
+    .repo-name { min-width: 0; font-size: 23px; line-height: 1.1; font-weight: 900; letter-spacing: -.35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .repo-meta { margin-top: 4px; color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .repo-actions { display: flex; gap: 6px; }
+    .icon-button { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 13px; background: #fff; display: grid; place-items: center; color: var(--secondary); font-size: 20px; font-weight: 850; }
+    .desc { margin: 14px 0 11px; color: var(--secondary); font-size: 16px; }
+    .tag-panel { border: 1px solid var(--border); border-radius: var(--radius-inner); padding: 9px 10px; }
+    .label { color: var(--secondary); font-size: 13px; font-weight: 850; margin-bottom: 7px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { height: 25px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--border); display: inline-flex; align-items: center; color: var(--secondary); background: #fff; font-size: 12px; font-weight: 650; }
+    .chip.success { color: var(--success); background: var(--success-soft); border-color: transparent; }
+    .stats { margin-top: 12px; border: 1px solid var(--border); border-radius: var(--radius-inner); overflow: hidden; display: grid; grid-template-columns: repeat(4,1fr); }
+    .stat { min-height: 43px; display: grid; place-items: center; color: var(--secondary); font-size: 14px; border-right: 1px solid rgba(208,215,222,.75); }
+    .stat:last-child { border-right: 0; }
+
+    .code-tools {
+      padding: 12px;
+      border-color: var(--accent-border);
+      background: linear-gradient(180deg,#f6fbff 0%,#fff 45%);
+    }
+    .tools-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+    .tools-title { font-size: 18px; line-height: 1.22; font-weight: 900; letter-spacing: -.2px; }
+    .tools-sub { margin-top: 3px; color: var(--secondary); font-size: 12.5px; line-height: 1.42; }
+    .kbd { height: 26px; min-width: 32px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 850; box-shadow: inset 0 -1px 0 rgba(27,31,36,.08); }
+
+    .search-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .search-top {
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 30px minmax(0,1fr) auto;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--divider);
+    }
+    .search-leading { width: 30px; height: 30px; border-radius: 11px; background: var(--subtle); color: var(--secondary); display: grid; place-items: center; }
+    .search-text { min-width: 0; }
+    .search-caption { color: var(--muted); font-size: 11px; font-weight: 850; letter-spacing: .02em; }
+    .query { margin-top: 1px; color: var(--text); font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    mark { background: #fff8c5; color: inherit; border-radius: 3px; padding: 0 1px; }
+    .new-file-btn { height: 37px; border-radius: 12px; background: #0d1117; color: #fff; padding: 0 10px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; font-size: 12.5px; font-weight: 850; }
+
+    .scope-row { padding: 8px 10px; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid rgba(216,222,228,.7); scrollbar-width: none; }
+    .scope-row::-webkit-scrollbar { display:none; }
+    .scope { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--secondary); background: #fff; display: inline-flex; align-items: center; white-space: nowrap; font-size: 12px; font-weight: 750; }
+    .scope.active { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-border); }
+
+    .results-head { padding: 10px 12px 6px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 11.5px; font-weight: 850; letter-spacing: .02em; }
+    .result { min-height: 58px; display: grid; grid-template-columns: 31px minmax(0,1fr) auto; align-items: center; gap: 9px; padding: 8px 12px; border-top: 1px solid rgba(216,222,228,.65); }
+    .result.selected { background: linear-gradient(90deg,rgba(221,240,255,.9),rgba(255,255,255,0) 88%); box-shadow: inset 3px 0 0 var(--accent); }
+    .filetype { width: 31px; height: 31px; border-radius: 11px; display: grid; place-items: center; background: var(--subtle); color: var(--secondary); font-size: 12px; font-weight: 900; }
+    .filetype.kt { color:#8250df; background:#fbefff; }
+    .filetype.md { color:var(--accent); background:var(--accent-soft); }
+    .filetype.folder { color:#0969da; background:#eef6ff; font-size:15px; }
+    .result-main { min-width: 0; }
+    .result-name { min-width: 0; color: var(--text); font-size: 14.5px; font-weight: 850; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .result-path { margin-top: 3px; color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .result-action { display: grid; gap: 4px; justify-items: end; color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .score { min-width: 32px; height: 20px; padding: 0 7px; border-radius: 999px; background: var(--subtle); color: var(--secondary); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 850; }
+
+    .create-inline-row { margin-top: 10px; border: 1px solid var(--border); border-radius: 16px; background: #fff; padding: 10px; display: grid; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 9px; }
+    .create-inline-icon { width: 34px; height: 34px; border-radius: 12px; background: #0d1117; color: #fff; display: grid; place-items: center; font-weight: 900; }
+    .create-inline-title { font-size: 13.5px; font-weight: 850; color: var(--text); }
+    .create-inline-sub { margin-top: 2px; color: var(--secondary); font-size: 11.5px; line-height: 1.32; }
+    .create-inline-btn { height: 34px; border-radius: 12px; background: #0d1117; color: #fff; padding: 0 10px; font-size: 12px; font-weight: 850; white-space: nowrap; }
+
+    .empty-create {
+      margin-top: 10px;
+      border: 1px dashed var(--accent-border);
+      border-radius: 16px;
+      background: #f6fbff;
+      padding: 11px;
+      display: grid;
+      grid-template-columns: 34px minmax(0,1fr) auto;
+      align-items: center;
+      gap: 9px;
+    }
+    .empty-icon { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: #fff; color: var(--accent); border: 1px solid var(--accent-border); font-weight: 900; }
+    .empty-title { font-size: 13.5px; font-weight: 850; }
+    .empty-sub { margin-top: 2px; color: var(--secondary); font-size: 11.5px; line-height: 1.32; }
+    .small-primary { height: 34px; border-radius: 12px; background: var(--accent); color: #fff; padding: 0 10px; font-size: 12px; font-weight: 850; white-space: nowrap; }
+
+    .tools-hint { margin-top: 9px; color: var(--muted); font-size: 11.5px; line-height: 1.35; }
+
+    .mono-icon { width: 18px; height: 18px; display: inline-block; position: relative; color: #0d1117; flex: 0 0 auto; }
+    .mono-search::before { content: ""; position: absolute; width: 10px; height: 10px; left: 2px; top: 2px; border: 2px solid currentColor; border-radius: 50%; }
+    .mono-search::after { content: ""; position: absolute; width: 8px; height: 2px; left: 11px; top: 13px; background: currentColor; border-radius: 999px; transform: rotate(45deg); transform-origin: left center; }
+    .mono-plus::before, .mono-plus::after { content: ""; position: absolute; left: 4px; right: 4px; top: 8px; height: 2px; background: currentColor; border-radius: 999px; }
+    .mono-plus::after { transform: rotate(90deg); }
+
+    .directory { padding: 0; }
+    .dir-head { padding: 15px 15px 12px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: start; }
+    .dir-title { font-size: 21px; font-weight: 900; letter-spacing: -.2px; }
+    .dir-sub { margin-top: 6px; color: var(--muted); font-size: 14px; }
+    .dir-actions-row { display: flex; align-items: flex-start; justify-content: flex-end; position: relative; }
+    .dir-menu { width: 42px; height: 42px; border-radius: 14px; background: #0d1117; color: #fff; display: inline-flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 6px 14px rgba(13,17,23,.12); }
+    .hamburger { width: 18px; height: 14px; position: relative; display: inline-block; }
+    .hamburger::before, .hamburger::after, .hamburger span { content: ""; position: absolute; left: 0; width: 18px; height: 2.5px; border-radius: 999px; background: currentColor; }
+    .hamburger::before { top: 0; }
+    .hamburger span { top: 5.7px; }
+    .hamburger::after { bottom: 0; }
+    .dir-menu-popover { position: absolute; top: 50px; right: -2px; width: 258px; padding: 18px 22px 20px; border: 1px solid var(--border); border-radius: 22px; background: #fff; box-shadow: var(--shadow-panel); color: var(--text); z-index: 4; text-align: left; }
+    .dir-menu-popover::before { content: ""; position: absolute; top: -7px; right: 24px; width: 12px; height: 12px; background: #fff; border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg); }
+    .popover-item { min-height: 42px; display: flex; align-items: center; gap: 18px; padding: 0 6px; border-radius: 12px; font-size: 16px; font-weight: 900; color: var(--text); }
+    .popover-item.muted { color: var(--text); font-weight: 850; }
+    .popover-item + .popover-item { margin-top: 8px; }
+    .popover-divider { height: 26px; margin: 4px 0; background: transparent; }
+    .popover-icon { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; color: #0d1117; flex: 0 0 auto; }
+    .popover-icon .mono-icon { transform: scale(1.35); transform-origin: center; }
+    .popover-item:hover { background: var(--subtle); }
+    .file-list { border-top: 1px solid var(--divider); }
+    .file-row { min-height: 56px; padding: 0 15px; display: grid; grid-template-columns: 27px minmax(0,1fr) auto 18px; align-items: center; gap: 8px; border-bottom: 1px solid rgba(216,222,228,.72); font-size: 17px; }
+    .file-row:last-child { border-bottom: 0; }
+    .file-name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .repo-file-icon { width: 27px; height: 27px; display: inline-block; position: relative; color: #0d1117; }
+    .repo-file-icon.icon-folder::before { content: ""; position: absolute; left: 2px; top: 9px; width: 23px; height: 14px; background: currentColor; border-radius: 3px; }
+    .repo-file-icon.icon-folder::after { content: ""; position: absolute; left: 4px; top: 6px; width: 10px; height: 6px; background: currentColor; border-radius: 3px 3px 0 0; }
+    .repo-file-icon.icon-doc::before { content: ""; position: absolute; left: 5px; top: 3px; width: 15px; height: 21px; border: 2px solid currentColor; border-radius: 2px; background: #fff; }
+    .repo-file-icon.icon-doc::after { content: ""; position: absolute; left: 14px; top: 3px; width: 7px; height: 7px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; background: #fff; transform: skew(-8deg); }
+    .size { color:var(--muted); font-size: 13px; }
+    .chev { color:var(--secondary); font-size: 24px; }
+
+    .state-card { padding: 13px; }
+    .state-title { font-size: 17px; font-weight: 900; margin-bottom: 4px; }
+    .state-desc { color: var(--secondary); font-size: 12.5px; line-height: 1.45; margin-bottom: 10px; }
+    .modal-preview { border: 1px solid var(--border); border-radius: 18px; background: #fff; box-shadow: var(--shadow-panel); overflow: hidden; }
+    .modal-search { min-height: 50px; padding: 9px 11px; display: grid; grid-template-columns: 26px minmax(0,1fr) auto; align-items: center; gap: 8px; border-bottom: 1px solid var(--divider); }
+    .modal-query { min-width: 0; font-size: 14.5px; font-weight: 850; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .esc { height: 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--subtle); color: var(--muted); padding: 0 8px; display: inline-flex; align-items: center; font-size: 11px; font-weight: 900; }
+    .modal-note { padding: 8px 11px 10px; color: var(--muted); background: linear-gradient(180deg,#fff,#f6fbff); font-size: 11.5px; line-height: 1.35; }
+
+    .create-flow { padding: 14px; }
+    .handle { width: 42px; height: 5px; border-radius: 999px; background: var(--divider); margin: 0 auto 12px; }
+    .flow-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .flow-title { font-size: 18px; font-weight: 900; }
+    .branch { height: 27px; border-radius: 999px; border: 1px solid var(--border); background: var(--subtle); padding: 0 9px; color: var(--secondary); display: inline-flex; align-items: center; font-size: 12px; font-weight: 800; }
+    .field { display: grid; gap: 6px; margin-top: 9px; }
+    .field label { color: var(--secondary); font-size: 12px; font-weight: 850; }
+    .input-like { min-height: 43px; border: 1px solid var(--border); border-radius: 13px; padding: 10px 11px; color: var(--text); display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: 13.5px; }
+    .hint { color: var(--muted); }
+    .flow-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .secondary, .primary { flex: 1; height: 41px; border-radius: 13px; display: inline-flex; align-items: center; justify-content: center; font-size: 13.5px; font-weight: 850; }
+    .secondary { border: 1px solid var(--border); background:#fff; color:var(--text); }
+    .primary { background:#0d1117; color:#fff; }
+
+    .note { padding: 13px 14px; border: 1px solid var(--accent-border); border-radius: var(--radius-card); background: #f6fbff; color: var(--secondary); font-size: 12.5px; line-height: 1.5; }
+    .note strong { color: var(--text); }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: min(396px, calc(100% - 18px));
+      height: 72px;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: rgba(255,255,255,.95);
+      box-shadow: 0 16px 34px rgba(27,31,36,.13);
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      align-items: center;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+    }
+    .nav-item { text-align: center; color:#0d1117; font-size: 12px; display: grid; gap: 3px; }
+    .nav-icon { font-size: 22px; line-height: 1; font-weight: 900; }
+    .nav-item.active { color: var(--accent); font-weight: 850; }
+
+    @media (max-width: 385px) {
+      .app-title { font-size: 21px; }
+      .repo-name { font-size: 21px; }
+      .repo-actions .icon-button:nth-child(3) { display: none; }
+      .search-top { grid-template-columns: 30px minmax(0,1fr); }
+      .new-file-btn { grid-column: 1 / -1; width: 100%; justify-content: center; }
+      .dir-head { grid-template-columns: minmax(0,1fr) auto; }
+      .dir-menu-popover { right: 0; transform: none; }
+      .dir-menu-popover::before { left: auto; right: 16px; transform: rotate(45deg); }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <div class="statusbar">
+      <span>00:09</span>
+      <span class="sys-icons"><span>◔</span><span>◕</span><span>▮▮▮</span><span class="battery">57</span></span>
+    </div>
+
+    <header class="appbar">
+      <button class="nav-button" aria-label="返回">‹</button>
+      <div class="app-title">SunsetRNE/SunsetGitHub</div>
+      <button class="nav-button more" aria-label="更多">⋯</button>
+    </header>
+
+    <section class="scroll">
+      <article class="card repo-card">
+        <div class="repo-head">
+          <div class="avatar">S</div>
+          <div>
+            <div class="repo-name">SunsetGtiHub</div>
+            <div class="repo-meta">SunsetRNE · User · main</div>
+          </div>
+          <div class="repo-actions">
+            <button class="icon-button">↗</button>
+            <button class="icon-button">☆</button>
+            <button class="icon-button">◉</button>
+          </div>
+        </div>
+        <div class="desc">暂无仓库简介</div>
+        <div class="tag-panel">
+          <div class="label">仓库标签</div>
+          <div class="chips"><span class="chip success">公开</span><span class="chip">主要语言：Kotlin</span></div>
+        </div>
+        <div class="stats">
+          <div class="stat">★ 0</div><div class="stat">⑂ 0</div><div class="stat">Issue 0</div><div class="stat">👁 0</div>
+        </div>
+      </article>
+      <!-- Go to file 搜索弹窗已拆到 repository-file-search-modal-preview.html 单独预览。 -->
+
+      <article class="card directory">
+        <div class="dir-head">
+          <div>
+            <div class="dir-title">根目录</div>
+            <div class="dir-sub">共 12 项 · 3 个目录 · 9 个文件</div>
+          </div>
+          <div class="dir-actions-row">
+            <button class="dir-menu" aria-label="更多文件操作">
+              <span class="hamburger" aria-hidden="true"><span></span></span>
+              <span class="dir-menu-popover" aria-hidden="true">
+                <span class="popover-item"><span class="popover-icon"><span class="mono-icon mono-search" aria-hidden="true"></span></span>Go to file</span>
+                <span class="popover-item"><span class="popover-icon"><span class="mono-icon mono-plus" aria-hidden="true"></span></span>Create new file</span>
+                <span class="popover-divider"></span>
+                <span class="popover-item muted">上传文件</span>
+                <span class="popover-item muted">新建文件夹</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="file-list">
+          <div class="file-row"><span class="repo-file-icon icon-folder" aria-hidden="true"></span><span class="file-name">app</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="repo-file-icon icon-folder" aria-hidden="true"></span><span class="file-name">docs</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="repo-file-icon icon-folder" aria-hidden="true"></span><span class="file-name">gradle</span><span class="size"></span><span class="chev">›</span></div>
+          <div class="file-row"><span class="repo-file-icon icon-doc" aria-hidden="true"></span><span class="file-name">.gitattributes</span><span class="size">276 B</span><span class="chev">›</span></div>
+          <div class="file-row"><span class="repo-file-icon icon-doc" aria-hidden="true"></span><span class="file-name">.gitignore</span><span class="size">316 B</span><span class="chev">›</span></div>
+        </div>
+      </article>
+      <!-- Go to file 聚焦态已拆到 repository-file-search-modal-preview.html 单独预览。 -->
+
+      <article class="card create-flow">
+        <div class="handle"></div>
+        <div class="flow-head"><div class="flow-title">Create new file</div><span class="branch">⑂ main</span></div>
+        <div class="field"><label>文件路径</label><div class="input-like"><span>docs/new-proposal.md</span><span class="hint">当前目录</span></div></div>
+        <div class="field"><label>提交信息</label><div class="input-like"><span>Add new proposal file</span><span>✎</span></div></div>
+        <div class="flow-actions"><button class="secondary">取消</button><button class="primary">继续编辑</button></div>
+      </article>
+
+      <section class="note"><strong>修正方向：</strong>页面默认只保留一个明确的搜索工具卡；浮层态、创建态作为下方状态样板展示，不再使用 fixed 覆盖主预览。这样更适合截图渲染器，也更接近 Android 实际落地结构。</section>
+    </section>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active"><div class="nav-icon">‹›</div><div>代码</div></div>
+      <div class="nav-item"><div class="nav-icon">○</div><div>议题</div></div>
+      <div class="nav-item"><div class="nav-icon">↻</div><div>工作流</div></div>
+      <div class="nav-item"><div class="nav-icon">⚙</div><div>设置</div></div>
+      <div class="nav-item"><div class="nav-icon">☰</div><div>更多</div></div>
+    </nav>
+  </main>
+</body>
+</html>

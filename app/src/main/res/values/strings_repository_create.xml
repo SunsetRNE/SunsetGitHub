@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_repository_create">新建仓库</string>
+    <string name="repository_create_action">新建仓库</string>
+    <string name="repository_create_page_title">创建新的仓库</string>
+    <string name="repository_create_page_subtitle">仓库包含项目所有文件、修订历史和协作设置。当前版本会创建到当前登录账号下。</string>
+    <string name="repository_create_required_hint">必填字段已用星号（*）标记。</string>
+    <string name="repository_create_name_section">仓库名称 *</string>
+    <string name="repository_create_name_hint">例如 sunset-demo</string>
+    <string name="repository_create_description_section">描述</string>
+    <string name="repository_create_description_hint">仓库描述（可选）</string>
+    <string name="repository_create_homepage_section">主页地址</string>
+    <string name="repository_create_homepage_hint">https://example.com（可选）</string>
+    <string name="repository_create_homepage_desc">可填写项目文档、演示站点或发布页链接。</string>
+    <string name="repository_create_visibility_section">可见性</string>
+    <string name="repository_create_visibility_public">公开</string>
+    <string name="repository_create_visibility_public_desc">任何人都可以看到这个仓库，你可以选择谁能提交。</string>
+    <string name="repository_create_visibility_private">私有</string>
+    <string name="repository_create_visibility_private_desc">你可以选择谁可以看到并提交到这个仓库。</string>
+    <string name="repository_create_initialize_section">初始化仓库</string>
+    <string name="repository_create_readme">添加 README 文件</string>
+    <string name="repository_create_readme_desc">勾选此选项后默认初始化 README/自述文件，并在创建后进入对应的 README/自述文件内容上传页面。</string>
+    <string name="repository_create_initial_files_hint">将通过 GitHub API 参数创建：%1$s。若同时勾选 README，创建完成后会进入 README/自述文件内容上传页面。</string>
+    <string name="repository_create_readme_commit_message">更新 README/自述文件</string>
+    <string name="repository_create_gitignore_section">.gitignore 模板</string>
+    <string name="repository_create_license_section">许可证</string>
+    <string name="repository_create_features_section">仓库功能</string>
+    <string name="repository_create_feature_issues">启用 Issues</string>
+    <string name="repository_create_feature_projects">启用 Projects</string>
+    <string name="repository_create_feature_wiki">启用 Wiki</string>
+    <string name="repository_create_feature_desc">这些设置创建后仍可在 GitHub 仓库设置中修改。</string>
+    <string name="repository_create_option_none">无</string>
+    <string name="repository_create_submit">创建仓库</string>
+    <string name="repository_create_submitting">正在创建仓库……</string>
+    <string name="repository_create_ready">填写信息后即可创建仓库。</string>
+    <string name="repository_create_current_owner_badge">● 当前登录账号 · Owner</string>
+    <string name="repository_create_required_name_badge">必填：仓库名称</string>
+    <string name="repository_create_basic_info_section">基础信息</string>
+    <string name="repository_create_signed_out">尚未登录，请先完成 GitHub 登录。</string>
+    <string name="repository_create_success">仓库已创建：%1$s</string>
+    <string name="repository_create_failed">创建失败：%1$s</string>
+    <string name="repository_create_discard_title">放弃创建仓库？</string>
+    <string name="repository_create_discard_message">当前填写的仓库信息还没有提交，离开后将丢失。</string>
+    <string name="repository_create_discard_confirm">放弃</string>
+    <string name="repository_create_discard_cancel">继续编辑</string>
+</resources>

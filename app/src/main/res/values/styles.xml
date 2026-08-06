@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.SunsetGitHub.Material.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/github_surface</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/github_border</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.GlobalButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">8dp</item>
+        <item name="backgroundTint">@android:color/black</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="iconTint">@android:color/white</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.Button" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">8dp</item>
+        <item name="strokeColor">@color/github_border</item>
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="iconTint">@color/github_text_secondary</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.IconButton" parent="Widget.SunsetGitHub.Material.Button">
+        <item name="android:textSize">18sp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.IconButton.Compact" parent="Widget.SunsetGitHub.Material.IconButton">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.PrimaryButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">8dp</item>
+        <item name="backgroundTint">@color/github_accent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.FilePreviewActionButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">6dp</item>
+        <item name="backgroundTint">@color/github_surface</item>
+        <item name="strokeColor">@color/github_border</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="iconTint">@color/github_text_secondary</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.FilePreviewPrimaryActionButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">6dp</item>
+        <item name="backgroundTint">@color/github_text_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Platform.Button" parent="Widget.AppCompat.Button">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">10dp</item>
+        <item name="boxCornerRadiusTopEnd">10dp</item>
+        <item name="boxCornerRadiusBottomStart">10dp</item>
+        <item name="boxCornerRadiusBottomEnd">10dp</item>
+        <item name="boxStrokeColor">@color/github_border</item>
+        <item name="hintTextColor">@color/github_text_muted</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.BottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@drawable/bg_bottom_nav_docked</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="elevation">0dp</item>
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="backgroundTint">@null</item>
+        <item name="itemIconTint">@color/nav_item_tint</item>
+        <item name="itemTextColor">@color/nav_item_tint</item>
+        <item name="itemRippleColor">@color/github_accent_soft</item>
+        <item name="itemHorizontalTranslationEnabled">false</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.SunsetGitHub.Material.BottomNavigation.ActiveIndicator</item>
+        <item name="labelVisibilityMode">labeled</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.BottomNavigation.ActiveIndicator">
+        <item name="android:color">@android:color/transparent</item>
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+    </style>
+
+    <!-- Unified controls: prefer built-in Material/AppCompat controls with these project-wide styles.
+         If a built-in control cannot express the required UI, create one reusable global wrapper/style,
+         register it in Theme.AppTheme, and reuse it instead of hand-styling per screen. -->
+    <style name="Widget.SunsetGitHub.Material.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/sunset_switch_thumb</item>
+        <item name="android:track">@drawable/sunset_switch_track</item>
+        <item name="android:thumbTint">@null</item>
+        <item name="thumbTint">@null</item>
+        <item name="android:trackTint">@null</item>
+        <item name="trackTint">@null</item>
+        <item name="android:splitTrack">false</item>
+        <item name="splitTrack">false</item>
+        <item name="useMaterialThemeColors">false</item>
+        <item name="android:minWidth">44dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="switchMinWidth">44dp</item>
+        <item name="switchPadding">0dp</item>
+        <item name="thumbTextPadding">0dp</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/sunset_compound_button_tint</item>
+        <item name="android:buttonTint">@color/sunset_compound_button_tint</item>
+        <item name="useMaterialThemeColors">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/sunset_compound_button_tint</item>
+        <item name="android:buttonTint">@color/sunset_compound_button_tint</item>
+        <item name="useMaterialThemeColors">false</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.FilterChip" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/sunset_filter_chip_background_tint</item>
+        <item name="chipStrokeColor">@color/sunset_filter_chip_stroke_tint</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/sunset_filter_chip_text_tint</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.RepositoryName" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.Body" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">@color/github_text_secondary</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.Meta" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/github_text_muted</item>
+    </style>
+    <style name="ShapeAppearance.SunsetGitHub.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- UI 重构新增：框选/分组样式 -->
+    <style name="Widget.SunsetGitHub.Chip" parent="">
+        <item name="android:background">@drawable/bg_chip</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:textColor">@color/github_text_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Chip.Accent">
+        <item name="android:background">@drawable/bg_chip_accent</item>
+        <item name="android:textColor">@color/github_accent</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.FilePreviewBadge.Primary" parent="">
+        <item name="android:background">@drawable/bg_file_preview_badge_primary</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingTop">1dp</item>
+        <item name="android:paddingBottom">1dp</item>
+        <item name="android:textColor">@color/github_accent</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.FilePreviewBadge.Secondary" parent="">
+        <item name="android:background">@drawable/bg_file_preview_badge_secondary</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingTop">1dp</item>
+        <item name="android:paddingBottom">1dp</item>
+        <item name="android:textColor">@color/github_text_secondary</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.StatCell" parent="">
+        <item name="android:background">@drawable/bg_stat_cell</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.StatNumber" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.StatLabel" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/github_text_muted</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.SectionLabel" parent="TextAppearance.MaterialComponents.Overline">
+        <item name="android:textColor">@color/github_text_muted</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <!-- 个人页概览指标网格：key 小字 + value 大字 -->
+    <style name="Widget.SunsetGitHub.OverviewItem" parent="">
+        <item name="android:background">@drawable/bg_profile_overview_tile</item>
+        <item name="android:paddingStart">11dp</item>
+        <item name="android:paddingEnd">11dp</item>
+        <item name="android:paddingTop">11dp</item>
+        <item name="android:paddingBottom">11dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.ProfileName" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.StatusPill" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/github_success</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.OverviewKey" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/github_text_muted</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.OverviewValue" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/github_text_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.OverviewHint" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/github_text_muted</item>
+        <item name="android:textSize">10.5sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextAppearance.SunsetGitHub.Material.Pill" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/github_text_secondary</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="ThemeOverlay.SunsetGitHub.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/github_accent</item>
+        <item name="colorAccent">@color/github_accent</item>
+        <item name="buttonBarButtonStyle">@style/Widget.SunsetGitHub.Material.DialogButton</item>
+        <item name="android:buttonBarButtonStyle">@style/Widget.SunsetGitHub.Material.DialogButton</item>
+        <item name="android:textColorPrimary">@color/github_text_primary</item>
+        <item name="android:textColorSecondary">@color/github_text_secondary</item>
+    </style>
+
+    <style name="Widget.SunsetGitHub.Material.DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/github_accent</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="rippleColor">@color/github_accent</item>
+        <item name="android:minWidth">64dp</item>
+    </style>
+
+    <!-- 排序选择弹窗：圆角背景 + 抬升阴影，替代系统默认直角方块 -->
+    <style name="Widget.SunsetGitHub.PopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="android:popupElevation">12dp</item>
+        <item name="android:overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
+    </style>
+
+    <style name="ThemeOverlay.SunsetGitHub.PopupMenu" parent="ThemeOverlay.MaterialComponents">
+        <item name="popupMenuBackground">@drawable/bg_popup_menu</item>
+        <item name="android:popupMenuStyle">@style/Widget.SunsetGitHub.PopupMenu</item>
+        <item name="android:textColorPrimary">@color/github_text_primary</item>
+        <item name="colorControlNormal">@color/github_text_secondary</item>
+    </style>
+</resources>

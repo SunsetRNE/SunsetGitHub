@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SunsetGitHub Navigation Bar Rendering Variants v6</title>
+  <style>
+    :root {
+      --page: #f6f8fa;
+      --canvas: #ffffff;
+      --text: #1f2328;
+      --muted: #57606a;
+      --subtle: #6e7781;
+      --line: rgba(31,35,40,.12);
+      --line-strong: rgba(31,35,40,.22);
+      --blue: #0969da;
+      --blue-soft: #ddf4ff;
+      --green: #1a7f37;
+      --green-soft: #dafbe1;
+      --purple: #8250df;
+      --purple-soft: #f0e7ff;
+      --orange: #bc4c00;
+      --orange-soft: #fff1e5;
+      --red: #cf222e;
+      --red-soft: #ffebe9;
+      --shadow: 0 18px 48px rgba(31,35,40,.13);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(9,105,218,.16), transparent 280px),
+        radial-gradient(circle at 90% 5%, rgba(26,127,55,.12), transparent 300px),
+        linear-gradient(180deg, #f8fbff 0, var(--page) 420px);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 30px 18px 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(360px, 1.08fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .panel, .hero-copy, .control-panel, .phone-shell, .variant-card {
+      background: rgba(255,255,255,.84);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .hero-copy { padding: 30px; }
+    .eyebrow {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: #0550ae;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 14px;
+    }
+    h1 { margin: 0 0 14px; font-size: clamp(32px, 5vw, 58px); line-height: 1.03; letter-spacing: -1.5px; }
+    h2 { margin: 0 0 12px; font-size: 27px; letter-spacing: -.4px; }
+    h3 { margin: 0 0 8px; font-size: 17px; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    strong { color: var(--text); }
+
+    .preview-stage {
+      display: grid;
+      grid-template-columns: 1fr 270px;
+      gap: 14px;
+      min-height: 620px;
+    }
+
+    .phone-shell {
+      padding: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, rgba(255,255,255,.9), rgba(246,248,250,.78));
+    }
+
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      aspect-ratio: 9 / 18.8;
+      padding: 13px;
+      border-radius: 42px;
+      background: linear-gradient(145deg, #24292f, #0d1117);
+      box-shadow: 0 28px 80px rgba(1,4,9,.26);
+    }
+
+    .screen {
+      position: relative;
+      height: 100%;
+      border-radius: 30px;
+      overflow: hidden;
+      background: var(--screen-bg, linear-gradient(180deg, #ffffff, #f6f8fa));
+      color: var(--screen-text, #1f2328);
+    }
+
+    .screen.dark {
+      --screen-bg: linear-gradient(180deg, #0d1117, #161b22 72%, #0d1117);
+      --screen-text: #f0f6fc;
+    }
+
+    .statusbar {
+      height: 34px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 18px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--screen-text);
+    }
+
+    .appbar {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(31,35,40,.09);
+      background: var(--appbar-bg, rgba(255,255,255,.76));
+    }
+    .screen.dark .appbar { --appbar-bg: rgba(22,27,34,.72); border-bottom-color: rgba(240,246,252,.12); }
+    .mark { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #24292f; color: #fff; font-weight: 900; }
+
+    .content {
+      position: absolute;
+      inset: 88px 0 0;
+      padding: 14px 14px 128px;
+      overflow: hidden;
+    }
+
+    .repo-card {
+      border-radius: 17px;
+      border: 1px solid rgba(31,35,40,.1);
+      background: var(--card-bg, rgba(255,255,255,.84));
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .screen.dark .repo-card { --card-bg: rgba(22,27,34,.72); border-color: rgba(240,246,252,.12); }
+    .line { display: block; height: 9px; border-radius: 999px; background: var(--line-bg, #d8dee4); margin-top: 10px; }
+    .screen.dark .line { --line-bg: #30363d; }
+
+    .nav-zone {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 116px;
+      pointer-events: none;
+    }
+
+    .demo-nav {
+      position: absolute;
+      pointer-events: auto;
+      display: grid;
+      grid-template-columns: repeat(var(--nav-count, 5), 1fr);
+      align-items: center;
+      gap: 2px;
+      padding: var(--nav-pad, 8px);
+      transition: all 220ms cubic-bezier(.2, .8, .2, 1);
+      overflow: hidden;
+    }
+
+    .demo-nav.placement-docked {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--nav-height, 74px);
+      border-radius: 0;
+      border-top: 1px solid var(--nav-stroke, rgba(31,35,40,.12));
+    }
+
+    .demo-nav.placement-floating {
+      left: 14px;
+      right: 14px;
+      bottom: 18px;
+      height: var(--nav-height, 74px);
+      border-radius: var(--nav-radius, 28px);
+      border: 1px solid var(--nav-stroke, rgba(255,255,255,.72));
+      box-shadow: var(--nav-shadow, 0 18px 42px rgba(31,35,40,.20));
+    }
+
+    .demo-nav.placement-compact-floating {
+      left: 34px;
+      right: 34px;
+      bottom: 20px;
+      height: 54px;
+      border-radius: 22px;
+      border: 1px solid var(--nav-stroke, rgba(255,255,255,.72));
+      box-shadow: var(--nav-shadow, 0 14px 34px rgba(31,35,40,.18));
+      --nav-pad: 5px;
+    }
+
+    .demo-nav.placement-hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
+
+    .material-solid {
+      background: var(--solid-bg, #ffffff);
+      --nav-stroke: rgba(31,35,40,.12);
+      --nav-shadow: 0 -2px 18px rgba(31,35,40,.06);
+    }
+    .screen.dark .material-solid { --solid-bg: #161b22; --nav-stroke: rgba(240,246,252,.12); }
+
+    .material-tonal {
+      background: color-mix(in srgb, var(--accent, #0969da) 12%, #ffffff);
+      --nav-stroke: color-mix(in srgb, var(--accent, #0969da) 22%, transparent);
+    }
+    .screen.dark .material-tonal { background: color-mix(in srgb, var(--accent, #58a6ff) 18%, #161b22); }
+
+    .material-frosted {
+      background: linear-gradient(135deg, rgba(255,255,255,.86), rgba(255,255,255,.52));
+      backdrop-filter: blur(18px) saturate(1.35);
+      -webkit-backdrop-filter: blur(18px) saturate(1.35);
+      --nav-stroke: rgba(255,255,255,.72);
+    }
+    .screen.dark .material-frosted {
+      background: linear-gradient(135deg, rgba(48,54,61,.84), rgba(22,27,34,.58));
+      --nav-stroke: rgba(240,246,252,.16);
+    }
+
+    .material-glass {
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,255,255,.88), rgba(255,255,255,0) 42%),
+        linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,255,255,.36));
+      backdrop-filter: blur(24px) saturate(1.6);
+      -webkit-backdrop-filter: blur(24px) saturate(1.6);
+      --nav-stroke: rgba(255,255,255,.78);
+      box-shadow: 0 18px 44px rgba(31,35,40,.22), inset 0 1px 0 rgba(255,255,255,.86) !important;
+    }
+    .screen.dark .material-glass {
+      background:
+        radial-gradient(circle at 18% 0%, rgba(240,246,252,.14), rgba(240,246,252,0) 42%),
+        linear-gradient(135deg, rgba(48,54,61,.74), rgba(13,17,23,.42));
+      --nav-stroke: rgba(240,246,252,.2);
+      box-shadow: 0 18px 44px rgba(1,4,9,.38), inset 0 1px 0 rgba(240,246,252,.16) !important;
+    }
+
+    .material-acrylic {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.56), rgba(255,255,255,.34)),
+        repeating-linear-gradient(45deg, rgba(9,105,218,.04) 0 2px, rgba(255,255,255,0) 2px 5px);
+      backdrop-filter: blur(28px) saturate(1.9) contrast(1.05);
+      -webkit-backdrop-filter: blur(28px) saturate(1.9) contrast(1.05);
+      --nav-stroke: rgba(255,255,255,.62);
+      box-shadow: 0 22px 54px rgba(31,35,40,.24), inset 0 1px 0 rgba(255,255,255,.72) !important;
+    }
+    .screen.dark .material-acrylic {
+      background:
+        linear-gradient(135deg, rgba(48,54,61,.58), rgba(13,17,23,.36)),
+        repeating-linear-gradient(45deg, rgba(88,166,255,.05) 0 2px, rgba(255,255,255,0) 2px 5px);
+      --nav-stroke: rgba(240,246,252,.16);
+    }
+
+    .nav-item {
+      height: 100%;
+      min-width: 0;
+      border-radius: calc(var(--nav-radius, 24px) - 8px);
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 2px;
+      color: var(--item-muted, #57606a);
+      font-size: var(--label-size, 10px);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .screen.dark .nav-item { --item-muted: #8b949e; }
+    .nav-item .icon { font-size: var(--icon-size, 18px); line-height: 1; }
+    .nav-item.active {
+      color: var(--accent, #0969da);
+      background: color-mix(in srgb, var(--accent, #0969da) 13%, transparent);
+    }
+    .density-compact .nav-item { --label-size: 0; --icon-size: 18px; gap: 0; }
+    .density-compact .nav-item .label { display: none; }
+    .density-icon-label .nav-item { --label-size: 10px; --icon-size: 18px; }
+    .density-large .nav-item { --label-size: 11px; --icon-size: 20px; }
+
+    .control-panel { padding: 16px; box-shadow: var(--shadow); }
+    .control-group { margin-bottom: 14px; }
+    .control-title { font-size: 12px; color: var(--subtle); font-weight: 900; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+    .seg { display: grid; gap: 7px; }
+    .seg button {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      min-height: 36px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-align: left;
+      padding: 0 10px;
+      cursor: pointer;
+    }
+    .seg button.active { border-color: rgba(9,105,218,.45); background: var(--blue-soft); color: #0550ae; }
+
+    .section { margin-top: 22px; }
+    .section.panel { padding: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .variant-card { padding: 14px; box-shadow: 0 8px 26px rgba(31,35,40,.08); }
+    .mini-screen {
+      position: relative;
+      height: 210px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: linear-gradient(180deg, #fff, #f6f8fa);
+      margin-top: 10px;
+    }
+    .mini-screen.dark { background: linear-gradient(180deg, #0d1117, #161b22); }
+    .mini-body { padding: 12px; display: grid; gap: 8px; }
+    .mini-row { height: 34px; border-radius: 12px; background: rgba(216,222,228,.68); }
+    .mini-screen.dark .mini-row { background: rgba(48,54,61,.7); }
+    .mini-nav { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 48px; border-radius: 18px; }
+    .mini-nav.docked { left: 0; right: 0; bottom: 0; border-radius: 0; }
+    .mini-nav.solid { background: #fff; border-top: 1px solid var(--line); }
+    .mini-screen.dark .mini-nav.solid { background: #161b22; border-color: rgba(240,246,252,.12); }
+    .mini-nav.glass { background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.42)); border: 1px solid rgba(255,255,255,.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 12px 28px rgba(31,35,40,.18); }
+    .mini-screen.dark .mini-nav.glass { background: linear-gradient(135deg, rgba(48,54,61,.72), rgba(13,17,23,.42)); border-color: rgba(240,246,252,.16); }
+    .mini-nav.tonal { background: #ddf4ff; border: 1px solid rgba(9,105,218,.2); }
+
+    .spec-table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 18px; border: 1px solid var(--line); background: #fff; }
+    .spec-table th, .spec-table td { padding: 12px 13px; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(31,35,40,.08); font-size: 13.5px; }
+    .spec-table th { background: #f6f8fa; font-size: 12px; }
+    .spec-table tr:last-child td { border-bottom: 0; }
+
+    .tag { display: inline-flex; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 900; background: var(--blue-soft); color: #0550ae; margin-bottom: 8px; }
+    .footer { margin-top: 28px; color: var(--subtle); font-size: 13px; text-align: center; }
+
+    @media (max-width: 980px) {
+      .hero, .preview-stage { grid-template-columns: 1fr; }
+      .control-panel { order: -1; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">Spec v6 · Rendering Variants</div>
+        <h1>导航栏渲染效果与变体画廊</h1>
+        <p>这一版不再继续写抽象架构，而是直接展示导航栏变体的视觉结果：placement、material、density、menu、surface 如何组合成最终渲染。</p>
+        <p><strong>目标：</strong>帮助判断“悬浮玻璃导航栏”应该是什么质感，以及组件需要支持哪些可复用渲染变体。</p>
+      </div>
+
+      <div class="preview-stage">
+        <div class="phone-shell">
+          <div class="phone">
+            <div id="screen" class="screen">
+              <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+              <div class="appbar"><span class="mark">G</span><strong id="title">Repository</strong><span>⋮</span></div>
+              <div class="content">
+                <div class="repo-card"><strong>SunsetGitHub</strong><span class="line" style="width: 82%"></span><span class="line" style="width: 48%"></span></div>
+                <div class="repo-card"><strong>Navigation surface sample</strong><span class="line" style="width: 68%"></span><span class="line" style="width: 78%"></span></div>
+                <div class="repo-card"><strong>Backdrop continuity</strong><span class="line" style="width: 56%"></span><span class="line" style="width: 86%"></span></div>
+                <div class="repo-card"><strong>Scrollable content behind bar</strong><span class="line" style="width: 72%"></span></div>
+              </div>
+              <div class="nav-zone">
+                <nav id="demoNav" class="demo-nav placement-floating material-glass density-icon-label" aria-label="Preview navigation"></nav>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="control-panel">
+          <div class="control-group" data-group="placement">
+            <div class="control-title">Placement</div>
+            <div class="seg">
+              <button data-value="placement-docked">Docked</button>
+              <button class="active" data-value="placement-floating">Floating</button>
+              <button data-value="placement-compact-floating">Compact Floating</button>
+              <button data-value="placement-hidden">Hidden</button>
+            </div>
+          </div>
+
+          <div class="control-group" data-group="material">
+            <div class="control-title">Material</div>
+            <div class="seg">
+              <button data-value="material-solid">Solid</button>
+              <button data-value="material-tonal">Tonal</button>
+              <button data-value="material-frosted">Frosted</button>
+              <button class="active" data-value="material-glass">Glass</button>
+              <button data-value="material-acrylic">Acrylic</button>
+            </div>
+          </div>
+
+          <div class="control-group" data-group="density">
+            <div class="control-title">Density</div>
+            <div class="seg">
+              <button data-value="density-compact">Icon only</button>
+              <button class="active" data-value="density-icon-label">Icon + label</button>
+              <button data-value="density-large">Large</button>
+            </div>
+          </div>
+
+          <div class="control-group" data-group="menu">
+            <div class="control-title">Menu</div>
+            <div class="seg">
+              <button data-value="main">Main</button>
+              <button class="active" data-value="repo">Repository</button>
+              <button data-value="repo-temp">Repository + temp</button>
+            </div>
+          </div>
+
+          <div class="control-group" data-group="surface">
+            <div class="control-title">Surface</div>
+            <div class="seg">
+              <button class="active" data-value="light">Light</button>
+              <button data-value="dark">Dark</button>
+              <button data-value="green">Green accent</button>
+              <button data-value="purple">Purple accent</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section panel">
+      <h2>推荐内置渲染变体</h2>
+      <div class="grid">
+        <div class="variant-card">
+          <span class="tag">Default</span>
+          <h3>Docked Solid</h3>
+          <p>稳定默认态。用于未开启悬浮、低端设备、玻璃降级、无障碍高对比场景。</p>
+          <div class="mini-screen"><div class="mini-body"><div class="mini-row"></div><div class="mini-row"></div><div class="mini-row"></div></div><div class="mini-nav docked solid"></div></div>
+        </div>
+        <div class="variant-card">
+          <span class="tag">Preferred</span>
+          <h3>Floating Glass</h3>
+          <p>主要目标态。用于仓库页和主导航页的悬浮导航，强调底色连续、轻量透明和高光边界。</p>
+          <div class="mini-screen"><div class="mini-body"><div class="mini-row"></div><div class="mini-row"></div><div class="mini-row"></div></div><div class="mini-nav glass"></div></div>
+        </div>
+        <div class="variant-card">
+          <span class="tag">Fallback</span>
+          <h3>Floating Frosted</h3>
+          <p>假玻璃降级态。没有真实 backdrop blur，但通过半透明、stroke 和 shadow 维持视觉层次。</p>
+          <div class="mini-screen"><div class="mini-body"><div class="mini-row"></div><div class="mini-row"></div><div class="mini-row"></div></div><div class="mini-nav glass" style="backdrop-filter: blur(10px); opacity: .88"></div></div>
+        </div>
+        <div class="variant-card">
+          <span class="tag">Contextual</span>
+          <h3>Compact Floating</h3>
+          <p>键盘、横屏、低高度或密集页面使用。优先保留图标，label 可隐藏。</p>
+          <div class="mini-screen"><div class="mini-body"><div class="mini-row"></div><div class="mini-row"></div><div class="mini-row"></div></div><div class="mini-nav glass" style="left:32px;right:32px;height:38px;border-radius:16px"></div></div>
+        </div>
+        <div class="variant-card">
+          <span class="tag">Theme</span>
+          <h3>Dark Glass</h3>
+          <p>深色主题不能直接套浅色玻璃，需要更低透明度、更弱高光和更强边界。</p>
+          <div class="mini-screen dark"><div class="mini-body"><div class="mini-row"></div><div class="mini-row"></div><div class="mini-row"></div></div><div class="mini-nav glass"></div></div>
+        </div>
+        <div class="variant-card">
+          <span class="tag">Accent</span>
+          <h3>Tonal Surface</h3>
+          <p>非玻璃的品牌/状态变体。适合高对比、低性能或需要明确页面身份的场景。</p>
+          <div class="mini-screen"><div class="mini-body"><div class="mini-row"></div><div class="mini-row"></div><div class="mini-row"></div></div><div class="mini-nav tonal"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section panel">
+      <h2>渲染变体定义</h2>
+      <table class="spec-table">
+        <thead>
+          <tr><th>轴</th><th>变体</th><th>渲染重点</th><th>建议第一轮</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Placement</td><td>Docked / Floating / CompactFloating / Hidden</td><td>位置、尺寸、圆角、内容避让和 hit slop</td><td>全部做</td></tr>
+          <tr><td>Material</td><td>Solid / Tonal / Frosted / Glass / Acrylic</td><td>背景、透明度、stroke、shadow、blur、highlight</td><td>Solid + Frosted/Glass</td></tr>
+          <tr><td>Density</td><td>IconOnly / IconLabel / Large</td><td>label 可见性、item 高度、图标尺寸、触摸区域</td><td>IconLabel + IconOnly</td></tr>
+          <tr><td>Menu</td><td>Main / Repository / RepositoryTemp</td><td>菜单项数量、临时分区、高亮规则、More 行为</td><td>全部做</td></tr>
+          <tr><td>Surface</td><td>Light / Dark / Accent</td><td>颜色 token、选中态、stroke 强度、玻璃高光强度</td><td>Light + Dark</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section panel">
+      <h2>落地建议</h2>
+      <p>现在方案应该从“写组件架构”转为“实现渲染变体”。第一刀建议做：`AppNavigationBarLayout` 接收一个 `RenderPlan`，先能渲染上面这些变体中的 `Docked Solid`、`Floating Glass/Frosted`、`Compact Floating` 和 `Hidden`。</p>
+      <p>玻璃先按 FakeGlass/Frosted 实现，真实 RenderEffect 或 snapshot blur 作为后续 material renderer，不影响 placement/menu/density。</p>
+    </section>
+
+    <div class="footer">生成文件：docs/navigation-bar-component-rendering-variants-v6.html</div>
+  </main>
+
+  <script>
+    const state = {
+      placement: 'placement-floating',
+      material: 'material-glass',
+      density: 'density-icon-label',
+      menu: 'repo',
+      surface: 'light'
+    };
+
+    const menus = {
+      main: [
+        ['⌂', 'Home'], ['▦', 'Repos'], ['●', 'Inbox'], ['⚙', 'Settings']
+      ],
+      repo: [
+        ['⌘', 'Code'], ['●', 'Issues'], ['↻', 'Actions'], ['⚙', 'Settings'], ['⋯', 'More']
+      ],
+      'repo-temp': [
+        ['⌘', 'Code'], ['●', 'Issues'], ['⑂', 'Pulls'], ['↻', 'Actions'], ['⋯', 'More']
+      ]
+    };
+
+    const nav = document.getElementById('demoNav');
+    const screen = document.getElementById('screen');
+    const title = document.getElementById('title');
+
+    function renderMenu() {
+      const items = menus[state.menu];
+      nav.style.setProperty('--nav-count', items.length);
+      nav.innerHTML = items.map((item, index) => `
+        <div class="nav-item ${index === 0 ? 'active' : ''}">
+          <span class="icon">${item[0]}</span>
+          <span class="label">${item[1]}</span>
+        </div>
+      `).join('');
+      title.textContent = state.menu === 'main' ? 'SunsetGitHub' : 'Repository';
+    }
+
+    function render() {
+      nav.className = `demo-nav ${state.placement} ${state.material} ${state.density}`;
+      screen.classList.toggle('dark', state.surface === 'dark');
+      const accent = state.surface === 'green' ? '#1a7f37' : state.surface === 'purple' ? '#8250df' : '#0969da';
+      nav.style.setProperty('--accent', accent);
+      renderMenu();
+    }
+
+    document.querySelectorAll('.control-group').forEach(group => {
+      const key = group.dataset.group;
+      group.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+          group.querySelectorAll('button').forEach(item => item.classList.remove('active'));
+          button.classList.add('active');
+          state[key] = button.dataset.value;
+          render();
+        });
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

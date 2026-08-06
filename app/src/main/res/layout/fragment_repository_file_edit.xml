@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/github_canvas"
+    android:orientation="vertical"
+    tools:context=".ui.repo.RepositoryFileEditFragment">
+
+    <!-- 文件信息头部：接近文件预览器/MT 风格，文件名、路径和编码状态直接暴露。 -->
+    <LinearLayout
+        android:id="@+id/container_repository_file_info_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/github_canvas"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/text_repository_file_edit_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/github_text_primary"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            tools:text="README.md" />
+
+        <TextView
+            android:id="@+id/text_repository_file_edit_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="middle"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/github_text_muted"
+            android:textSize="14sp"
+            tools:text="SunsetRNE/SunsetGitHub · app/src/main/README.md" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_repository_file_edit_mode_chip"
+                style="@style/Widget.SunsetGitHub.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_2"
+                android:visibility="gone"
+                tools:text="预览"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/text_repository_file_edit_metadata"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/github_text_secondary"
+                android:textSize="13sp"
+                tools:text="可编辑预览 · 15.2 KiB · UTF-8 · LF" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container_repository_file_current_tools"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/github_subtle_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/page_horizontal_padding"
+        android:paddingBottom="@dimen/space_2">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/repository_file_edit_current_file_tools"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/repository_file_edit_terminal_prefill_hint"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_open_terminal"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_2"
+            android:minHeight="36dp"
+            android:text="@string/repository_file_edit_open_terminal" />
+    </LinearLayout>
+
+    <!-- 仓库上下文：极轻量单行，仅在异常/缺失时占位。 -->
+    <TextView
+        android:id="@+id/text_repository_file_edit_context"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/github_subtle_background"
+        android:ellipsize="end"
+        android:paddingHorizontal="@dimen/page_horizontal_padding"
+        android:paddingBottom="@dimen/space_2"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+        android:visibility="gone"
+        tools:text="octocat/Hello-World"
+        tools:visibility="visible" />
+
+    <!-- 状态文案：仅在加载/错误时显示，加载完成后隐藏，不常驻占位。 -->
+    <TextView
+        android:id="@+id/text_repository_file_edit_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/github_subtle_background"
+        android:ellipsize="end"
+        android:paddingHorizontal="@dimen/page_horizontal_padding"
+        android:paddingBottom="@dimen/space_2"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+        android:visibility="gone"
+        tools:text="已加载可编辑文件。"
+        tools:visibility="visible" />
+
+    <!-- 新建模式：目标路径输入框，紧贴路径条下方。 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_repository_file_target_path"
+        style="@style/Widget.SunsetGitHub.Material.TextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+        android:layout_marginTop="@dimen/space_2"
+        android:hint="@string/repository_file_upload_target_path_hint"
+        android:visibility="gone">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_repository_file_target_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textNoSuggestions"
+            android:textColor="@color/github_text_primary"
+            android:textColorHint="@color/github_text_muted" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 编辑态 MT 风格深色命令栏：文件编辑时替代大信息头部，降低页面感。 -->
+    <LinearLayout
+        android:id="@+id/container_repository_file_editor_command_bar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/github_black_soft"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="6dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/button_repository_file_command_menu"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="☰"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_repository_file_command_pin"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="⌖"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_repository_file_command_undo"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="↶"
+            android:textColor="#99FFFFFF"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_repository_file_command_redo"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="↷"
+            android:textColor="#99FFFFFF"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_repository_file_command_save"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="▣"
+            android:textColor="#CCFFFFFF"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_repository_file_command_edit"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="✎"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/button_repository_file_command_more"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="⋮"
+            android:textColor="@color/white"
+            android:textSize="26sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container_repository_file_editor_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:background="@color/github_black_soft"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text_repository_file_editor_status_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="#E6FFFFFF"
+            android:textSize="13sp"
+            tools:text="build.gradle.kts" />
+
+        <TextView
+            android:id="@+id/text_repository_file_editor_status_cursor"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="#E6FFFFFF"
+            android:textSize="13sp"
+            tools:text="1:1  UTF-8" />
+    </LinearLayout>
+
+    <!-- 编辑区：吃满路径条与底部提交条之间的剩余空间。 -->
+    <FrameLayout
+        android:id="@+id/container_repository_file_editor_host"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/github_canvas">
+
+        <FrameLayout
+            android:id="@+id/container_repository_file_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <ScrollView
+            android:id="@+id/scroll_repository_file_render_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:paddingHorizontal="@dimen/page_horizontal_padding"
+            android:paddingVertical="@dimen/space_3"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/text_repository_file_render_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="4dp"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Body"
+                android:textColor="@color/github_text_primary"
+                tools:text="# README\n\nMarkdown rendered preview" />
+        </ScrollView>
+
+        <WebView
+            android:id="@+id/web_repository_file_render_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/github_canvas"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/container_repository_file_editor_tools"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/github_surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="0dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_toggle_search"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/repository_file_tools" android:textSize="18sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_save"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/repository_file_save"
+            android:visibility="gone" android:textSize="18sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_undo"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/repository_file_undo"
+            android:visibility="gone" android:textSize="18sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_redo"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/repository_file_redo"
+            android:visibility="gone" android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/text_repository_file_cursor_status"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_1"
+            android:layout_weight="1.8"
+            android:ellipsize="end"
+            android:gravity="end|center_vertical"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+            android:textColor="@color/github_text_muted"
+            tools:text="1:1  UTF-8" android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_toggle_render_preview"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/repository_file_render_preview_show"
+            android:visibility="gone" android:textSize="18sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_focus_mode"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/repository_file_focus_edit" android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container_repository_file_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/github_subtle_background"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/page_horizontal_padding"
+        android:paddingBottom="@dimen/space_1"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_repository_file_search_query"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/local_file_preview_search_field_height"
+                android:layout_weight="1"
+                android:hint="@string/repository_file_search_hint"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingVertical="0dp"
+                android:singleLine="true"
+                android:textColor="@color/github_text_primary"
+                android:textColorHint="@color/github_text_muted"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_repository_file_find_previous"
+                style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                android:layout_width="@dimen/local_file_preview_search_icon_button_size"
+                android:layout_height="@dimen/local_file_preview_search_icon_button_size"
+                android:layout_marginStart="@dimen/space_1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="0dp"
+                android:text="@string/local_file_preview_find_previous_short"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_repository_file_find_next"
+                style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                android:layout_width="@dimen/local_file_preview_search_icon_button_size"
+                android:layout_height="@dimen/local_file_preview_search_icon_button_size"
+                android:layout_marginStart="@dimen/space_1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="0dp"
+                android:text="@string/local_file_preview_find_next_short"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_repository_file_replace_text"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/local_file_preview_search_field_height"
+                android:layout_weight="1"
+                android:hint="@string/repository_file_replace_hint"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingVertical="0dp"
+                android:singleLine="true"
+                android:textColor="@color/github_text_primary"
+                android:textColorHint="@color/github_text_muted"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_repository_file_replace_current"
+                style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/local_file_preview_search_action_button_height"
+                android:layout_marginStart="@dimen/space_1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="8dp"
+                android:text="@string/local_file_preview_replace_current"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_repository_file_replace_all"
+                style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/local_file_preview_search_action_button_height"
+                android:layout_marginStart="@dimen/space_1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="8dp"
+                android:text="@string/local_file_preview_replace_all"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/check_repository_file_ignore_case"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/local_file_preview_search_option_height"
+                android:minHeight="0dp"
+                android:paddingVertical="0dp"
+                android:text="@string/local_file_preview_search_ignore_case"
+                android:textColor="@color/github_text_secondary"
+                android:textSize="12sp" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/check_repository_file_regex"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/local_file_preview_search_option_height"
+                android:layout_marginStart="@dimen/space_1"
+                android:minHeight="0dp"
+                android:paddingVertical="0dp"
+                android:text="@string/repository_file_search_regex"
+                android:textColor="@color/github_text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/text_repository_file_search_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_2"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="end|center_vertical"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.SunsetGitHub.Material.Meta"
+                android:textColor="@color/github_text_muted"
+                tools:text="3 处匹配" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/container_repository_file_symbol_bar"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/github_black_soft"
+        android:fillViewport="false"
+        android:overScrollMode="never"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="0dp"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/layout_repository_file_symbol_keys"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <!-- 底部操作条：预览态显示文件预览快捷操作；编辑态由顶部命令栏处理保存。 -->
+    <LinearLayout
+        android:id="@+id/container_repository_file_commit_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/github_surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="10dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_preview_find"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:text="@string/repository_file_preview_action_find"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_preview_tools"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:text="@string/repository_file_preview_action_tools"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_preview_copy"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:text="@string/repository_file_preview_action_copy"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_enter_edit_mode"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:text="@string/repository_file_enter_edit_mode"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_repository_file_commit_message"
+            style="@style/Widget.SunsetGitHub.Material.TextInput"
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/repository_file_edit_commit_message_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_repository_file_commit_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:textColor="@color/github_text_primary"
+                android:textColorHint="@color/github_text_muted" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_repository_file_submit"
+            style="@style/Widget.SunsetGitHub.Material.GlobalButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="0dp"
+            android:text="@string/repository_file_edit_submit"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>
