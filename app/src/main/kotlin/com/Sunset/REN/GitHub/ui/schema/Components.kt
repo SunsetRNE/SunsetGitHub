@@ -83,6 +83,8 @@ data class ItemComponent(
     val languageBar: LanguageBarComponent? = null,
     val icon: IconId? = null,
     val badge: String? = null,
+    /** 徽章颜色（默认 accent；Actions 状态徽章等使用 Success/Danger）。 */
+    val badgeColor: TextColor = TextColor.Accent,
     val trailing: String? = null,
     val actions: List<ItemAction> = emptyList(),
     override val action: String = "",

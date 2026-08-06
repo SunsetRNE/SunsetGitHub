@@ -316,7 +316,7 @@ private fun renderItem(component: ItemComponent, onAction: (String) -> Unit) {
                     Text(
                         text = component.badge,
                         style = MaterialTheme.typography.labelSmall,
-                        color = colors.accent,
+                        color = textColor(component.badgeColor),
                         maxLines = 1,
                     )
                 }
