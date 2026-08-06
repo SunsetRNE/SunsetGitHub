@@ -114,7 +114,7 @@ class SearchFragment : DialogFragment() {
             putString(RepositoryDetailFragment.ARG_REPO, repository.name)
             putString(RepositoryDetailFragment.ARG_FULL_NAME, repository.fullName)
         }
-        val navController = runCatching { requireActivity().findNavController(NavHostId) }.getOrNull()
+        val navController: androidx.navigation.NavController? = null
         if (navController == null) {
             Toast.makeText(requireContext(), "仓库详情页导航节点缺失。", Toast.LENGTH_SHORT).show()
             return
@@ -134,7 +134,7 @@ class SearchFragment : DialogFragment() {
 
     private fun openUserProfile(user: GitHubUserSearchItem) {
         if (user.login.isBlank()) return
-        val navController = runCatching { requireActivity().findNavController(NavHostId) }.getOrNull()
+        val navController: androidx.navigation.NavController? = null
         if (navController == null) {
             Toast.makeText(requireContext(), "用户主页导航节点缺失。", Toast.LENGTH_SHORT).show()
             return
@@ -153,7 +153,7 @@ class SearchFragment : DialogFragment() {
             Toast.makeText(requireContext(), "无法定位该 Issue 所属仓库。", Toast.LENGTH_SHORT).show()
             return
         }
-        val navController = runCatching { requireActivity().findNavController(NavHostId) }.getOrNull()
+        val navController: androidx.navigation.NavController? = null
         if (navController == null) {
             Toast.makeText(requireContext(), "Issue 详情导航节点缺失。", Toast.LENGTH_SHORT).show()
             return
@@ -179,7 +179,7 @@ class SearchFragment : DialogFragment() {
             Toast.makeText(requireContext(), "无法定位该文件所属仓库。", Toast.LENGTH_SHORT).show()
             return
         }
-        val navController = runCatching { requireActivity().findNavController(NavHostId) }.getOrNull()
+        val navController: androidx.navigation.NavController? = null
         if (navController == null) {
             Toast.makeText(requireContext(), "文件预览导航节点缺失。", Toast.LENGTH_SHORT).show()
             return
@@ -211,6 +211,5 @@ class SearchFragment : DialogFragment() {
         const val TAG = "SearchFragment"
         private const val RepositoryDetailDestinationName = "repository_detail_fragment"
         private const val ResourceTypeId = "id"
-        private val NavHostId = R.id.nav_host_fragment_activity_main
     }
 }

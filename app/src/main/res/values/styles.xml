@@ -91,27 +91,6 @@
         <item name="hintTextColor">@color/github_text_muted</item>
     </style>
 
-    <style name="Widget.SunsetGitHub.Material.BottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="android:background">@drawable/bg_bottom_nav_docked</item>
-        <item name="android:elevation">0dp</item>
-        <item name="android:minHeight">56dp</item>
-        <item name="elevation">0dp</item>
-        <item name="elevationOverlayEnabled">false</item>
-        <item name="backgroundTint">@null</item>
-        <item name="itemIconTint">@color/nav_item_tint</item>
-        <item name="itemTextColor">@color/nav_item_tint</item>
-        <item name="itemRippleColor">@color/github_accent_soft</item>
-        <item name="itemHorizontalTranslationEnabled">false</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.SunsetGitHub.Material.BottomNavigation.ActiveIndicator</item>
-        <item name="labelVisibilityMode">labeled</item>
-    </style>
-
-    <style name="Widget.SunsetGitHub.Material.BottomNavigation.ActiveIndicator">
-        <item name="android:color">@android:color/transparent</item>
-        <item name="android:width">0dp</item>
-        <item name="android:height">0dp</item>
-    </style>
-
     <!-- Unified controls: prefer built-in Material/AppCompat controls with these project-wide styles.
          If a built-in control cannot express the required UI, create one reusable global wrapper/style,
          register it in Theme.AppTheme, and reuse it instead of hand-styling per screen. -->
