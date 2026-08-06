@@ -246,6 +246,7 @@ internal fun iconRes(icon: IconId): Int = when (icon) {
     IconId.Warning -> R.drawable.ic_block_24
     IconId.Error -> R.drawable.ic_error_24
     IconId.Check -> R.drawable.ic_check_circle_24
+    IconId.Pin -> R.drawable.ic_pin_outline_24
 }
 
 @Composable
@@ -342,6 +343,9 @@ private fun renderItem(component: ItemComponent, onAction: (String) -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = spacing.xxs),
                 )
+            }
+            component.languageBar?.let { bar ->
+                renderLanguageBar(bar, Modifier.padding(top = spacing.xs))
             }
         }
         component.actions.forEach { itemAction ->
@@ -537,12 +541,12 @@ private fun SkeletonBlock(widthFraction: Float, height: Dp) {
 // ---- 语言色条 ----
 
 @Composable
-private fun renderLanguageBar(component: LanguageBarComponent) {
+private fun renderLanguageBar(component: LanguageBarComponent, modifier: Modifier = Modifier) {
     val colors = SunsetGitHubThemeTokens.colors
     val segments = languageBarSegments(component.segments, component.fallback)
     if (segments.isEmpty()) return
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(3.dp)
             .background(colors.chipBackground, RoundedCornerShape(99.dp)),

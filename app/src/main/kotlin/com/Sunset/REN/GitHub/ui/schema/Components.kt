@@ -67,9 +67,10 @@ data class SpacerComponent(
 ) : Component
 
 /**
- * 列表条目组件：固定字段 { title, subtitle, description, meta, icon, badge, trailing, actions, action }。
+ * 列表条目组件：固定字段 { title, subtitle, description, meta, languageBar, icon, badge, trailing, actions, action }。
  * - [description]：标题区下方的第二行描述（可选，仓库卡片等富条目使用）；
  * - [meta]：条目底部 meta 行片段（可选，如语言/★/Fork/Issue/时间，以 " · " 连接）；
+ * - [languageBar]：条目内嵌语言色条（可选，组合而非布局参数，渲染在 meta 下方）；
  * - [actions]：行内图标动作（可选，如置顶/收藏，渲染在 trailing 左侧）。
  * 与列表组件 [ListComponent] 配合，条目本身不持有布局参数。
  */
@@ -79,6 +80,7 @@ data class ItemComponent(
     val subtitle: String? = null,
     val description: String? = null,
     val meta: List<String> = emptyList(),
+    val languageBar: LanguageBarComponent? = null,
     val icon: IconId? = null,
     val badge: String? = null,
     val trailing: String? = null,

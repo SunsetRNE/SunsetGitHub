@@ -11,8 +11,12 @@ import com.Sunset.REN.GitHub.ui.repo.RepositoriesUiState
 import com.Sunset.REN.GitHub.ui.schema.ButtonComponent
 import com.Sunset.REN.GitHub.ui.schema.ButtonKind
 import com.Sunset.REN.GitHub.ui.schema.FieldComponent
+import com.Sunset.REN.GitHub.ui.schema.FieldKeyboard
 import com.Sunset.REN.GitHub.ui.schema.IconId
+import com.Sunset.REN.GitHub.ui.schema.ItemAction
 import com.Sunset.REN.GitHub.ui.schema.ItemComponent
+import com.Sunset.REN.GitHub.ui.schema.LanguageBarComponent
+import com.Sunset.REN.GitHub.ui.schema.LanguageSegment
 import com.Sunset.REN.GitHub.ui.schema.ListComponent
 import com.Sunset.REN.GitHub.ui.schema.SpacerComponent
 import com.Sunset.REN.GitHub.ui.schema.StateComponent
@@ -219,9 +223,32 @@ object DashboardPage {
                 if (repository.forksCount > 0) add("Fork ${repository.forksCount}")
                 if (repository.openIssuesCount > 0) add("Issue ${repository.openIssuesCount}")
             },
+            languageBar = LanguageBarComponent(
+                id = "dashboard.lang.${repository.id}",
+                segments = repository.languages.map { language ->
+                    LanguageSegment(name = language.name, percentage = language.percentage.toFloat())
+                },
+                fallback = repository.language,
+            ),
             icon = if (repository.archived) IconId.Archive else IconId.Folder,
             badge = if (localState.isPinned) "置顶" else null,
             trailing = repository.updatedAt?.take(10)?.takeIf { it.length == 10 },
+            actions = listOf(
+                ItemAction(
+                    id = "dashboard.action.pin.${repository.fullName}",
+                    icon = IconId.Pin,
+                    contentDescription = if (localState.isPinned) "取消置顶" else "置顶",
+                    active = localState.isPinned,
+                    action = "dashboard.pin.${repository.fullName}",
+                ),
+                ItemAction(
+                    id = "dashboard.action.star.${repository.fullName}",
+                    icon = IconId.Star,
+                    contentDescription = if (localState.isFavorite) "取消收藏" else "收藏",
+                    active = localState.isFavorite,
+                    action = "dashboard.star.${repository.fullName}",
+                ),
+            ),
             action = "repo.open.${repository.fullName}",
         )
     }
@@ -297,6 +324,8 @@ fun DashboardPageContent(
             action == "nav.home" -> onOpenHome()
             // 排序菜单为浮层组件（阶段 6），当前仅占位路由
             action == "dashboard.sort" -> Unit
+            action.startsWith("dashboard.pin.") -> onTogglePinned(action.removePrefix("dashboard.pin."))
+            action.startsWith("dashboard.star.") -> onToggleFavorite(action.removePrefix("dashboard.star."))
             action.startsWith("repo.open.") -> {
                 val fullName = action.removePrefix("repo.open.")
                 repositories.firstOrNull { it.fullName == fullName }?.let(onOpenRepository)
