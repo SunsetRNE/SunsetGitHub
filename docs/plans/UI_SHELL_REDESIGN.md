@@ -6,7 +6,7 @@
 > 迁移进度：步骤 1（骨架）✅ 步骤 2（Home 切片）✅ 步骤 3（Dashboard 切片）✅
 > 步骤 4（仓库详情分段导航）✅ 步骤 5（逐页迁移：Issues/PR/Notifications/Profile/Settings/Search/Account/
 > IssueDetail/Releases/HTML 摘要分区页族（Wiki/Projects/Insights/Agents/SecurityQuality/仓库 Settings 六分区共用一页）/
-> Actions 已迁移，Dashboard 已用语言色条+行内动作升级；Settings/Search/Account/Releases 验证 Hidden+返回）→ 进行中
+> Actions/本地文件管理器 已迁移，Dashboard 已用语言色条+行内动作升级；Settings/Search/Account/Releases 验证 Hidden+返回）→ 进行中
 > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。
