@@ -28,6 +28,10 @@
  > 桥接 + 唯一 action 分发），桥接登录页 + 五主导航页（Home/Dashboard/Notifications/Profile/Settings）
  > + DeviceFlowIntro/TokenLoginChoice 入口页；assembleDebug 通过 → 旧壳文件删除（ui/navigation 13 文件、
  > 旧壳 XML、样式、死代码 Fragment 清理）待下一轮
+ > 旧壳文件已删除 ✅：ui/navigation 13 补丁文件、activity_main.xml、bottom_nav_menu.xml、nav_item_tint.xml、
+ > bg_bottom_nav_docked/floating/transparent 3 个 drawable、styles.xml BottomNavigation 样式 2 处、
+ > SearchFragment 对 nav_host id 的机制关联（已断链）→ 剩余：mobile_navigation.xml（122 目的地）+
+ > 52 个旧 Fragment 死代码族（引用导航图 R.id，删除需连锁处理 Fragment/layout/ViewModel，单独轮次统筹）
  > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。
