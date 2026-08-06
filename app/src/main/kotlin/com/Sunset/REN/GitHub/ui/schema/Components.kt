@@ -42,6 +42,8 @@ data class FieldComponent(
     val hint: String = "",
     val singleLine: Boolean = true,
     val keyboard: FieldKeyboard = FieldKeyboard.Text,
+    /** 输入框可用性（默认 true 向后兼容；加载/保存中禁用由调用端计算）。 */
+    val enabled: Boolean = true,
     val onChange: ((String) -> Unit)? = null,
     override val action: String = "",
 ) : Component

@@ -210,6 +210,7 @@ private fun renderField(component: FieldComponent) {
         onValueChange = { newValue ->
             component.onChange?.invoke(newValue) ?: run { localValue = newValue }
         },
+        enabled = component.enabled,
         singleLine = component.singleLine,
         placeholder = if (component.hint.isNotEmpty()) {
             { Text(component.hint, color = SunsetGitHubThemeTokens.colors.textMuted) }
