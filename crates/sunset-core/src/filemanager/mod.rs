@@ -11,11 +11,15 @@ pub mod operation;
 pub mod pane;
 pub mod path;
 pub mod recycle;
+pub mod root;
 pub mod search;
 pub mod sort;
 
 pub use entry::{FileEntry, FileEntryKind};
-pub use operation::{FileOperationRunner, OperationContext, OperationEvent, OperationKind};
+pub use operation::{
+    ConflictAction, ErrorAction, FileOperationRunner, OperationContext, OperationEvent,
+    OperationKind, OperationOptions,
+};
 pub use pane::{
     DualPaneNavigationState, DualPaneState, PaneId, PaneNavigationState, PaneTransferTarget,
     PaneTransferTargetResolver,

@@ -7,7 +7,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::filemanager::entry::{FileEntry, FileEntryKind};
+use crate::filemanager::entry::{load_entry, FileEntry, FileEntryKind};
 
 /// 搜索选项（与 Kotlin FileManagerSearchOptions 字段对齐）。
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -136,7 +136,6 @@ impl RecursiveSearcher {
                 continue;
             }
 
-            let is_hidden = file_name.starts_with('.');
             let path = entry.path().to_string_lossy().into_owned();
             let rel_path = if rel_prefix.is_empty() {
                 file_name.clone()
@@ -144,13 +143,7 @@ impl RecursiveSearcher {
                 format!("{rel_prefix}/{file_name}")
             };
 
-            let fe = FileEntry {
-                name: file_name,
-                path: path.clone(),
-                kind,
-                size: 0,
-                is_hidden,
-            };
+            let fe = load_entry(&entry.path())?;
 
             if options.matches(&fe, &rel_path) {
                 results.push(SearchHit {
