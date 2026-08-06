@@ -44,6 +44,10 @@ data class FieldComponent(
     val keyboard: FieldKeyboard = FieldKeyboard.Text,
     /** 输入框可用性（默认 true 向后兼容；加载/保存中禁用由调用端计算）。 */
     val enabled: Boolean = true,
+    /** 输入框错误态（边框红色；配合 supportingText 展示校验文案）。 */
+    val isError: Boolean = false,
+    /** 辅助/错误文本（isError 时渲染为错误色，否则为弱化色）。 */
+    val supportingText: String? = null,
     val onChange: ((String) -> Unit)? = null,
     override val action: String = "",
 ) : Component

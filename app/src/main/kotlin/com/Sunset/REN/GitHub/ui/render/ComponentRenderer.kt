@@ -212,6 +212,19 @@ private fun renderField(component: FieldComponent) {
         },
         enabled = component.enabled,
         singleLine = component.singleLine,
+        isError = component.isError,
+        supportingText = component.supportingText?.let { supporting ->
+            {
+                Text(
+                    text = supporting,
+                    color = if (component.isError) {
+                        SunsetGitHubThemeTokens.colors.danger
+                    } else {
+                        SunsetGitHubThemeTokens.colors.textMuted
+                    },
+                )
+            }
+        },
         placeholder = if (component.hint.isNotEmpty()) {
             { Text(component.hint, color = SunsetGitHubThemeTokens.colors.textMuted) }
         } else null,

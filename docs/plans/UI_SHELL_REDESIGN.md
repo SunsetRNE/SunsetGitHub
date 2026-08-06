@@ -9,6 +9,7 @@
 > Actions/本地文件管理器/登录首页（LoginHome 认证入口）已迁移，Dashboard 已用语言色条+行内动作升级；Settings/Search/Account/Releases 验证 Hidden+返回）→ 进行中
 > 认证链路五页已全部迁移（设备流两页 DeviceFlowIntro/DeviceFlowCode + Token 三页 TokenLoginChoice/TokenGuide/TokenPermissionReview），
 > FieldComponent 新增 enabled 字段（默认 true 向后兼容）→ 进行中
+> 仓库写入流两页已迁移（IssueCreate 新建议题 + ReleaseCreate 新建发布），FieldComponent 新增 isError/supportingText 表单校验 → 进行中
 > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。
