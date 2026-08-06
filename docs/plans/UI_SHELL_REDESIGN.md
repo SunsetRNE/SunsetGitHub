@@ -23,6 +23,11 @@
  > 组 D 独立页四页已迁移（WorkspacePullPage/WorkspacePushPage 引入 Fields 纯数据类承载表单状态+Switch 经 action 路由翻转；
  > AppLogPage 复制/刷新+Code 日志体；LocalFilePreviewPage 三段混合布局 schema 头+weight(1f) 原生 View+schema 底，
  > 与 RepositoryFileEditPage 同款 fillMaxSize=false 模式）✅ 编译通过 → 剩余待迁移 0 页，步骤 6（删旧壳）待用户统筹
+ > 步骤 6（删旧壳）已启动：新壳运行时接管——MainActivity 由 XML+NavHost+BottomNavigationView 补丁系统
+ > 重写为 Compose AppShell 入口；新增 ShellHost/ShellHostController（壳页路由 + Activity-scoped ViewModel
+ > 桥接 + 唯一 action 分发），桥接登录页 + 五主导航页（Home/Dashboard/Notifications/Profile/Settings）
+ > + DeviceFlowIntro/TokenLoginChoice 入口页；assembleDebug 通过 → 旧壳文件删除（ui/navigation 13 文件、
+ > 旧壳 XML、样式、死代码 Fragment 清理）待下一轮
  > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。
