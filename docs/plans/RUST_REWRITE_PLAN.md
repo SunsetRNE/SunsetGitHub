@@ -1,6 +1,6 @@
 # Rust 重写路线图（2026-08-06 启动）
 
-> 状态：阶段 3 文件引擎深化已完成 ✅（2026-08-06）
+> 状态：阶段 4 逆向工具链已完成 ✅（2026-08-06）
 > 决策：核心逻辑 Rust 化（GPL-3.0-or-later 彻底开源），UI 层保留
 > Kotlin/Compose 壳，经 UniFFI 桥接。旧代码备份于
 > `.backup/pre_rust_rewrite_20260806/`（397MB，含全部源码与文档）。
@@ -37,7 +37,7 @@ SunsetGitHub（GPL-3.0）
 | 1 | Cargo workspace + sunset-core 骨架 + 测试 + GPL-3.0/NOTICE | ✅ 2026-08-06 |
 | 2 | GitHub API 深化：Issues/PR/Releases/Actions/文件上传编辑 | ✅ 2026-08-06 |
 | 3 | 文件引擎深化：复制/移动/回收站/递归搜索/双栏状态 | ✅ 2026-08-06 |
-| 4 | 逆向工具链：Dex 类/方法/字符串解析、ARSC 解析、AXML 解码 | ⬜ |
+| 4 | 逆向工具链：Dex 类/方法/字符串解析、ARSC 解析、AXML 解码 | ✅ 2026-08-06 |
 | 5 | AI 工作区：gix Git 操作、工具运行时、记忆模型 | ⬜ |
 | 6 | UniFFI 接入：生成 Kotlin 绑定，替换 UI 层调用 | ⬜ |
 | 7 | UI 壳清理：删除旧 Kotlin 业务逻辑，发布 1.0 | ⬜ |

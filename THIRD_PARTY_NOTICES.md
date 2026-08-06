@@ -16,6 +16,9 @@
 | tar / flate2 | tar.gz 处理 | MIT / Apache-2.0 |
 | chrono | 时间 | MIT / Apache-2.0 |
 | base64 | Base64 编解码 | MIT / Apache-2.0 |
+| rusty-axml | AXML（Android 二进制 XML）解析 | Apache-2.0 |
+| quick-xml（rusty-axml 传递依赖） | XML 写出 | MIT |
+| byteorder（rusty-axml 传递依赖） | 字节序读写 | MIT / Unlicense |
 
 > 完整依赖树请见 `Cargo.lock`。引入新依赖前必须通过
 > `cargo deny check`（配置见 `deny.toml`）。

@@ -17,6 +17,7 @@ tar.workspace = true
 flate2.workspace = true
 chrono.workspace = true
 base64.workspace = true
+rusty-axml.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
