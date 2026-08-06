@@ -306,6 +306,26 @@ private fun renderItem(component: ItemComponent, onAction: (String) -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+            if (!component.description.isNullOrBlank()) {
+                Text(
+                    text = component.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = spacing.xxs),
+                )
+            }
+            if (component.meta.isNotEmpty()) {
+                Text(
+                    text = component.meta.joinToString(" · "),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.textMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = spacing.xxs),
+                )
+            }
         }
         if (!component.trailing.isNullOrBlank()) {
             Spacer(Modifier.width(spacing.md))
