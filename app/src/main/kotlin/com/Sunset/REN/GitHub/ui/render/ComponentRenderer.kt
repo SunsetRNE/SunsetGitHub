@@ -1,20 +1,27 @@
 package com.Sunset.REN.GitHub.ui.render
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -33,20 +40,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.Sunset.REN.GitHub.R
 import com.Sunset.REN.GitHub.ui.compose.SunsetGitHubThemeTokens
 import com.Sunset.REN.GitHub.ui.schema.ButtonComponent
 import com.Sunset.REN.GitHub.ui.schema.ButtonKind
 import com.Sunset.REN.GitHub.ui.schema.Component
+import com.Sunset.REN.GitHub.ui.schema.DropdownMenuComponent
 import com.Sunset.REN.GitHub.ui.schema.FieldComponent
 import com.Sunset.REN.GitHub.ui.schema.FieldKeyboard
 import com.Sunset.REN.GitHub.ui.schema.IconId
 import com.Sunset.REN.GitHub.ui.schema.ImageComponent
 import com.Sunset.REN.GitHub.ui.schema.ImageSource
+import com.Sunset.REN.GitHub.ui.schema.ItemAction
 import com.Sunset.REN.GitHub.ui.schema.ItemComponent
+import com.Sunset.REN.GitHub.ui.schema.LanguageBarComponent
+import com.Sunset.REN.GitHub.ui.schema.LanguageSegment
 import com.Sunset.REN.GitHub.ui.schema.ListComponent
+import com.Sunset.REN.GitHub.ui.schema.MenuItemComponent
 import com.Sunset.REN.GitHub.ui.schema.SectionHeaderComponent
+import com.Sunset.REN.GitHub.ui.schema.SkeletonComponent
 import com.Sunset.REN.GitHub.ui.schema.SpacerComponent
 import com.Sunset.REN.GitHub.ui.schema.StateComponent
 import com.Sunset.REN.GitHub.ui.schema.StateKind
@@ -75,6 +89,9 @@ fun Component.render(onAction: (String) -> Unit) {
             items.forEach { item -> renderItem(item, onAction) }
         }
         is StateComponent -> renderState(this, onAction)
+        is SkeletonComponent -> renderSkeleton(this)
+        is LanguageBarComponent -> renderLanguageBar(this)
+        is DropdownMenuComponent -> renderDropdownMenu(this, onAction)
     }
 }
 
@@ -327,6 +344,17 @@ private fun renderItem(component: ItemComponent, onAction: (String) -> Unit) {
                 )
             }
         }
+        component.actions.forEach { itemAction ->
+            Spacer(Modifier.width(spacing.sm))
+            Icon(
+                painter = painterResource(iconRes(itemAction.icon)),
+                contentDescription = itemAction.contentDescription,
+                tint = if (itemAction.active) colors.accent else colors.textMuted,
+                modifier = Modifier
+                    .size(spacing.lg)
+                    .clickable { onAction(itemAction.action) },
+            )
+        }
         if (!component.trailing.isNullOrBlank()) {
             Spacer(Modifier.width(spacing.md))
             Text(
@@ -446,6 +474,171 @@ private fun renderState(component: StateComponent, onAction: (String) -> Unit) {
                 TextButton(onClick = { onAction(component.retryAction) }) {
                     Text("重试", color = colors.accent)
                 }
+            }
+        }
+    }
+}
+
+// ---- 骨架 ----
+
+@Composable
+private fun renderSkeleton(component: SkeletonComponent) {
+    val spacing = SunsetGitHubThemeTokens.spacing
+    Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+        repeat(component.rows) { index ->
+            SkeletonCard(compact = component.compact || index >= 3)
+        }
+    }
+}
+
+@Composable
+private fun SkeletonCard(compact: Boolean) {
+    val colors = SunsetGitHubThemeTokens.colors
+    val spacing = SunsetGitHubThemeTokens.spacing
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colors.surface, RoundedCornerShape(14.dp))
+            .padding(horizontal = spacing.md, vertical = spacing.md),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SkeletonBlock(widthFraction = if (compact) 0.62f else 0.82f, height = 18.dp)
+            Spacer(Modifier.weight(1f))
+            SkeletonBlock(widthFraction = 0.12f, height = 18.dp)
+        }
+        Spacer(Modifier.height(spacing.sm))
+        if (!compact) {
+            SkeletonBlock(widthFraction = 0.68f, height = 12.dp)
+            Spacer(Modifier.height(spacing.xs))
+        }
+        SkeletonBlock(widthFraction = 1f, height = 3.dp)
+        Spacer(Modifier.height(spacing.sm))
+        Row {
+            SkeletonBlock(widthFraction = 0.16f, height = 11.dp)
+            Spacer(Modifier.width(spacing.sm))
+            SkeletonBlock(widthFraction = 0.12f, height = 11.dp)
+            Spacer(Modifier.width(spacing.sm))
+            SkeletonBlock(widthFraction = 0.14f, height = 11.dp)
+        }
+    }
+}
+
+@Composable
+private fun SkeletonBlock(widthFraction: Float, height: Dp) {
+    val colors = SunsetGitHubThemeTokens.colors
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(widthFraction.coerceIn(0.05f, 1f))
+            .height(height)
+            .background(colors.chipBackground, RoundedCornerShape(99.dp)),
+    )
+}
+
+// ---- 语言色条 ----
+
+@Composable
+private fun renderLanguageBar(component: LanguageBarComponent) {
+    val colors = SunsetGitHubThemeTokens.colors
+    val segments = languageBarSegments(component.segments, component.fallback)
+    if (segments.isEmpty()) return
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(3.dp)
+            .background(colors.chipBackground, RoundedCornerShape(99.dp)),
+    ) {
+        segments.forEach { segment ->
+            Box(
+                modifier = Modifier
+                    .weight(segment.weight)
+                    .fillMaxHeight()
+                    .background(segment.color),
+            )
+        }
+    }
+}
+
+private data class LanguageBarSegment(
+    val weight: Float,
+    val color: Color,
+)
+
+private fun languageBarSegments(
+    segments: List<LanguageSegment>,
+    fallback: String?,
+): List<LanguageBarSegment> {
+    val known = segments
+        .filter { it.percentage > 0 }
+        .sortedByDescending { it.percentage }
+        .take(4)
+    if (known.isNotEmpty()) {
+        return known.map { segment ->
+            LanguageBarSegment(
+                weight = segment.percentage.coerceAtLeast(1f).toFloat(),
+                color = languageColor(segment.name),
+            )
+        }
+    }
+    return fallback
+        ?.takeIf { it.isNotBlank() }
+        ?.let { listOf(LanguageBarSegment(weight = 1f, color = languageColor(it))) }
+        .orEmpty()
+}
+
+/** 语言 → 颜色（渲染层唯一实现，与现有 DashboardScreen 映射一致）。 */
+internal fun languageColor(language: String): Color = when (language.trim().lowercase()) {
+    "kotlin" -> Color(0xFFA97BFF)
+    "java" -> Color(0xFFB07219)
+    "python" -> Color(0xFF3572A5)
+    "shell", "bash" -> Color(0xFF89E051)
+    "javascript" -> Color(0xFFF1E05A)
+    "typescript" -> Color(0xFF3178C6)
+    "html" -> Color(0xFFE34C26)
+    "css" -> Color(0xFF563D7C)
+    "c" -> Color(0xFF555555)
+    "c++", "cpp" -> Color(0xFFF34B7D)
+    "go" -> Color(0xFF00ADD8)
+    "rust" -> Color(0xFFDEA584)
+    "ruby" -> Color(0xFF701516)
+    "swift" -> Color(0xFFF05138)
+    else -> Color(0xFF8C959F)
+}
+
+// ---- 浮层菜单 ----
+
+@Composable
+private fun renderDropdownMenu(component: DropdownMenuComponent, onAction: (String) -> Unit) {
+    val colors = SunsetGitHubThemeTokens.colors
+    Box {
+        Icon(
+            painter = painterResource(iconRes(component.triggerIcon)),
+            contentDescription = component.triggerContentDescription,
+            tint = colors.textSecondary,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onAction(component.toggleAction) },
+        )
+        DropdownMenu(
+            expanded = component.expanded,
+            onDismissRequest = { onAction(component.dismissAction) },
+            containerColor = colors.surface,
+            border = BorderStroke(1.dp, colors.border),
+        ) {
+            component.items.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item.label, color = colors.textPrimary) },
+                    trailingIcon = if (item.selected) {
+                        {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_check_circle_24),
+                                contentDescription = null,
+                                tint = colors.accent,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+                    } else null,
+                    onClick = { onAction(item.action) },
+                )
             }
         }
     }

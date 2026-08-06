@@ -67,9 +67,10 @@ data class SpacerComponent(
 ) : Component
 
 /**
- * 列表条目组件：固定字段 { title, subtitle, description, meta, icon, badge, trailing, action }。
+ * 列表条目组件：固定字段 { title, subtitle, description, meta, icon, badge, trailing, actions, action }。
  * - [description]：标题区下方的第二行描述（可选，仓库卡片等富条目使用）；
- * - [meta]：条目底部 meta 行片段（可选，如语言/★/Fork/Issue/时间，以 " · " 连接）。
+ * - [meta]：条目底部 meta 行片段（可选，如语言/★/Fork/Issue/时间，以 " · " 连接）；
+ * - [actions]：行内图标动作（可选，如置顶/收藏，渲染在 trailing 左侧）。
  * 与列表组件 [ListComponent] 配合，条目本身不持有布局参数。
  */
 data class ItemComponent(
@@ -81,8 +82,18 @@ data class ItemComponent(
     val icon: IconId? = null,
     val badge: String? = null,
     val trailing: String? = null,
+    val actions: List<ItemAction> = emptyList(),
     override val action: String = "",
 ) : Component
+
+/** 条目行内图标动作（如置顶/收藏）：{ id, icon, contentDescription, active, action }。 */
+data class ItemAction(
+    val id: String,
+    val icon: IconId,
+    val contentDescription: String = "",
+    val active: Boolean = false,
+    val action: String = "",
+)
 
 /**
  * 列表组件：固定字段 { items }。items 元素为 [ItemComponent]。
@@ -116,3 +127,62 @@ data class StateComponent(
     val retryAction: String = "",
     override val action: String = "",
 ) : Component
+
+/**
+ * 骨架组件：Loading 占位（列表骨架卡片序列）。
+ * 固定字段 { rows, compact }，渲染判断由字段驱动。
+ */
+data class SkeletonComponent(
+    override val id: String,
+    /** 骨架行数。 */
+    val rows: Int = 5,
+    /** 精简模式（隐藏描述行）。 */
+    val compact: Boolean = false,
+    override val action: String = "",
+) : Component
+
+/**
+ * 语言色条组件：GitHub 仓库语言分布条（3dp 分段条）。
+ * 固定字段 { segments, fallback }；颜色由渲染层 [languageColor] 映射，
+ * schema 只承载 (name, percentage) 纯数据。
+ */
+data class LanguageBarComponent(
+    override val id: String,
+    val segments: List<LanguageSegment> = emptyList(),
+    /** 无 segments 时的兜底语言名。 */
+    val fallback: String? = null,
+    override val action: String = "",
+) : Component
+
+/** 语言段：{ name, percentage }，百分比 > 0 参与分段。 */
+data class LanguageSegment(
+    val name: String,
+    val percentage: Float,
+)
+
+/**
+ * 浮层菜单组件：下拉菜单（排序/筛选）。
+ * 固定字段 { triggerIcon, items, expanded, toggleAction, dismissAction }；
+ * expanded 受控（页面状态驱动），点击触发项 → onAction(toggleAction)，
+ * 菜单项选中 → onAction(item.action)，关闭 → onAction(dismissAction)。
+ */
+data class DropdownMenuComponent(
+    override val id: String,
+    val triggerIcon: IconId = IconId.Sort,
+    val triggerContentDescription: String = "菜单",
+    val items: List<MenuItemComponent> = emptyList(),
+    /** 菜单是否展开（受控，页面状态驱动）。 */
+    val expanded: Boolean = false,
+    /** 点击触发器 → 页面切换 expanded 状态。 */
+    val toggleAction: String = "",
+    /** 菜单关闭（dismiss）→ 页面回写状态。 */
+    val dismissAction: String = "",
+    override val action: String = "",
+) : Component
+
+/** 菜单项：{ label, selected, action }。 */
+data class MenuItemComponent(
+    val label: String,
+    val selected: Boolean = false,
+    val action: String = "",
+)
