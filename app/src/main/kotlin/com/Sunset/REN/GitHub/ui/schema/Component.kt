@@ -76,6 +76,8 @@ enum class IconId {
     Error,
     Check,
     Pin,
+    ArrowUp,
+    ArrowDown,
 }
 
 /** 图片加载方式：矢量图标或远程图（头像等）。 */

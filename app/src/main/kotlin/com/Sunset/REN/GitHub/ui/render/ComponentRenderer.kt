@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,6 +65,7 @@ import com.Sunset.REN.GitHub.ui.schema.SkeletonComponent
 import com.Sunset.REN.GitHub.ui.schema.SpacerComponent
 import com.Sunset.REN.GitHub.ui.schema.StateComponent
 import com.Sunset.REN.GitHub.ui.schema.StateKind
+import com.Sunset.REN.GitHub.ui.schema.SwitchComponent
 import com.Sunset.REN.GitHub.ui.schema.TextColor
 import com.Sunset.REN.GitHub.ui.schema.TextComponent
 import com.Sunset.REN.GitHub.ui.schema.TextStyle
@@ -92,6 +94,7 @@ fun Component.render(onAction: (String) -> Unit) {
         is SkeletonComponent -> renderSkeleton(this)
         is LanguageBarComponent -> renderLanguageBar(this)
         is DropdownMenuComponent -> renderDropdownMenu(this, onAction)
+        is SwitchComponent -> renderSwitch(this, onAction)
     }
 }
 
@@ -247,6 +250,8 @@ internal fun iconRes(icon: IconId): Int = when (icon) {
     IconId.Error -> R.drawable.ic_error_24
     IconId.Check -> R.drawable.ic_check_circle_24
     IconId.Pin -> R.drawable.ic_pin_outline_24
+    IconId.ArrowUp -> R.drawable.ic_arrow_upward_24
+    IconId.ArrowDown -> R.drawable.ic_arrow_downward_24
 }
 
 @Composable
@@ -606,6 +611,40 @@ internal fun languageColor(language: String): Color = when (language.trim().lowe
     "ruby" -> Color(0xFF701516)
     "swift" -> Color(0xFFF05138)
     else -> Color(0xFF8C959F)
+}
+
+// ---- 开关 ----
+
+@Composable
+private fun renderSwitch(component: SwitchComponent, onAction: (String) -> Unit) {
+    val colors = SunsetGitHubThemeTokens.colors
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = component.title,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.textPrimary,
+            )
+            if (!component.description.isNullOrBlank()) {
+                Text(
+                    text = component.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textMuted,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+        }
+        Spacer(Modifier.width(12.dp))
+        Switch(
+            checked = component.checked,
+            onCheckedChange = { onAction(component.action) },
+        )
+    }
 }
 
 // ---- 浮层菜单 ----

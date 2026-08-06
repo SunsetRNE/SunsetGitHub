@@ -188,3 +188,15 @@ data class MenuItemComponent(
     val selected: Boolean = false,
     val action: String = "",
 )
+
+/**
+ * 开关组件：固定字段 { title, description, checked, action }。
+ * checked 受控（页面状态回写）；点击切换 → onAction(action)，由页面翻转状态。
+ */
+data class SwitchComponent(
+    override val id: String,
+    val title: String,
+    val description: String? = null,
+    val checked: Boolean = false,
+    override val action: String = "",
+) : Component
