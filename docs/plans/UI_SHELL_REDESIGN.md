@@ -11,6 +11,7 @@
 > FieldComponent 新增 enabled 字段（默认 true 向后兼容）→ 进行中
 > 仓库写入流两页已迁移（IssueCreate 新建议题 + ReleaseCreate 新建发布），FieldComponent 新增 isError/supportingText 表单校验 → 进行中
 > 通知详情页已迁移（NotificationDetail：快捷操作 + 打开链接，本地化复用 NotificationsPage 纯函数）→ 进行中
+> 终端/工作区同步两页已迁移（Terminal 工作区终端 + WorkspaceSync 同步方向入口），任务 1-4 全部完成 → 步骤 6（删旧壳）待统筹
 > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。
