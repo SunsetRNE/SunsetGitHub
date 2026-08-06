@@ -252,6 +252,7 @@ internal fun iconRes(icon: IconId): Int = when (icon) {
     IconId.Pin -> R.drawable.ic_pin_outline_24
     IconId.ArrowUp -> R.drawable.ic_arrow_upward_24
     IconId.ArrowDown -> R.drawable.ic_arrow_downward_24
+    IconId.Download -> R.drawable.ic_download_24
 }
 
 @Composable

@@ -78,6 +78,7 @@ enum class IconId {
     Pin,
     ArrowUp,
     ArrowDown,
+    Download,
 }
 
 /** 图片加载方式：矢量图标或远程图（头像等）。 */
