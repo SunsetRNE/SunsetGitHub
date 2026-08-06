@@ -4,8 +4,8 @@
 > Home、Dashboard 垂直切片已完成，`assembleDebug` 编译通过 ✅
 > 组件补全：Skeleton/LanguageBar/DropdownMenu/行内动作（步骤 5 前置）✅
 > 迁移进度：步骤 1（骨架）✅ 步骤 2（Home 切片）✅ 步骤 3（Dashboard 切片）✅
-> 步骤 4（仓库详情分段导航）✅ 步骤 5（逐页迁移：Issues/PR/Notifications 已迁移，Dashboard 已用
-> 语言色条+行内动作升级）→ 进行中
+> 步骤 4（仓库详情分段导航）✅ 步骤 5（逐页迁移：Issues/PR/Notifications/Profile 已迁移，
+> Dashboard 已用语言色条+行内动作升级）→ 进行中
 > 触发原因：UI 壳长期存在漂移、导航栏约束不一致、渲染越界问题。
 > 方法：**一致组件模块化坐标构建法**——所有 UI 组件化、模块化，只解析
 > 固定字段，通过坐标固定在相应页面，渲染层按字段状态做判断。
