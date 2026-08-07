@@ -131,7 +131,19 @@ jobs:
       - name: Build debug APK
         env:
           OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: |
+          set +e
+          ./gradlew :app:assembleDebug --stacktrace > /tmp/build-log.txt 2>&1
+          CODE=$?
+          if [ $CODE -ne 0 ]; then
+            # 把错误关键行输出为 annotation（check-run annotations 可被 API 读取，
+            # 便于无日志权限时快速定位构建失败）
+            grep -E '^e: |^w: |error:|Unresolved|Could not|Execution failed|FAILURE:|BUILD FAILED' /tmp/build-log.txt \
+              | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+            echo "::error::Gradle build failed with exit code $CODE (full log tail below)"
+            tail -30 /tmp/build-log.txt | while IFS= read -r line; do echo "::error::$line"; done
+            exit $CODE
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
