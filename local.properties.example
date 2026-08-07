@@ -4,8 +4,11 @@
 # Android SDK path. setup_android_env.sh updates this automatically in local.properties.
 sdk.dir=/path/to/android/sdk
 
-# Device Flow client_id is optional. Token login works without it.
+# Device Flow client_id is optional for local builds. Token login works without it.
 # Device Flow only needs client_id; do not add client_secret or redirect_uri keys.
+# CI builds (GitHub Actions) read this from the GITHUB_OAUTH_CLIENT_ID repository
+# secret instead of local.properties. Without it, Device Flow login is disabled
+# in the produced APK (client_id compiles to an empty string).
 github.oauth.client.id=
 
 # Release signing. Required only when you want assembleRelease to produce a signed APK.

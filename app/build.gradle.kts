@@ -14,7 +14,11 @@ if (localPropertiesFile.exists()) {
         localProperties.load(stream)
     }
 }
-val githubOAuthClientId = localProperties.getProperty("github.oauth.client.id", "")
+// 优先级：CI 环境变量（GitHub Actions secret）> local.properties > 空。
+// CI runner 上没有 local.properties，必须经 GITHUB_OAUTH_CLIENT_ID secret 注入，
+// 否则产物 APK 的设备码登录（Device Flow）会因缺少 client_id 无法工作。
+val githubOAuthClientId = (System.getenv("GITHUB_OAUTH_CLIENT_ID")
+    ?: localProperties.getProperty("github.oauth.client.id", "")).trim()
 
 fun localProperty(name: String): String = localProperties.getProperty(name, "").trim()
 
