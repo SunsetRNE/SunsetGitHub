@@ -84,9 +84,9 @@ private fun ShellTopBar(state: ShellState, onAction: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(ShellTopBarHeight)
             .background(colors.surface)
             .shellTopBarInsets()
+            .height(ShellTopBarHeight)
             .padding(horizontal = spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -132,9 +132,9 @@ private fun ShellNavBar(state: ShellState, onAction: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(ShellNavBarHeight)
             .background(colors.surface)
-            .shellNavBarInsets(),
+            .shellNavBarInsets()
+            .height(ShellNavBarHeight),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         state.navItems.forEach { navItem ->
