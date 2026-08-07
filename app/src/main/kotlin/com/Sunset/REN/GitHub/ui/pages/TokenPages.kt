@@ -325,7 +325,7 @@ object TokenPermissionReviewPage {
         TokenPermissionStatus.Unknown -> TextColor.Muted
     }
 
-    fun schemaFor(state: TokenPermissionReviewUiState): PageSchema {
+    fun schemaFor(state: TokenPermissionReviewUiState, onTokenInputChange: (String) -> Unit = {}): PageSchema {
         val busy = state.isLoading || state.isSaving
         val rows = buildList<RowSchema> {
             add(row(cell(TextComponent(id = "review.title", text = "Token 检查", style = TextStyle.Section, color = TextColor.Primary))))
@@ -351,6 +351,7 @@ object TokenPermissionReviewPage {
                             hint = "请输入认证令牌",
                             singleLine = false,
                             enabled = !busy,
+                            onChange = onTokenInputChange,
                         ),
                     ),
                 ),

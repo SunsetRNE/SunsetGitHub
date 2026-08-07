@@ -118,6 +118,7 @@ import com.Sunset.REN.GitHub.ui.workspace.WorkspacePullViewModel
 import com.Sunset.REN.GitHub.ui.workspace.WorkspaceSyncUiState
 import com.Sunset.REN.GitHub.ui.workspace.WorkspaceSyncViewModel
 import com.Sunset.REN.GitHub.util.AppLogger
+import com.Sunset.REN.GitHub.util.BrowserLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -621,9 +622,20 @@ class ShellHostController(
             action == "app_log.refresh" -> appLogText = AppLogger.readLogText()
             action == "rust_core.refresh" -> refreshRustCore()
             action.startsWith("terminal.") -> handleTerminalAction(action)
-            action == "account.switch" -> AppLogger.w(TAG, "account.switch not bridged yet")
+            action == "account.add" -> push(ShellPage.Login)
             action == "account.sign_out" -> accountViewModel.signOut()
-            action.startsWith("account.remove.") -> AppLogger.w(TAG, "account.remove not bridged yet: $action")
+            action.startsWith("account.switch.") -> {
+                val login = action.removePrefix("account.switch.")
+                rememberedAccounts.firstOrNull { it.account.login == login }?.let {
+                    accountViewModel.switchAccount(it.account)
+                }
+            }
+            action.startsWith("account.remove.") -> {
+                val login = action.removePrefix("account.remove.")
+                rememberedAccounts.firstOrNull { it.account.login == login }?.let {
+                    accountViewModel.removeAccount(it.account)
+                }
+            }
             action.startsWith("device_flow.") -> handleDeviceFlowAction(action)
             action.startsWith("token.") -> handleTokenAction(action)
             action.startsWith("branch_settings.") -> handleBranchSettingsAction(action)
@@ -804,15 +816,50 @@ class ShellHostController(
 
     private fun handleDeviceFlowAction(action: String) {
         when (action) {
+            "device_flow.next" -> push(ShellPage.DeviceFlowCode)
             "device_flow.start" -> push(ShellPage.DeviceFlowCode)
-            "device_flow.cancel" -> navigateBack()
+            "device_flow.copy_or_retry" -> handleDeviceFlowCopyOrRetry()
+            "device_flow.open_browser" -> openDeviceFlowBrowser()
             "device_flow.retry" -> deviceFlowViewModel.start()
+            "device_flow.cancel" -> navigateBack()
             else -> AppLogger.w(TAG, "device_flow action not bridged yet: $action")
         }
     }
 
+    /** 码页主按钮：CodeReady → 复制验证码；Error → 重新生成。 */
+    private fun handleDeviceFlowCopyOrRetry() {
+        when (val state = deviceFlowState) {
+            is DeviceFlowUiState.CodeReady -> {
+                val clipboard = activity.getSystemService(android.content.ClipboardManager::class.java)
+                clipboard?.setPrimaryClip(
+                    android.content.ClipData.newPlainText("GitHub device code", state.userCode)
+                )
+                android.widget.Toast.makeText(activity, "验证码已复制到剪贴板", android.widget.Toast.LENGTH_SHORT).show()
+            }
+            is DeviceFlowUiState.Error -> deviceFlowViewModel.start()
+            else -> Unit
+        }
+    }
+
+    private fun openDeviceFlowBrowser() {
+        val url = when (val state = deviceFlowState) {
+            is DeviceFlowUiState.CodeReady -> state.verificationUriComplete ?: state.verificationUri
+            else -> null
+        }
+        if (url != null) BrowserLauncher.open(activity, url)
+    }
+
     private fun handleTokenAction(action: String) {
         when (action) {
+            "token.choice.have" -> push(ShellPage.TokenPermissionReview)
+            "token.choice.need" -> push(ShellPage.TokenGuide)
+            "token.guide.open" -> BrowserLauncher.open(activity, "https://github.com/settings/tokens")
+            "token.guide.acquired" -> push(ShellPage.TokenPermissionReview)
+            "token.review.recheck" -> tokenReviewViewModel.inspectToken()
+            "token.review.confirm" -> tokenReviewViewModel.confirmLogin()
+            "token.review.cancel" -> navigateBack()
+            "token.review.open_page" -> BrowserLauncher.open(activity, "https://github.com/settings/tokens")
+            // 兼容旧 action 名
             "token.start" -> push(ShellPage.TokenGuide)
             "token.guide_next" -> push(ShellPage.TokenPermissionReview)
             "token.retry" -> tokenReviewViewModel.inspectToken()
@@ -1093,7 +1140,10 @@ fun ShellHost(controller: ShellHostController) {
                 TokenGuidePage.schemaFor().renderPage(controller::handleAction)
 
             ShellPage.TokenPermissionReview ->
-                TokenPermissionReviewPage.schemaFor(controller.tokenReviewState).renderPage(controller::handleAction)
+                TokenPermissionReviewPage.schemaFor(
+                    controller.tokenReviewState,
+                    controller.tokenReviewViewModel::updateToken,
+                ).renderPage(controller::handleAction)
 
             is ShellPage.RepositoryDetail ->
                 RepositoryDetailPage.schemaFor(controller.detailState).renderPage(controller::handleAction)

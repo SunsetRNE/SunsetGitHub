@@ -25,6 +25,13 @@ class TokenPermissionReviewViewModel(application: Application) : AndroidViewMode
     private val _reviewState = MutableLiveData(TokenPermissionReviewUiState())
     val reviewState: LiveData<TokenPermissionReviewUiState> = _reviewState
 
+    /** 输入框实时回调：仅更新状态，不触发网络检查（避免每敲一个字符发请求）。 */
+    fun updateToken(token: String) {
+        val current = _reviewState.value
+        if (current?.token == token) return
+        _reviewState.value = (current ?: TokenPermissionReviewUiState()).copy(token = token)
+    }
+
     fun prepare(token: String) {
         val accessToken = token.trim()
         if (accessToken.isBlank()) {
