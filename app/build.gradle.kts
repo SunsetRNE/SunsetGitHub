@@ -244,7 +244,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.markwon.core)
-    implementation(libs.jna)  # UniFFI 生成的 Kotlin 绑定依赖 JNA 运行时
+    implementation("net.java.dev.jna:jna:${libs.versions.jna.get()}@aar")  # UniFFI 绑定 JNA 运行时（Android AAR）
     implementation(libs.markwon.ext.tables)
     implementation(libs.markwon.ext.tasklist)
     implementation(libs.markwon.ext.strikethrough)
