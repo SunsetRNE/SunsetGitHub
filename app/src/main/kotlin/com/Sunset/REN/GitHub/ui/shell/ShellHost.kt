@@ -414,8 +414,19 @@ class ShellHostController(
         tokenReviewViewModel.updateToken(token)
     }
 
-    /** 登录成功统一出口：清空返回栈并进入首页，避免返回键退回登录页。 */
+    /** 登录成功统一出口：刷新全局登录态与各页数据，清空返回栈并进入首页。
+     *  此前仅跳转不刷新——authState 仍为 SignedOut、仓库/通知/我的页全部停留在登录前状态。 */
     private fun enterHomeAfterLogin() {
+        scope.launch {
+            val login = authSessionRepository.getCurrentAccount()?.login
+            // 让 authState 从 SignedOut → Authorized（账号页/退出检测依赖它）
+            accountViewModel.refreshAccountState()
+            if (login != null) {
+                profileViewModel.start(login)
+            }
+        }
+        dashboardViewModel.refreshRepositories(forceRefresh = true)
+        notificationsViewModel.loadFirstPage()
         backStack.clear()
         navigateTo(ShellPage.Home)
     }
