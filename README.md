@@ -55,25 +55,29 @@ SunsetGitHub（GPL-3.0）
 
 ## 🛠️ 构建
 
-### Rust 核心（推荐先验证）
+> **CI-First（默认）**：把改动提交推送到 `main`，GitHub Actions（`.github/workflows/ci.yml`）自动完成全部编译——
+> Job1 Rust 多重交叉编译（fmt/clippy/test/cargo-deny + NDK r26d + cargo-ndk 三 target：
+> arm64-v8a / armeabi-v7a / x86_64 → `app/src/main/jniLibs/` + uniffi-bindgen 生成 Kotlin 绑定）；
+> Job2 Android `assembleDebug` 产出 APK（可在 Actions 页面下载 artifact）。
+> 本地不做重型编译；仅允许下方轻量检查。
 
+### Rust 核心（轻量本地检查）
 ```bash
-cargo build --workspace
-cargo test --workspace
-cargo clippy --workspace --all-targets
-cargo deny check licenses   # 许可证门禁（需 cargo-deny）
+cargo check --workspace          # 轻量语法/类型检查
+cargo test -p sunset-core        # 核心单测
+cargo fmt --check                # 格式检查
+cargo clippy --workspace --all-targets   # 可选，完整 clippy 以 CI 为准
+cargo deny check licenses        # 许可证门禁（需 cargo-deny，完整校验以 CI 为准）
 ```
-
-### Android 应用
-
+### Android 应用（完整构建以 CI 为准）
 首次在 Operit / proot / ARM64 Linux 环境构建前，先初始化环境：
-
 ```bash
 chmod +x ./setup_android_env.sh
 ./setup_android_env.sh
 ./gradlew assembleDebug     # Debug APK → app/build/outputs/apk/debug/
 ./gradlew assembleRelease   # Release APK
 ```
+`app/src/main/jniLibs/` 与 `app/src/main/kotlin/uniffi/` 为 CI 产物，不入库。
 
 技术栈：Kotlin · AndroidX · Material Components · AppCompat/ViewBinding · Jetpack Compose（渐进迁移）· Gradle Kotlin DSL · Version Catalog。
 

@@ -40,8 +40,17 @@ SunsetGitHub（GPL-3.0）
 | 4 | 逆向工具链：Dex 类/方法/字符串解析、ARSC 解析、AXML 解码 | ✅ 2026-08-06 |
 | 4.5 | 文件管理器双蓝本重构（Rust 核心侧）：FileItem 属性快照、FileJob 冲突/错误策略、压缩包内浏览、root 命令生成器 | ✅ 2026-08-06 |
 | 5 | AI 工作区：gix Git 操作、工具运行时、记忆模型 | ⬜ |
-| 6 | UniFFI 接入：生成 Kotlin 绑定，按双蓝本重构 Kotlin UI 壳 | ⬜ |
+| 6 | UniFFI 接入：生成 Kotlin 绑定，按双蓝本重构 Kotlin UI 壳 | 🔄 2026-08-07（sunset-ffi 接入 uniffi 0.32，首批导出面 + RustCorePage 自检页；编译验证移交 GitHub Actions） |
 | 7 | UI 壳清理：删除旧 Kotlin 业务逻辑，发布 1.0 | ⬜ |
+
+## 3.6 CI 编译链记录（2026-08-07 起）
+
+**约定：所有重型编译（Rust 交叉编译、Android APK）默认提交到 GitHub 由 CI 执行，本地只做轻量检查。**
+
+- 工作流：`.github/workflows/ci.yml`（push main / PR 触发）
+- Job1 `rust-cross`：fmt/clippy/test/cargo-deny → NDK r26d + rustup Android targets → cargo-ndk 三 target 交叉编译（arm64-v8a / armeabi-v7a / x86_64）→ `app/src/main/jniLibs/` → uniffi-bindgen 生成 Kotlin 绑定（`app/src/main/kotlin/uniffi/`）→ 上传 artifact
+- Job2 `android-apk`：下载 artifact → JDK17 + Android SDK → `./gradlew :app:assembleDebug` → 上传 APK
+- 产物（jniLibs、uniffi 绑定、APK）在 Actions 页面 Artifacts 下载；`app/src/main/jniLibs/` 不入库（.gitignore）
 
 ## 3.5 双蓝本重构记录（阶段 4.5）
 

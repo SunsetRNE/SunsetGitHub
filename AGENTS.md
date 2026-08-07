@@ -118,6 +118,16 @@ Preferred commands from repository root:
 ./gradlew lint
 ```
 
+### CI-First 编译约定（2026-08-07 起，覆盖本地重型编译）
+
+- **默认编译方式：把改动提交推送到 `main` 分支，由 GitHub Actions（`.github/workflows/ci.yml`）完成全部编译验证**。不要在本地 proot/ARM64 环境做重型编译（交叉编译 Rust cdylib、完整 assembleDebug 等），本机环境内存与稳定性有限。
+- CI 链路（多重交叉编译链）：
+  1. Job1 `rust-cross`：`cargo fmt --check` → `cargo clippy -D warnings` → `cargo test --workspace` → `cargo deny check`；安装 NDK r26d + rustup Android targets（aarch64/armv7/x86_64）；`cargo-ndk` 三 target 交叉编译 `sunset-ffi` → `app/src/main/jniLibs/`；`uniffi-bindgen generate --library` 生成 Kotlin 绑定（`app/src/main/kotlin/uniffi/`）；上传 artifact。
+  2. Job2 `android-apk`：下载 artifact → JDK17 + Android SDK → `./gradlew :app:assembleDebug` → 上传 APK。
+- 本地允许的轻量检查：`cargo check` / `cargo test -p sunset-core` / `cargo fmt --check` / `git status`。Android 侧改动以 CI Job2 结果为准。
+- 涉及 Rust FFI 面变更（新增/修改 `#[uniffi::export]`）必须保证 `crates/sunset-ffi` 能交叉编译，并同步 `.github/workflows/ci.yml` 的验证范围。
+- `app/src/main/jniLibs/` 与 `app/src/main/kotlin/uniffi/` 为 CI 产物，不入库（`.gitignore` 已排除前者；绑定生成路径由 CI artifact 提供）。
+
 Use the narrowest verification command that reasonably covers the change. For Android UI/resource/build changes, `./gradlew assembleDebug` is the minimum useful build check when the environment has a valid Android SDK.
 
 The app currently builds with `compileSdk = 36`. Keep `setup_android_env.sh` aligned with `app/build.gradle.kts` when changing SDK versions. In Operit/proot/ARM64 Linux environments, the setup script also prepares Android command line tools, Gradle, and the bundled ARM64 AAPT2 workaround.
