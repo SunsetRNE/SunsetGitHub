@@ -334,7 +334,6 @@ class ShellHostController(
         runDetailViewModel.detailState.observe(activity) { runDetailState = it }
         searchViewModel.searchState.observe(activity) { searchState = it }
         fileManagerViewModel.state.observe(activity) { fileManagerState = it }
-        accountViewModel.authState.observe(activity) { authState = it }
         accountViewModel.rememberedAccounts.observe(activity) { rememberedAccounts = it }
         terminalViewModel.state.observe(activity) { terminalState = it }
         workspaceSyncViewModel.state.observe(activity) { workspaceSyncState = it }
@@ -350,9 +349,28 @@ class ShellHostController(
         webhooksViewModel.state.observe(activity) { webhooksState = it }
         actionsSettingsViewModel.actionsSettingsState.observe(activity) { actionsSettingsState = it }
         securityAlertViewModel.detailState.observe(activity) { securityAlertState = it }
-        deviceFlowViewModel.state.observe(activity) { deviceFlowState = it }
-        tokenReviewViewModel.reviewState.observe(activity) { tokenReviewState = it }
-
+        deviceFlowViewModel.state.observe(activity) { state ->
+            deviceFlowState = state
+            // 设备码登录成功 → 清栈回首页（此前缺失，用户会卡在等待授权页）
+            if (state is DeviceFlowUiState.SignedIn) {
+                enterHomeAfterLogin()
+            }
+        }
+        tokenReviewViewModel.reviewState.observe(activity) { state ->
+            tokenReviewState = state
+            // Token 登录成功 → 清栈回首页
+            if (state.signedInLogin != null) {
+                enterHomeAfterLogin()
+            }
+        }
+        accountViewModel.authState.observe(activity) { state ->
+            authState = state
+            // 退出登录 → 清栈回登录页（仅当当前不在登录页时触发，避免启动时重复跳转）
+            if (state is AuthUiState.SignedOut && currentPage != ShellPage.Login) {
+                backStack.clear()
+                navigateTo(ShellPage.Login)
+            }
+        }
         loginViewModel.refresh(autoEnterCurrent = true)
         scope.launch {
             val login = authSessionRepository.getCurrentAccount()?.login
@@ -385,6 +403,12 @@ class ShellHostController(
         } else {
             AppLogger.w(TAG, "shell.back with empty back stack")
         }
+    }
+
+    /** 登录成功统一出口：清空返回栈并进入首页，避免返回键退回登录页。 */
+    private fun enterHomeAfterLogin() {
+        backStack.clear()
+        navigateTo(ShellPage.Home)
     }
 
     private fun deriveShellState(page: ShellPage): ShellState = when (page) {
