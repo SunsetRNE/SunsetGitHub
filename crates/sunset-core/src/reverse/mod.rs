@@ -63,9 +63,19 @@ pub fn scan_apk(path: &Path) -> Result<ApkFacts> {
 pub fn format_apk_facts(facts: &ApkFacts) -> String {
     let mut lines = vec![
         format!("条目总数: {}", facts.entry_count),
-        format!("AndroidManifest.xml: {}", if facts.has_manifest { "有" } else { "无" }),
+        format!(
+            "AndroidManifest.xml: {}",
+            if facts.has_manifest { "有" } else { "无" }
+        ),
         format!("classes.dex: {}", if facts.has_dex { "有" } else { "无" }),
-        format!("resources.arsc: {}", if facts.has_resources_arsc { "有" } else { "无" }),
+        format!(
+            "resources.arsc: {}",
+            if facts.has_resources_arsc {
+                "有"
+            } else {
+                "无"
+            }
+        ),
     ];
     if !facts.native_libs.is_empty() {
         lines.push(format!("native so: {}", facts.native_libs.join(", ")));
@@ -113,16 +123,38 @@ pub fn format_dex_facts(dex: &DexFile) -> String {
     let mut lines = vec![
         format!("DEX 版本: {}", h.version),
         format!("文件大小: {} 字节", h.file_size),
-        format!("字符串: {}  类型: {}  原型: {}", h.string_ids_size, h.type_ids_size, h.proto_ids_size),
-        format!("字段: {}  方法: {}  类: {}", h.field_ids_size, h.method_ids_size, h.class_defs_size),
+        format!(
+            "字符串: {}  类型: {}  原型: {}",
+            h.string_ids_size, h.type_ids_size, h.proto_ids_size
+        ),
+        format!(
+            "字段: {}  方法: {}  类: {}",
+            h.field_ids_size, h.method_ids_size, h.class_defs_size
+        ),
     ];
     let classes = dex.all_class_names();
     if !classes.is_empty() {
-        lines.push(format!("类示例: {}", classes.iter().take(6).cloned().collect::<Vec<_>>().join(", ")));
+        lines.push(format!(
+            "类示例: {}",
+            classes
+                .iter()
+                .take(6)
+                .cloned()
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
     }
     let methods = dex.all_method_signatures();
     if !methods.is_empty() {
-        lines.push(format!("方法示例: {}", methods.iter().take(6).cloned().collect::<Vec<_>>().join(", ")));
+        lines.push(format!(
+            "方法示例: {}",
+            methods
+                .iter()
+                .take(6)
+                .cloned()
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
     }
     lines.join("\n")
 }
@@ -158,11 +190,14 @@ pub fn format_arsc_facts(arsc: &ArscFile) -> String {
 
 /// Manifest 事实面板文本。
 pub fn format_manifest_facts(f: &ManifestFacts) -> String {
-    let mut lines = vec![format!("包名: {}", f.package.as_deref().unwrap_or("?")), format!(
-        "版本: {} ({})",
-        f.version_name.as_deref().unwrap_or("?"),
-        f.version_code.as_deref().unwrap_or("?")
-    )];
+    let mut lines = vec![
+        format!("包名: {}", f.package.as_deref().unwrap_or("?")),
+        format!(
+            "版本: {} ({})",
+            f.version_name.as_deref().unwrap_or("?"),
+            f.version_code.as_deref().unwrap_or("?")
+        ),
+    ];
     if let Some(label) = &f.application_label {
         lines.push(format!("应用名: {label}"));
     }

@@ -91,10 +91,7 @@ impl GitHubClient {
     }
 
     /// 通用 GET 请求并反序列化为 JSON。
-    pub(crate) async fn get_json<T: serde::de::DeserializeOwned>(
-        &self,
-        path: &str,
-    ) -> Result<T> {
+    pub(crate) async fn get_json<T: serde::de::DeserializeOwned>(&self, path: &str) -> Result<T> {
         let mut req = self.http.get(format!("{GITHUB_API_BASE}{path}"));
         if let Some(token) = &self.token {
             req = req.bearer_auth(token);
@@ -153,8 +150,7 @@ impl GitHubClient {
         let resp = Self::check_status(resp).await?;
         // 204 等无内容响应直接返回空 JSON
         if resp.status() == reqwest::StatusCode::NO_CONTENT {
-            return serde_json::from_value(serde_json::Value::Null)
-                .map_err(Error::Json);
+            return serde_json::from_value(serde_json::Value::Null).map_err(Error::Json);
         }
         resp.json().await.map_err(Error::from)
     }
@@ -199,10 +195,7 @@ impl GitHubClient {
         if status == reqwest::StatusCode::UNAUTHORIZED {
             return Err(Error::Unauthorized);
         }
-        let message = resp
-            .text()
-            .await
-            .unwrap_or_else(|_| "unknown error".into());
+        let message = resp.text().await.unwrap_or_else(|_| "unknown error".into());
         Err(Error::Http {
             status: status.as_u16(),
             message,

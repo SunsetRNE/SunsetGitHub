@@ -102,9 +102,8 @@ impl RecycleBin {
                 format!("源条目不存在：{source}"),
             ));
         }
-        let name = file_name(source).ok_or_else(|| {
-            std::io::Error::new(std::io::ErrorKind::InvalidInput, "无效源路径")
-        })?;
+        let name = file_name(source)
+            .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, "无效源路径"))?;
 
         // 生成唯一目标名（同名冲突时追加序号）
         let base_rel = self.unique_relative_path(&name);

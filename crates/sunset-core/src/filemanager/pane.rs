@@ -49,7 +49,10 @@ impl DualPaneState {
     /// 聚焦指定窗格（单栏模式始终聚焦左栏）。
     pub fn focus(self, pane: PaneId) -> Self {
         if self.is_dual_pane {
-            Self { focused_pane: pane, ..self }
+            Self {
+                focused_pane: pane,
+                ..self
+            }
         } else {
             Self {
                 focused_pane: PaneId::Left,
@@ -142,8 +145,7 @@ impl PaneNavigationState {
 
     /// 是否可向上一级（根路径不可）。
     pub fn can_go_up(&self) -> bool {
-        !self.current_path.starts_with("content://")
-            && parent_path(&self.current_path).is_some()
+        !self.current_path.starts_with("content://") && parent_path(&self.current_path).is_some()
     }
 
     /// 更新窗格标识（用于双栏交换）。

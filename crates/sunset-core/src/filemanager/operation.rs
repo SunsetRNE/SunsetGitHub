@@ -45,11 +45,24 @@ impl OperationContext {
 /// 操作事件（与 Kotlin FileOperationEvent 对齐）。
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum OperationEvent {
-    Started { title: String },
-    Progress { current: u64, total: Option<u64>, message: String },
-    ConflictDetected { source: String, target: String },
-    Completed { summary: String },
-    Failed { message: String },
+    Started {
+        title: String,
+    },
+    Progress {
+        current: u64,
+        total: Option<u64>,
+        message: String,
+    },
+    ConflictDetected {
+        source: String,
+        target: String,
+    },
+    Completed {
+        summary: String,
+    },
+    Failed {
+        message: String,
+    },
     Cancelled,
 }
 
@@ -347,9 +360,8 @@ impl FileOperationRunner {
         events: &mut Vec<OperationEvent>,
     ) -> std::io::Result<EntryOutcome> {
         let src = PathBuf::from(normalize_path(source));
-        let name = file_name(source).ok_or_else(|| {
-            std::io::Error::new(std::io::ErrorKind::InvalidInput, "无效源路径")
-        })?;
+        let name = file_name(source)
+            .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, "无效源路径"))?;
         let dst = PathBuf::from(join_path(target_dir, &name));
 
         // 目录对目录 → 合并（Material Files isMerge 语义，不询问）
@@ -375,9 +387,8 @@ impl FileOperationRunner {
         events: &mut Vec<OperationEvent>,
     ) -> std::io::Result<EntryOutcome> {
         let src = PathBuf::from(normalize_path(source));
-        let name = file_name(source).ok_or_else(|| {
-            std::io::Error::new(std::io::ErrorKind::InvalidInput, "无效源路径")
-        })?;
+        let name = file_name(source)
+            .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, "无效源路径"))?;
         let dst = PathBuf::from(join_path(target_dir, &name));
 
         // 目录对目录 → 合并后删除源
@@ -633,7 +644,9 @@ mod tests {
             ),
             &OperationOptions::default(),
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert_eq!(fs::read_to_string(dst_dir.join("a.txt")).unwrap(), "hello");
         fs::remove_dir_all(&base).ok();
     }
@@ -655,7 +668,9 @@ mod tests {
             ),
             &OperationOptions::default(),
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert!(dst_dir.join("dir/sub/f.txt").exists());
         assert!(!src.exists());
         fs::remove_dir_all(&base).ok();
@@ -687,7 +702,9 @@ mod tests {
             &OperationContext::new(vec![src.to_string_lossy().into_owned()], None),
             &OperationOptions::default(),
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert!(!src.exists());
         fs::remove_dir_all(&base).ok();
     }
@@ -706,7 +723,9 @@ mod tests {
             ),
             &OperationOptions::default(),
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert!(b.exists());
         fs::remove_dir_all(&base).ok();
     }
@@ -742,7 +761,9 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::ConflictDetected { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::ConflictDetected { .. })));
         // 跳过：目标保持旧内容
         assert_eq!(fs::read_to_string(dst_dir.join("a.txt")).unwrap(), "old");
         // 总结含跳过计数
@@ -777,7 +798,9 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert_eq!(fs::read_to_string(dst_dir.join("a.txt")).unwrap(), "new");
         fs::remove_dir_all(&base).ok();
     }
@@ -802,10 +825,15 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         // 原目标保留，新名写入
         assert_eq!(fs::read_to_string(dst_dir.join("a.txt")).unwrap(), "old");
-        assert_eq!(fs::read_to_string(dst_dir.join("a (1).txt")).unwrap(), "new");
+        assert_eq!(
+            fs::read_to_string(dst_dir.join("a (1).txt")).unwrap(),
+            "new"
+        );
         fs::remove_dir_all(&base).ok();
     }
 
@@ -835,10 +863,14 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Cancelled)));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Cancelled)));
         // 第二个条目未处理
         assert!(!dst_dir.join("two.txt").exists());
-        assert!(!events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(!events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         fs::remove_dir_all(&base).ok();
     }
 
@@ -864,10 +896,15 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         // 合并：新文件进入，旧文件按替换策略覆盖
         assert!(dst_dir.join("dir/sub/new.txt").exists());
-        assert_eq!(fs::read_to_string(dst_dir.join("dir/same.txt")).unwrap(), "new");
+        assert_eq!(
+            fs::read_to_string(dst_dir.join("dir/same.txt")).unwrap(),
+            "new"
+        );
         fs::remove_dir_all(&base).ok();
     }
 
@@ -896,7 +933,9 @@ mod tests {
             None,
             None,
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert_eq!(calls, 1);
         assert!(dst_dir.join("renamed.txt").exists());
         fs::remove_dir_all(&base).ok();
@@ -921,7 +960,9 @@ mod tests {
             ),
             &OperationOptions::default(),
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert!(events
             .iter()
             .any(|e| matches!(e, OperationEvent::Failed { .. })));
@@ -953,7 +994,9 @@ mod tests {
                 error: ErrorAction::Cancel,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Cancelled)));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Cancelled)));
         assert!(!dst_dir.join("after.txt").exists());
         fs::remove_dir_all(&base).ok();
     }
@@ -978,7 +1021,9 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::Completed { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::Completed { .. })));
         assert_eq!(fs::read_to_string(dst_dir.join("a.txt")).unwrap(), "new");
         assert!(!src.exists());
         fs::remove_dir_all(&base).ok();
@@ -1003,7 +1048,9 @@ mod tests {
                 error: ErrorAction::Skip,
             },
         );
-        assert!(events.iter().any(|e| matches!(e, OperationEvent::ConflictDetected { .. })));
+        assert!(events
+            .iter()
+            .any(|e| matches!(e, OperationEvent::ConflictDetected { .. })));
         assert_eq!(fs::read_to_string(&b).unwrap(), "y");
         assert!(a.exists());
         fs::remove_dir_all(&base).ok();

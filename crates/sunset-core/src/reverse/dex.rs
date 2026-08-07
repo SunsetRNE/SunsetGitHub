@@ -224,7 +224,10 @@ impl DexFile {
 
 /// 将类型描述符转为可读类名："Lcom/example/A;" → "com.example.A"。
 pub fn pretty_type_name(descriptor: &str) -> String {
-    if let Some(inner) = descriptor.strip_prefix('L').and_then(|s| s.strip_suffix(';')) {
+    if let Some(inner) = descriptor
+        .strip_prefix('L')
+        .and_then(|s| s.strip_suffix(';'))
+    {
         inner.replace('/', ".")
     } else {
         descriptor.to_string()
@@ -236,26 +239,41 @@ pub fn pretty_type_name(descriptor: &str) -> String {
 // ---------------------------------------------------------------------------
 
 fn u16_at(bytes: &[u8], off: usize, what: &str) -> Result<u16> {
-    let end = off.checked_add(2).ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
-    let slice = bytes
-        .get(off..end)
-        .ok_or_else(|| Error::InvalidData(format!("{what}: offset {off} out of bounds (len {})", bytes.len())))?;
+    let end = off
+        .checked_add(2)
+        .ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
+    let slice = bytes.get(off..end).ok_or_else(|| {
+        Error::InvalidData(format!(
+            "{what}: offset {off} out of bounds (len {})",
+            bytes.len()
+        ))
+    })?;
     Ok(u16::from_le_bytes([slice[0], slice[1]]))
 }
 
 fn u32_at(bytes: &[u8], off: usize, what: &str) -> Result<u32> {
-    let end = off.checked_add(4).ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
-    let slice = bytes
-        .get(off..end)
-        .ok_or_else(|| Error::InvalidData(format!("{what}: offset {off} out of bounds (len {})", bytes.len())))?;
+    let end = off
+        .checked_add(4)
+        .ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
+    let slice = bytes.get(off..end).ok_or_else(|| {
+        Error::InvalidData(format!(
+            "{what}: offset {off} out of bounds (len {})",
+            bytes.len()
+        ))
+    })?;
     Ok(u32::from_le_bytes([slice[0], slice[1], slice[2], slice[3]]))
 }
 
 fn slice_at<'a>(bytes: &'a [u8], off: usize, len: usize, what: &str) -> Result<&'a [u8]> {
-    let end = off.checked_add(len).ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
-    bytes
-        .get(off..end)
-        .ok_or_else(|| Error::InvalidData(format!("{what}: range {off}..{end} out of bounds (len {})", bytes.len())))
+    let end = off
+        .checked_add(len)
+        .ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
+    bytes.get(off..end).ok_or_else(|| {
+        Error::InvalidData(format!(
+            "{what}: range {off}..{end} out of bounds (len {})",
+            bytes.len()
+        ))
+    })
 }
 
 /// ULEB128 解码，返回 (值, 下一个偏移)。
@@ -274,7 +292,9 @@ fn uleb128_at(bytes: &[u8], off: usize, what: &str) -> Result<(u32, usize)> {
         }
         shift += 7;
     }
-    Err(Error::InvalidData(format!("{what}: ULEB128 too long at {off}")))
+    Err(Error::InvalidData(format!(
+        "{what}: ULEB128 too long at {off}"
+    )))
 }
 
 // ---------------------------------------------------------------------------
@@ -490,7 +510,9 @@ fn parse_class_data(bytes: &[u8], off: usize) -> Result<ClassData> {
     for _ in 0..static_size {
         let (diff, c) = uleb128_at(bytes, cursor, "class_data static field_idx_diff")?;
         cursor = c;
-        field_idx = field_idx.checked_add(diff).ok_or_else(|| Error::InvalidData("class_data field_idx overflow".into()))?;
+        field_idx = field_idx
+            .checked_add(diff)
+            .ok_or_else(|| Error::InvalidData("class_data field_idx overflow".into()))?;
         let (flags, c) = uleb128_at(bytes, cursor, "class_data static field access_flags")?;
         cursor = c;
         static_fields.push(EncodedField {
@@ -504,7 +526,9 @@ fn parse_class_data(bytes: &[u8], off: usize) -> Result<ClassData> {
     for _ in 0..instance_size {
         let (diff, c) = uleb128_at(bytes, cursor, "class_data instance field_idx_diff")?;
         cursor = c;
-        field_idx = field_idx.checked_add(diff).ok_or_else(|| Error::InvalidData("class_data field_idx overflow".into()))?;
+        field_idx = field_idx
+            .checked_add(diff)
+            .ok_or_else(|| Error::InvalidData("class_data field_idx overflow".into()))?;
         let (flags, c) = uleb128_at(bytes, cursor, "class_data instance field access_flags")?;
         cursor = c;
         instance_fields.push(EncodedField {
@@ -519,7 +543,9 @@ fn parse_class_data(bytes: &[u8], off: usize) -> Result<ClassData> {
     for _ in 0..direct_size {
         let (diff, c) = uleb128_at(bytes, cursor, "class_data direct method_idx_diff")?;
         cursor = c;
-        method_idx = method_idx.checked_add(diff).ok_or_else(|| Error::InvalidData("class_data method_idx overflow".into()))?;
+        method_idx = method_idx
+            .checked_add(diff)
+            .ok_or_else(|| Error::InvalidData("class_data method_idx overflow".into()))?;
         let (flags, c) = uleb128_at(bytes, cursor, "class_data direct method access_flags")?;
         cursor = c;
         let (code_off, c) = uleb128_at(bytes, cursor, "class_data direct method code_off")?;
@@ -536,7 +562,9 @@ fn parse_class_data(bytes: &[u8], off: usize) -> Result<ClassData> {
     for _ in 0..virtual_size {
         let (diff, c) = uleb128_at(bytes, cursor, "class_data virtual method_idx_diff")?;
         cursor = c;
-        method_idx = method_idx.checked_add(diff).ok_or_else(|| Error::InvalidData("class_data method_idx overflow".into()))?;
+        method_idx = method_idx
+            .checked_add(diff)
+            .ok_or_else(|| Error::InvalidData("class_data method_idx overflow".into()))?;
         let (flags, c) = uleb128_at(bytes, cursor, "class_data virtual method access_flags")?;
         cursor = c;
         let (code_off, c) = uleb128_at(bytes, cursor, "class_data virtual method code_off")?;
@@ -574,19 +602,33 @@ fn decode_mutf8_string(bytes: &[u8], off: usize) -> Result<String> {
         let (cp, next) = if b < 0x80 {
             (u32::from(b), i + 1)
         } else if b >> 5 == 0b110 {
-            let b2 = *bytes.get(i + 1).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+            let b2 = *bytes
+                .get(i + 1)
+                .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
             (((u32::from(b) & 0x1F) << 6) | (u32::from(b2) & 0x3F), i + 2)
         } else if b >> 4 == 0b1110 {
-            let b2 = *bytes.get(i + 1).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
-            let b3 = *bytes.get(i + 2).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+            let b2 = *bytes
+                .get(i + 1)
+                .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+            let b3 = *bytes
+                .get(i + 2)
+                .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
             (
-                ((u32::from(b) & 0x0F) << 12) | ((u32::from(b2) & 0x3F) << 6) | (u32::from(b3) & 0x3F),
+                ((u32::from(b) & 0x0F) << 12)
+                    | ((u32::from(b2) & 0x3F) << 6)
+                    | (u32::from(b3) & 0x3F),
                 i + 3,
             )
         } else {
-            let b2 = *bytes.get(i + 1).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
-            let b3 = *bytes.get(i + 2).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
-            let b4 = *bytes.get(i + 3).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+            let b2 = *bytes
+                .get(i + 1)
+                .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+            let b3 = *bytes
+                .get(i + 2)
+                .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+            let b4 = *bytes
+                .get(i + 3)
+                .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
             (
                 ((u32::from(b) & 0x07) << 18)
                     | ((u32::from(b2) & 0x3F) << 12)
@@ -602,10 +644,16 @@ fn decode_mutf8_string(bytes: &[u8], off: usize) -> Result<String> {
                 return Err(Error::InvalidData("MUTF-8: lone high surrogate".into()));
             }
             let (low_cp, low_next) = if bytes[next] >> 4 == 0b1110 {
-                let b2 = *bytes.get(next + 1).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
-                let b3 = *bytes.get(next + 2).ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+                let b2 = *bytes
+                    .get(next + 1)
+                    .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
+                let b3 = *bytes
+                    .get(next + 2)
+                    .ok_or_else(|| Error::InvalidData("MUTF-8 truncated".into()))?;
                 (
-                    ((u32::from(bytes[next]) & 0x0F) << 12) | ((u32::from(b2) & 0x3F) << 6) | (u32::from(b3) & 0x3F),
+                    ((u32::from(bytes[next]) & 0x0F) << 12)
+                        | ((u32::from(b2) & 0x3F) << 6)
+                        | (u32::from(b3) & 0x3F),
                     next + 3,
                 )
             } else {
@@ -615,11 +663,13 @@ fn decode_mutf8_string(bytes: &[u8], off: usize) -> Result<String> {
                 return Err(Error::InvalidData("MUTF-8: bad low surrogate".into()));
             }
             let combined = 0x10000 + ((cp - 0xD800) << 10) + (low_cp - 0xDC00);
-            let ch = char::from_u32(combined).ok_or_else(|| Error::InvalidData("MUTF-8: invalid code point".into()))?;
+            let ch = char::from_u32(combined)
+                .ok_or_else(|| Error::InvalidData("MUTF-8: invalid code point".into()))?;
             result.push(ch);
             i = low_next;
         } else {
-            let ch = char::from_u32(cp).ok_or_else(|| Error::InvalidData("MUTF-8: invalid code point".into()))?;
+            let ch = char::from_u32(cp)
+                .ok_or_else(|| Error::InvalidData("MUTF-8: invalid code point".into()))?;
             result.push(ch);
             i = next;
         }
@@ -664,7 +714,7 @@ mod tests {
         buf.extend_from_slice(&120u32.to_le_bytes()); // class_defs_off 100
         buf.extend_from_slice(&5u32.to_le_bytes()); // data_size 104
         buf.extend_from_slice(&152u32.to_le_bytes()); // data_off 108
-        // string_ids[1] @112
+                                                      // string_ids[1] @112
         buf.extend_from_slice(&152u32.to_le_bytes());
         // type_ids[1] @116
         buf.extend_from_slice(&0u32.to_le_bytes());
@@ -677,7 +727,7 @@ mod tests {
         buf.extend_from_slice(&0u32.to_le_bytes()); // annotations_off
         buf.extend_from_slice(&0u32.to_le_bytes()); // class_data_off
         buf.extend_from_slice(&0u32.to_le_bytes()); // static_values_off
-        // string_data @152: utf16_size=3, "Lx;", NUL
+                                                    // string_data @152: utf16_size=3, "Lx;", NUL
         buf.push(3);
         buf.extend_from_slice(b"Lx;");
         buf.push(0);

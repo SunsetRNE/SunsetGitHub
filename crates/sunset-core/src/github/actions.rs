@@ -16,19 +16,15 @@ pub struct WorkflowDispatchRequest {
 
 impl GitHubClient {
     /// 列出仓库 workflows。
-    pub async fn list_workflows(
-        &self,
-        owner: &str,
-        repo: &str,
-    ) -> Result<Vec<ActionWorkflow>> {
+    pub async fn list_workflows(&self, owner: &str, repo: &str) -> Result<Vec<ActionWorkflow>> {
         #[derive(serde::Deserialize)]
         struct WorkflowListResponse {
             #[serde(default)]
             workflows: Vec<ActionWorkflow>,
         }
-        let resp: WorkflowListResponse =
-            self.get_json(&format!("/repos/{owner}/{repo}/actions/workflows"))
-                .await?;
+        let resp: WorkflowListResponse = self
+            .get_json(&format!("/repos/{owner}/{repo}/actions/workflows"))
+            .await?;
         Ok(resp.workflows)
     }
 
@@ -69,16 +65,9 @@ impl GitHubClient {
     }
 
     /// 获取单次运行详情。
-    pub async fn get_action_run(
-        &self,
-        owner: &str,
-        repo: &str,
-        run_id: u64,
-    ) -> Result<ActionRun> {
-        self.get_json(&format!(
-            "/repos/{owner}/{repo}/actions/runs/{run_id}"
-        ))
-        .await
+    pub async fn get_action_run(&self, owner: &str, repo: &str, run_id: u64) -> Result<ActionRun> {
+        self.get_json(&format!("/repos/{owner}/{repo}/actions/runs/{run_id}"))
+            .await
     }
 
     /// 列出运行的 artifacts。
@@ -108,10 +97,8 @@ impl GitHubClient {
         repo: &str,
         run_id: u64,
     ) -> Result<Vec<u8>> {
-        self.get_bytes(&format!(
-            "/repos/{owner}/{repo}/actions/runs/{run_id}/logs"
-        ))
-        .await
+        self.get_bytes(&format!("/repos/{owner}/{repo}/actions/runs/{run_id}/logs"))
+            .await
     }
 }
 

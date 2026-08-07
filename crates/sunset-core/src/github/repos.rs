@@ -53,11 +53,7 @@ impl GitHubClient {
     }
 
     /// 搜索仓库。
-    pub async fn search_repositories(
-        &self,
-        query: &str,
-        per_page: u32,
-    ) -> Result<Vec<Repository>> {
+    pub async fn search_repositories(&self, query: &str, per_page: u32) -> Result<Vec<Repository>> {
         let encoded = urlencode(query);
         #[derive(serde::Deserialize)]
         struct SearchResponse {
@@ -109,8 +105,7 @@ impl GitHubClient {
 
     /// 获取仓库 README（原始 Markdown 文本）。
     pub async fn readme_text(&self, owner: &str, name: &str) -> Result<String> {
-        self.get_raw(&format!("/repos/{owner}/{name}/readme"))
-            .await
+        self.get_raw(&format!("/repos/{owner}/{name}/readme")).await
     }
 }
 

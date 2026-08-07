@@ -40,11 +40,7 @@ impl GitHubClient {
     }
 
     /// 订阅通知线程。
-    pub async fn subscribe_thread(
-        &self,
-        thread_id: &str,
-        ignored: bool,
-    ) -> Result<()> {
+    pub async fn subscribe_thread(&self, thread_id: &str, ignored: bool) -> Result<()> {
         self.request_empty(
             Method::PUT,
             &format!("/notifications/threads/{thread_id}/subscription"),
@@ -69,7 +65,10 @@ mod tests {
     #[test]
     fn notification_paths_are_stable() {
         // 仅验证路径构造不回归
-        let path = format!("/notifications?all={}&participating={}&per_page=100", true, false);
+        let path = format!(
+            "/notifications?all={}&participating={}&per_page=100",
+            true, false
+        );
         assert!(path.contains("all=true"));
         assert!(path.contains("participating=false"));
     }

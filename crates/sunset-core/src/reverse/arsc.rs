@@ -263,18 +263,28 @@ impl ArscFile {
 // ---------------------------------------------------------------------------
 
 fn u16_at(bytes: &[u8], off: usize, what: &str) -> Result<u16> {
-    let end = off.checked_add(2).ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
-    let slice = bytes
-        .get(off..end)
-        .ok_or_else(|| Error::InvalidData(format!("{what}: offset {off} out of bounds (len {})", bytes.len())))?;
+    let end = off
+        .checked_add(2)
+        .ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
+    let slice = bytes.get(off..end).ok_or_else(|| {
+        Error::InvalidData(format!(
+            "{what}: offset {off} out of bounds (len {})",
+            bytes.len()
+        ))
+    })?;
     Ok(u16::from_le_bytes([slice[0], slice[1]]))
 }
 
 fn u32_at(bytes: &[u8], off: usize, what: &str) -> Result<u32> {
-    let end = off.checked_add(4).ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
-    let slice = bytes
-        .get(off..end)
-        .ok_or_else(|| Error::InvalidData(format!("{what}: offset {off} out of bounds (len {})", bytes.len())))?;
+    let end = off
+        .checked_add(4)
+        .ok_or_else(|| Error::InvalidData(format!("{what}: offset overflow")))?;
+    let slice = bytes.get(off..end).ok_or_else(|| {
+        Error::InvalidData(format!(
+            "{what}: offset {off} out of bounds (len {})",
+            bytes.len()
+        ))
+    })?;
     Ok(u32::from_le_bytes([slice[0], slice[1], slice[2], slice[3]]))
 }
 
@@ -312,11 +322,15 @@ fn parse_header(bytes: &[u8]) -> Result<ArscHeader> {
 
 fn parse_string_pool(bytes: &[u8], offset: usize) -> Result<StringPool> {
     if offset + 28 > bytes.len() {
-        return Err(Error::InvalidData(format!("ARSC: string pool at {offset} truncated")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: string pool at {offset} truncated"
+        )));
     }
     let header_type = u16_at(bytes, offset, "pool type")?;
     if header_type != RES_STRING_POOL_TYPE {
-        return Err(Error::InvalidData(format!("ARSC: not a string pool (0x{header_type:04x})")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: not a string pool (0x{header_type:04x})"
+        )));
     }
     let header_size = u16_at(bytes, offset + 2, "pool header_size")? as usize;
     let size = u32_at(bytes, offset + 4, "pool size")?;
@@ -328,10 +342,14 @@ fn parse_string_pool(bytes: &[u8], offset: usize) -> Result<StringPool> {
     let utf8 = flags & UTF8_FLAG != 0;
 
     if string_count > MAX_STRING_COUNT {
-        return Err(Error::InvalidData(format!("ARSC: string_count {string_count} exceeds limit")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: string_count {string_count} exceeds limit"
+        )));
     }
     if header_size < 28 {
-        return Err(Error::InvalidData(format!("ARSC: pool header_size {header_size} too small")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: pool header_size {header_size} too small"
+        )));
     }
 
     let mut strings = Vec::with_capacity(string_count as usize);
@@ -410,9 +428,9 @@ fn decode_utf16_pool_string(bytes: &[u8], off: usize) -> Result<String> {
     let end = data_off
         .checked_add(byte_len)
         .ok_or_else(|| Error::InvalidData("utf16 string length overflow".into()))?;
-    let slice = bytes
-        .get(data_off..end)
-        .ok_or_else(|| Error::InvalidData(format!("utf16 string out of bounds ({data_off}..{end})")))?;
+    let slice = bytes.get(data_off..end).ok_or_else(|| {
+        Error::InvalidData(format!("utf16 string out of bounds ({data_off}..{end})"))
+    })?;
     let mut units = Vec::with_capacity(len);
     for chunk in slice.chunks_exact(2) {
         units.push(u16::from_le_bytes([chunk[0], chunk[1]]));
@@ -426,11 +444,15 @@ fn decode_utf16_pool_string(bytes: &[u8], off: usize) -> Result<String> {
 
 fn parse_package(bytes: &[u8], offset: usize) -> Result<ArscPackage> {
     if offset + 288 > bytes.len() {
-        return Err(Error::InvalidData(format!("ARSC: package at {offset} truncated")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: package at {offset} truncated"
+        )));
     }
     let header_type = u16_at(bytes, offset, "package type")?;
     if header_type != RES_TABLE_PACKAGE_TYPE {
-        return Err(Error::InvalidData(format!("ARSC: not a package chunk (0x{header_type:04x})")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: not a package chunk (0x{header_type:04x})"
+        )));
     }
     let header_size = u16_at(bytes, offset + 2, "package header_size")? as usize;
     let size = u32_at(bytes, offset + 4, "package size")? as usize;
@@ -511,11 +533,17 @@ fn parse_type_spec(bytes: &[u8], offset: usize) -> Result<TypeSpec> {
     let id = bytes[offset + 8];
     let entry_count = u32_at(bytes, offset + 12, "typeSpec entryCount")?;
     if entry_count > MAX_ENTRY_COUNT {
-        return Err(Error::InvalidData(format!("ARSC: typeSpec entry_count {entry_count} exceeds limit")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: typeSpec entry_count {entry_count} exceeds limit"
+        )));
     }
     let mut flags = Vec::with_capacity(entry_count as usize);
     for i in 0..entry_count {
-        flags.push(u32_at(bytes, offset + 16 + i as usize * 4, "typeSpec flag")?);
+        flags.push(u32_at(
+            bytes,
+            offset + 16 + i as usize * 4,
+            "typeSpec flag",
+        )?);
     }
     Ok(TypeSpec {
         offset,
@@ -533,7 +561,9 @@ fn parse_type_chunk(bytes: &[u8], offset: usize) -> Result<TypeChunk> {
     let id = bytes[offset + 8];
     let entry_count = u32_at(bytes, offset + 12, "type entryCount")?;
     if entry_count > MAX_ENTRY_COUNT {
-        return Err(Error::InvalidData(format!("ARSC: type entry_count {entry_count} exceeds limit")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: type entry_count {entry_count} exceeds limit"
+        )));
     }
     let entries_start = u32_at(bytes, offset + 16, "type entriesStart")? as usize;
     let config = parse_config(bytes, offset + 20)?;
@@ -568,13 +598,17 @@ fn parse_type_chunk(bytes: &[u8], offset: usize) -> Result<TypeChunk> {
 
 fn parse_entry(bytes: &[u8], offset: usize) -> Result<ResEntry> {
     if offset + 8 > bytes.len() {
-        return Err(Error::InvalidData(format!("ARSC: entry at {offset} truncated")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: entry at {offset} truncated"
+        )));
     }
     let size = u16_at(bytes, offset, "entry size")? as usize;
     let flags = u16_at(bytes, offset + 2, "entry flags")?;
     let key_idx = u32_at(bytes, offset + 4, "entry key")?;
     if size < 8 {
-        return Err(Error::InvalidData(format!("ARSC: entry size {size} too small")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: entry size {size} too small"
+        )));
     }
     if flags & TABLE_ENTRY_FLAG_COMPLEX != 0 {
         // ResTable_map_entry：size=16，parent/count + map items
@@ -584,7 +618,9 @@ fn parse_entry(bytes: &[u8], offset: usize) -> Result<ResEntry> {
         let parent = u32_at(bytes, offset + 8, "map parent")?;
         let count = u32_at(bytes, offset + 12, "map count")?;
         if count > MAX_ENTRY_COUNT {
-            return Err(Error::InvalidData(format!("ARSC: map count {count} exceeds limit")));
+            return Err(Error::InvalidData(format!(
+                "ARSC: map count {count} exceeds limit"
+            )));
         }
         let mut maps = Vec::with_capacity(count as usize);
         for i in 0..count {
@@ -619,7 +655,9 @@ fn parse_entry(bytes: &[u8], offset: usize) -> Result<ResEntry> {
 
 fn parse_value(bytes: &[u8], offset: usize) -> Result<ResValue> {
     if offset + 8 > bytes.len() {
-        return Err(Error::InvalidData(format!("ARSC: value at {offset} truncated")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: value at {offset} truncated"
+        )));
     }
     let data_type = bytes[offset + 3];
     let data = u32_at(bytes, offset + 4, "value data")?;
@@ -637,7 +675,9 @@ pub fn parse_config(bytes: &[u8], offset: usize) -> Result<ResTableConfig> {
     }
     let size = u32_at(bytes, offset, "config size")? as usize;
     if size < 4 {
-        return Err(Error::InvalidData(format!("ARSC: config size {size} too small")));
+        return Err(Error::InvalidData(format!(
+            "ARSC: config size {size} too small"
+        )));
     }
     let avail = bytes.len().saturating_sub(offset).min(size);
     let rd_u32 = |at: usize, what: &str| -> u32 {
@@ -1127,7 +1167,7 @@ mod tests {
         w.u32(28); // entriesStart（offset 表之后，相对 type chunk 开头）
         w.u32(4); // config.size=4（默认配置）
         w.u32(0); // entry offset table: [0]
-        // entry @ type_start+28: size=8 flags=0 key=0, value: size=8 res0=0 type=0x03 data=0
+                  // entry @ type_start+28: size=8 flags=0 key=0, value: size=8 res0=0 type=0x03 data=0
         let entry_mark = w.len();
         w.u16(8);
         w.u16(0);
@@ -1181,7 +1221,10 @@ mod tests {
 
     #[test]
     fn rejects_non_table() {
-        let err = ArscFile::parse(&[0x01, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]).unwrap_err();
+        let err = ArscFile::parse(&[
+            0x01, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        ])
+        .unwrap_err();
         assert!(err.to_string().contains("not a resource table"));
     }
 
@@ -1241,17 +1284,30 @@ mod tests {
 
     #[test]
     fn value_display_variants() {
-        let mk = |t: u8, d: u32| ResValue { data_type: t, data: d };
+        let mk = |t: u8, d: u32| ResValue {
+            data_type: t,
+            data: d,
+        };
         let none = |_: u32| -> Option<String> { None };
         assert_eq!(value_display(&mk(TYPE_INT_DEC, 42), none), "42");
         assert_eq!(value_display(&mk(TYPE_INT_HEX, 0xAB), none), "0xab");
         assert_eq!(value_display(&mk(TYPE_INT_BOOLEAN, 1), none), "true");
         assert_eq!(value_display(&mk(TYPE_INT_BOOLEAN, 0), none), "false");
-        assert_eq!(value_display(&mk(TYPE_INT_COLOR_ARGB8, 0xFF112233), none), "#ff112233");
-        assert_eq!(value_display(&mk(TYPE_REFERENCE, 0x7F010000), none), "@0x7f010000");
+        assert_eq!(
+            value_display(&mk(TYPE_INT_COLOR_ARGB8, 0xFF112233), none),
+            "#ff112233"
+        );
+        assert_eq!(
+            value_display(&mk(TYPE_REFERENCE, 0x7F010000), none),
+            "@0x7f010000"
+        );
         assert_eq!(value_display(&mk(TYPE_STRING, 3), none), "string[3]");
         assert_eq!(
-            value_display(&mk(TYPE_STRING, 3), |i| if i == 3 { Some("hi".into()) } else { None }),
+            value_display(&mk(TYPE_STRING, 3), |i| if i == 3 {
+                Some("hi".into())
+            } else {
+                None
+            }),
             "\"hi\""
         );
         // 16sp（radix=0 即整数 → 16sp）

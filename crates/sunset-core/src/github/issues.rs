@@ -38,12 +38,7 @@ impl IssueState {
 
 impl GitHubClient {
     /// 获取 Issue 详情。
-    pub async fn get_issue(
-        &self,
-        owner: &str,
-        repo: &str,
-        number: u64,
-    ) -> Result<Issue> {
+    pub async fn get_issue(&self, owner: &str, repo: &str, number: u64) -> Result<Issue> {
         self.get_json(&format!("/repos/{owner}/{repo}/issues/{number}"))
             .await
     }

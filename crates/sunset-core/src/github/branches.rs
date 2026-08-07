@@ -19,12 +19,7 @@ impl GitHubClient {
     }
 
     /// 获取单个分支。
-    pub async fn get_branch(
-        &self,
-        owner: &str,
-        repo: &str,
-        branch: &str,
-    ) -> Result<Branch> {
+    pub async fn get_branch(&self, owner: &str, repo: &str, branch: &str) -> Result<Branch> {
         let encoded = crate::github::releases::urlencode(branch);
         self.get_json(&format!("/repos/{owner}/{repo}/branches/{encoded}"))
             .await

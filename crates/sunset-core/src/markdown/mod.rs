@@ -66,14 +66,20 @@ mod tests {
 
     #[test]
     fn renders_table() {
-        let html = render_markdown("| a | b |\n|---|---|\n| 1 | 2 |", &MarkdownRenderOptions::default());
+        let html = render_markdown(
+            "| a | b |\n|---|---|\n| 1 | 2 |",
+            &MarkdownRenderOptions::default(),
+        );
         assert!(html.contains("<table>"), "table should be rendered: {html}");
     }
 
     #[test]
     fn renders_tasklist() {
         let html = render_markdown("- [x] done\n- [ ] todo", &MarkdownRenderOptions::default());
-        assert!(html.contains("type=\"checkbox\""), "tasklist checkbox missing: {html}");
+        assert!(
+            html.contains("type=\"checkbox\""),
+            "tasklist checkbox missing: {html}"
+        );
     }
 
     #[test]

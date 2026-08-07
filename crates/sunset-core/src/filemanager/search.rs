@@ -165,7 +165,8 @@ mod tests {
     use super::*;
 
     fn temp_tree(name: &str) -> PathBuf {
-        let base = std::env::temp_dir().join(format!("sunset_search_{name}_{}", std::process::id()));
+        let base =
+            std::env::temp_dir().join(format!("sunset_search_{name}_{}", std::process::id()));
         let _ = fs::remove_dir_all(&base);
         fs::create_dir_all(base.join("sub/deep")).unwrap();
         fs::write(base.join("readme.md"), "# hi").unwrap();
@@ -235,7 +236,9 @@ mod tests {
         };
         let hits = RecursiveSearcher::search(&base.to_string_lossy(), &options).unwrap();
         assert!(!hits.is_empty());
-        assert!(hits.iter().all(|h| h.entry.kind == FileEntryKind::Directory));
+        assert!(hits
+            .iter()
+            .all(|h| h.entry.kind == FileEntryKind::Directory));
         fs::remove_dir_all(&base).ok();
     }
 

@@ -128,9 +128,16 @@ fn list_zip_dir(path: &Path, rel_dir: &str) -> Result<Vec<ArchiveDirEntry>> {
     let mut raw = Vec::with_capacity(archive.len());
     for i in 0..archive.len() {
         let entry = archive.by_index(i)?;
-        let modified = entry
-            .last_modified()
-            .map(|dt| msdos_to_unix(dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second()));
+        let modified = entry.last_modified().map(|dt| {
+            msdos_to_unix(
+                dt.year(),
+                dt.month(),
+                dt.day(),
+                dt.hour(),
+                dt.minute(),
+                dt.second(),
+            )
+        });
         raw.push((
             entry.name().to_string(),
             entry.is_dir(),
@@ -297,9 +304,7 @@ fn sanitize_join(dest: &Path, name: &str) -> Result<PathBuf> {
     let candidate = normalize_path(&dest.join(name));
     let dest_norm = normalize_path(dest);
     if !candidate.starts_with(&dest_norm) {
-        return Err(Error::InvalidData(format!(
-            "unsafe archive path: {name}"
-        )));
+        return Err(Error::InvalidData(format!("unsafe archive path: {name}")));
     }
     Ok(candidate)
 }
@@ -355,14 +360,26 @@ mod tests {
 
     #[test]
     fn detects_archive_format() {
-        assert_eq!(detect_archive(Path::new("/a/b.zip")), Some(ArchiveFormat::Zip));
-        assert_eq!(detect_archive(Path::new("/a/app.apk")), Some(ArchiveFormat::Zip));
-        assert_eq!(detect_archive(Path::new("/a/lib.jar")), Some(ArchiveFormat::Zip));
+        assert_eq!(
+            detect_archive(Path::new("/a/b.zip")),
+            Some(ArchiveFormat::Zip)
+        );
+        assert_eq!(
+            detect_archive(Path::new("/a/app.apk")),
+            Some(ArchiveFormat::Zip)
+        );
+        assert_eq!(
+            detect_archive(Path::new("/a/lib.jar")),
+            Some(ArchiveFormat::Zip)
+        );
         assert_eq!(
             detect_archive(Path::new("/a/b.tar.gz")),
             Some(ArchiveFormat::TarGz)
         );
-        assert_eq!(detect_archive(Path::new("/a/b.tgz")), Some(ArchiveFormat::TarGz));
+        assert_eq!(
+            detect_archive(Path::new("/a/b.tgz")),
+            Some(ArchiveFormat::TarGz)
+        );
         assert_eq!(detect_archive(Path::new("/a/b.txt")), None);
     }
 
@@ -437,13 +454,15 @@ mod tests {
         header.set_size(4);
         header.set_mode(0o644);
         header.set_cksum();
-        tar.append_data(&mut header, "a/b.txt", std::io::Cursor::new(b"data")).unwrap();
+        tar.append_data(&mut header, "a/b.txt", std::io::Cursor::new(b"data"))
+            .unwrap();
         let mut dir_header = tar::Header::new_gnu();
         dir_header.set_entry_type(tar::EntryType::Directory);
         dir_header.set_size(0);
         dir_header.set_mode(0o755);
         dir_header.set_cksum();
-        tar.append_data(&mut dir_header, "a/", std::io::empty()).unwrap();
+        tar.append_data(&mut dir_header, "a/", std::io::empty())
+            .unwrap();
         tar.into_inner().unwrap().finish().unwrap();
 
         let entries = list_archive_dir(&tgz_path, "").unwrap();

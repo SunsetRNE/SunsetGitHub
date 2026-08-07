@@ -76,11 +76,7 @@ impl GitHubClient {
     }
 
     /// 搜索用户。
-    pub async fn search_users(
-        &self,
-        query: &str,
-        per_page: u32,
-    ) -> Result<UserSearchPage> {
+    pub async fn search_users(&self, query: &str, per_page: u32) -> Result<UserSearchPage> {
         let resp: SearchResponse<User> = self
             .get_json(&format!(
                 "/search/users?q={}&per_page={}",
@@ -95,11 +91,7 @@ impl GitHubClient {
     }
 
     /// 搜索 Issue / PR。
-    pub async fn search_issues(
-        &self,
-        query: &str,
-        per_page: u32,
-    ) -> Result<IssueSearchPage> {
+    pub async fn search_issues(&self, query: &str, per_page: u32) -> Result<IssueSearchPage> {
         let resp: SearchResponse<Issue> = self
             .get_json(&format!(
                 "/search/issues?q={}&per_page={}",
@@ -114,11 +106,7 @@ impl GitHubClient {
     }
 
     /// 搜索代码。
-    pub async fn search_code(
-        &self,
-        query: &str,
-        per_page: u32,
-    ) -> Result<CodeSearchPage> {
+    pub async fn search_code(&self, query: &str, per_page: u32) -> Result<CodeSearchPage> {
         let resp: SearchResponse<CodeSearchItem> = self
             .get_json(&format!(
                 "/search/code?q={}&per_page={}",

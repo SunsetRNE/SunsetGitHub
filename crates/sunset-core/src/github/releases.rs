@@ -37,12 +37,7 @@ impl GitHubClient {
     }
 
     /// 按 tag 获取 Release。
-    pub async fn get_release_by_tag(
-        &self,
-        owner: &str,
-        repo: &str,
-        tag: &str,
-    ) -> Result<Release> {
+    pub async fn get_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Release> {
         let encoded = urlencode(tag);
         self.get_json(&format!("/repos/{owner}/{repo}/releases/tags/{encoded}"))
             .await

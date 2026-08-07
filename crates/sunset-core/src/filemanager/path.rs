@@ -125,7 +125,10 @@ mod tests {
         assert_eq!(normalize_path("root:///sdcard"), "root:///sdcard");
         assert_eq!(normalize_path("root://sdcard"), "root:///sdcard");
         assert_eq!(normalize_path("root:///"), "root:///");
-        assert_eq!(parent_path("root:///sdcard/Download"), Some("root:///sdcard".into()));
+        assert_eq!(
+            parent_path("root:///sdcard/Download"),
+            Some("root:///sdcard".into())
+        );
         assert_eq!(parent_path("root:///"), None);
     }
 

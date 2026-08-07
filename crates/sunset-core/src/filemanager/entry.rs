@@ -139,8 +139,8 @@ pub enum FileCategory {
 
 /// 常见文本/代码扩展名集合。
 const TEXT_EXTENSIONS: &[&str] = &[
-    "txt", "log", "ini", "cfg", "conf", "md", "markdown", "kt", "java", "rs", "py", "js",
-    "ts", "json", "xml", "html", "css", "toml", "yaml", "yml", "sh", "gradle", "sql",
+    "txt", "log", "ini", "cfg", "conf", "md", "markdown", "kt", "java", "rs", "py", "js", "ts",
+    "json", "xml", "html", "css", "toml", "yaml", "yml", "sh", "gradle", "sql",
 ];
 
 /// 依据文件名判定内容类别。
@@ -160,9 +160,9 @@ pub fn categorize(name: &str) -> FileCategory {
         "mp4" | "mkv" | "avi" | "mov" | "webm" | "flv" => FileCategory::Video,
         "mp3" | "wav" | "flac" | "aac" | "ogg" | "m4a" => FileCategory::Audio,
         "pdf" => FileCategory::Pdf,
-        "kt" | "java" | "rs" | "py" | "js" | "ts" | "c" | "cpp" | "h" | "go" | "swift"
-        | "php" | "rb" | "sql" | "gradle" | "sh" | "toml" | "yaml" | "yml" | "json"
-        | "xml" | "html" | "css" => FileCategory::Code,
+        "kt" | "java" | "rs" | "py" | "js" | "ts" | "c" | "cpp" | "h" | "go" | "swift" | "php"
+        | "rb" | "sql" | "gradle" | "sh" | "toml" | "yaml" | "yml" | "json" | "xml" | "html"
+        | "css" => FileCategory::Code,
         _ if TEXT_EXTENSIONS.contains(&ext.as_str()) => FileCategory::Text,
         _ => FileCategory::Binary,
     }
@@ -233,8 +233,8 @@ pub fn mime_type_of(name: &str) -> &'static str {
         "aac" => "audio/aac",
         "ogg" => "audio/ogg",
         "m4a" => "audio/mp4",
-        "kt" | "java" | "rs" | "py" | "js" | "ts" | "c" | "cpp" | "h" | "go" | "swift"
-        | "php" | "rb" | "sql" | "gradle" | "sh" => "text/x-source",
+        "kt" | "java" | "rs" | "py" | "js" | "ts" | "c" | "cpp" | "h" | "go" | "swift" | "php"
+        | "rb" | "sql" | "gradle" | "sh" => "text/x-source",
         _ => "application/octet-stream",
     }
 }
@@ -304,7 +304,10 @@ mod tests {
     fn mime_type_mapping() {
         assert_eq!(mime_type_of("a.txt"), "text/plain");
         assert_eq!(mime_type_of("README.MD"), "text/markdown");
-        assert_eq!(mime_type_of("app-debug.apk"), "application/vnd.android.package-archive");
+        assert_eq!(
+            mime_type_of("app-debug.apk"),
+            "application/vnd.android.package-archive"
+        );
         assert_eq!(mime_type_of("classes.dex"), "application/x-dex");
         assert_eq!(mime_type_of("archive.zip"), "application/zip");
         assert_eq!(mime_type_of("song.flac"), "audio/flac");

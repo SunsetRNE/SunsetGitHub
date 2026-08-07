@@ -31,7 +31,10 @@ impl GitHubClient {
         path: &str,
         branch: Option<&str>,
     ) -> Result<FileContent> {
-        let mut url = format!("/repos/{owner}/{repo}/contents/{}", path.trim_start_matches('/'));
+        let mut url = format!(
+            "/repos/{owner}/{repo}/contents/{}",
+            path.trim_start_matches('/')
+        );
         if let Some(branch) = branch {
             url.push_str(&format!("?ref={branch}"));
         }
@@ -49,9 +52,11 @@ impl GitHubClient {
         let clean_path = path.trim_start_matches('/');
         let url = format!("/repos/{owner}/{repo}/contents/{clean_path}");
 
-        let mut req = self
-            .http()
-            .get(format!("{}/{}", crate::github::client::GITHUB_API_BASE, url.trim_start_matches('/')));
+        let mut req = self.http().get(format!(
+            "{}/{}",
+            crate::github::client::GITHUB_API_BASE,
+            url.trim_start_matches('/')
+        ));
         if let Some(token) = self.token() {
             req = req.bearer_auth(token);
         }

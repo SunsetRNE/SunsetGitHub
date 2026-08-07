@@ -19,15 +19,23 @@ use crate::error::{Error, Result};
 /// AXML → XML 文本（带声明、4 空格缩进）。
 pub fn axml_to_xml(bytes: &[u8]) -> Result<String> {
     let axml = parse(bytes)?;
-    axml.to_string().map_err(|e| Error::InvalidData(format!("axml: {e}")))
+    axml.to_string()
+        .map_err(|e| Error::InvalidData(format!("axml: {e}")))
 }
 
 fn parse(bytes: &[u8]) -> Result<Axml> {
     // AXML 文件以 XML chunk（type=0x0003, headerSize=0x0008）开头。
     // rusty-axml 上游对垃圾输入会 panic（chunk_types.rs unwrap），
     // 这里先做 magic 校验避免进入其 panic 路径。
-    if bytes.len() < 8 || bytes[0] != 0x03 || bytes[1] != 0x00 || bytes[2] != 0x08 || bytes[3] != 0x00 {
-        return Err(Error::InvalidData("axml: bad header (not a binary XML file)".into()));
+    if bytes.len() < 8
+        || bytes[0] != 0x03
+        || bytes[1] != 0x00
+        || bytes[2] != 0x08
+        || bytes[3] != 0x00
+    {
+        return Err(Error::InvalidData(
+            "axml: bad header (not a binary XML file)".into(),
+        ));
     }
     rusty_axml::parse_from_reader(Cursor::new(bytes))
         .map_err(|e| Error::InvalidData(format!("axml: {e}")))
@@ -120,9 +128,7 @@ pub fn manifest_facts(bytes: &[u8]) -> Result<ManifestFacts> {
             "manifest" => {
                 facts.package = el.get_attr("package").map(str::to_string);
                 facts.version_name = el.get_attr("android:versionName").map(str::to_string);
-                facts.version_code = el
-                    .get_attr("android:versionCode")
-                    .and_then(clean_attr);
+                facts.version_code = el.get_attr("android:versionCode").and_then(clean_attr);
             }
             "uses-sdk" => {
                 facts.min_sdk = el.get_attr("android:minSdkVersion").and_then(clean_attr);
@@ -217,7 +223,10 @@ mod tests {
         eprintln!("package: {:?}", facts.package);
         eprintln!("versionName: {:?}", facts.version_name);
         eprintln!("versionCode: {:?}", facts.version_code);
-        eprintln!("minSdk: {:?} targetSdk: {:?}", facts.min_sdk, facts.target_sdk);
+        eprintln!(
+            "minSdk: {:?} targetSdk: {:?}",
+            facts.min_sdk, facts.target_sdk
+        );
         eprintln!("permissions: {}", facts.permissions.len());
         eprintln!("activities: {}", facts.activities.len());
         eprintln!("services: {}", facts.services.len());

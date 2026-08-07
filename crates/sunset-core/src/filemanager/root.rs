@@ -71,11 +71,18 @@ pub enum RootCommand {
     /// `touch path`
     MakeFile { path: String },
     /// `chmod [-R] <octal> "path"`
-    Chmod { path: String, mode: u32, recursive: bool },
+    Chmod {
+        path: String,
+        mode: u32,
+        recursive: bool,
+    },
     /// `find "path"`（判断存在性）
     Find { path: String },
     /// `cat "a" "b" > "out"`（拼接）
-    Concatenate { sources: Vec<String>, output: String },
+    Concatenate {
+        sources: Vec<String>,
+        output: String,
+    },
     /// `mount -o rw,remount path`
     Mount { path: String, read_write: bool },
 }
@@ -141,21 +148,17 @@ impl RootCommand {
     /// 主命令文本。
     pub fn primary_command(&self) -> String {
         match self {
-            RootCommand::Copy { source, destination } => format!(
-                "cp -r {} {}",
-                shell_quote(source),
-                shell_quote(destination)
-            ),
-            RootCommand::Move { source, destination } => format!(
-                "mv {} {}",
-                shell_quote(source),
-                shell_quote(destination)
-            ),
-            RootCommand::Rename { old_path, new_path } => format!(
-                "mv {} {}",
-                shell_quote(old_path),
-                shell_quote(new_path)
-            ),
+            RootCommand::Copy {
+                source,
+                destination,
+            } => format!("cp -r {} {}", shell_quote(source), shell_quote(destination)),
+            RootCommand::Move {
+                source,
+                destination,
+            } => format!("mv {} {}", shell_quote(source), shell_quote(destination)),
+            RootCommand::Rename { old_path, new_path } => {
+                format!("mv {} {}", shell_quote(old_path), shell_quote(new_path))
+            }
             RootCommand::Delete { path } => format!("rm -rf {}", shell_quote(path)),
             RootCommand::List { path, show_hidden } => {
                 let flags = if *show_hidden { "-la" } else { "-l" };
@@ -175,8 +178,7 @@ impl RootCommand {
             }
             RootCommand::Find { path } => format!("find {}", shell_quote(path)),
             RootCommand::Concatenate { sources, output } => {
-                let parts: Vec<String> =
-                    sources.iter().map(|s| shell_quote(s)).collect();
+                let parts: Vec<String> = sources.iter().map(|s| shell_quote(s)).collect();
                 format!("cat {} > {}", parts.join(" "), shell_quote(output))
             }
             RootCommand::Mount { path, read_write } => {
@@ -189,12 +191,11 @@ impl RootCommand {
     /// 写操作涉及的父目录（用于 remount 目标）。
     fn target_dir(&self) -> Option<String> {
         match self {
-            RootCommand::Copy { destination, .. }
-            | RootCommand::Move { destination, .. } => Some(destination.clone()),
-            RootCommand::Rename { new_path, .. } => Some(new_path.clone()),
-            RootCommand::Delete { path } | RootCommand::MakeFile { path } => {
-                Some(parent_of(path))
+            RootCommand::Copy { destination, .. } | RootCommand::Move { destination, .. } => {
+                Some(destination.clone())
             }
+            RootCommand::Rename { new_path, .. } => Some(new_path.clone()),
+            RootCommand::Delete { path } | RootCommand::MakeFile { path } => Some(parent_of(path)),
             RootCommand::MakeDirectory { path } => Some(path.clone()),
             RootCommand::Chmod { path, .. } => Some(parent_of(path)),
             RootCommand::Concatenate { output, .. } => Some(parent_of(output)),
@@ -316,7 +317,10 @@ mod tests {
             "cp -r '/sdcard/a.txt' '/data/x/'"
         );
         assert_eq!(
-            RootCommand::Delete { path: "/a b".into() }.primary_command(),
+            RootCommand::Delete {
+                path: "/a b".into()
+            }
+            .primary_command(),
             "rm -rf '/a b'"
         );
         assert_eq!(
@@ -346,7 +350,10 @@ mod tests {
             "ls -la '/'"
         );
         assert_eq!(
-            RootCommand::MakeDirectory { path: "/a/b".into() }.primary_command(),
+            RootCommand::MakeDirectory {
+                path: "/a/b".into()
+            }
+            .primary_command(),
             "mkdir -p '/a/b'"
         );
         assert_eq!(
