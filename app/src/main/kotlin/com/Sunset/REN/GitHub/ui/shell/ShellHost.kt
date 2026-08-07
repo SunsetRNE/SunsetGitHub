@@ -406,6 +406,11 @@ class ShellHostController(
         }
     }
 
+    /** Token 输入框实时回调（渲染层经此更新 token，避免暴露 ViewModel 私有成员）。 */
+    fun onTokenInputChange(token: String) {
+        tokenReviewViewModel.updateToken(token)
+    }
+
     /** 登录成功统一出口：清空返回栈并进入首页，避免返回键退回登录页。 */
     private fun enterHomeAfterLogin() {
         backStack.clear()
@@ -1142,7 +1147,7 @@ fun ShellHost(controller: ShellHostController) {
             ShellPage.TokenPermissionReview ->
                 TokenPermissionReviewPage.schemaFor(
                     controller.tokenReviewState,
-                    controller.tokenReviewViewModel::updateToken,
+                    controller::onTokenInputChange,
                 ).renderPage(controller::handleAction)
 
             is ShellPage.RepositoryDetail ->
