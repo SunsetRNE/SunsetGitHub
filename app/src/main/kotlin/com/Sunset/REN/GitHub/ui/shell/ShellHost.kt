@@ -580,6 +580,9 @@ class ShellHostController(
             action == "nav.profile" -> navigateTo(ShellPage.Profile)
             action == "nav.settings" -> push(ShellPage.Settings)
             action == "nav.search" -> push(ShellPage.SearchPage())
+            action == "home.create_repository" -> push(ShellPage.RepoCreate)
+            action == "home.refresh" -> dashboardViewModel.refreshRepositories(forceRefresh = true)
+            action == "home.open_all" -> navigateTo(ShellPage.Dashboard)
             action == "login.device_flow" -> push(ShellPage.DeviceFlowIntro)
             action == "login.token_login" -> push(ShellPage.TokenLoginChoice)
             action.startsWith("settings.toggle.") -> handleSettingsToggle(action)
@@ -1128,7 +1131,7 @@ fun ShellHost(controller: ShellHostController) {
                 LoginHomePage.schemaFor(controller.loginUiState.message).renderPage(controller::handleAction)
 
             ShellPage.Home ->
-                HomePage.schema.renderPage(controller::handleAction)
+                HomePage.schemaFor(controller.repositoriesState).renderPage(controller::handleAction)
 
             ShellPage.Dashboard ->
                 DashboardPage.schemaFor(controller.repositoriesState).renderPage(controller::handleAction)
