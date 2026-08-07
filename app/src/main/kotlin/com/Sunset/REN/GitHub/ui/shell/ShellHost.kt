@@ -559,6 +559,8 @@ class ShellHostController(
     // ---- action 路由 ----
 
     fun handleAction(action: String) {
+        // 诊断日志：真机点击后可在「设置 → 应用日志」确认 action 是否到达与分发结果。
+        AppLogger.d(TAG, "handleAction: $action (page=${currentPage::class.simpleName})")
         when {
             action == "shell.back" -> navigateBack()
             action == "nav.home" -> navigateTo(ShellPage.Home)
