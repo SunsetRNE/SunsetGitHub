@@ -365,9 +365,12 @@ class ShellHostController(
             }
         }
         accountViewModel.authState.observe(activity) { state ->
+            val previous = authState
             authState = state
-            // 退出登录 → 清栈回登录页（仅当当前不在登录页时触发，避免启动时重复跳转）
-            if (state is AuthUiState.SignedOut && currentPage != ShellPage.Login) {
+            // 仅当「曾处于已授权态 → 变为未登录」这一真实退出转换才清栈回登录页，
+            // 覆盖退出登录/会话失效；同时避免启动时 Loading→SignedOut 的异步回调
+            // 把刚进入设备码/Token 次级页的用户弹回登录页（点击“设备码登录”无反应的根因）。
+            if (previous is AuthUiState.Authorized && state is AuthUiState.SignedOut && currentPage != ShellPage.Login) {
                 backStack.clear()
                 navigateTo(ShellPage.Login)
             }
