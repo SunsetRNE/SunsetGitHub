@@ -159,4 +159,7 @@ sealed interface ShellPage {
 
     /** 应用日志。 */
     data object AppLog : ShellPage
+
+    /** Rust 核心自检页（阶段 6：UniFFI 接入）。 */
+    data object RustCore : ShellPage
 }

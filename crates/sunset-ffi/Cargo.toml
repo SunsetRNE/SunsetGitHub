@@ -7,12 +7,7 @@ description = "UniFFI binding layer between sunset-core and Kotlin/Swift UI."
 
 [dependencies]
 sunset-core = { path = "../sunset-core", version = "0.1.0" }
-
-# UniFFI 将在核心 API 稳定后接入（TODO: 阶段 2）
-# uniffi = { version = "0.29", features = ["cli"] }
-
-[build-dependencies]
-# uniffi = { version = "0.29", features = ["bindgen"] }
+uniffi = { version = "0.32" }
 
 [lib]
-crate-type = ["cdylib", "staticlib", "lib"]
+crate-type = ["cdylib", "lib"]

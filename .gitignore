@@ -49,3 +49,6 @@ Image/
 # 逆向分析工作资料（382MB，含 MT 管理器素材，红线不复用）
 reverse_engineering/
 
+
+# Rust FFI 构建产物（由 CI 生成，不入库）
+app/src/main/jniLibs/

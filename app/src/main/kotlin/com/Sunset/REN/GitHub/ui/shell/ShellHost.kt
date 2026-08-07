@@ -24,6 +24,7 @@ import com.Sunset.REN.GitHub.ui.notifications.NotificationsViewModel
 import com.Sunset.REN.GitHub.ui.pages.AccountPage
 import com.Sunset.REN.GitHub.ui.pages.ActionsPage
 import com.Sunset.REN.GitHub.ui.pages.AppLogPage
+import com.Sunset.REN.GitHub.ui.pages.RustCorePage
 import com.Sunset.REN.GitHub.ui.pages.DashboardPage
 import com.Sunset.REN.GitHub.ui.pages.DeviceFlowCodePage
 import com.Sunset.REN.GitHub.ui.pages.DeviceFlowIntroPage
@@ -427,6 +428,7 @@ class ShellHostController(
         ShellPage.WorkspacePull -> ShellState(title = "拉取到工作区", showBack = true, navBarMode = NavBarMode.Hidden, contentKey = "workspace_pull")
         ShellPage.WorkspacePush -> ShellState(title = "推送到远端", showBack = true, navBarMode = NavBarMode.Hidden, contentKey = "workspace_push")
         ShellPage.AppLog -> ShellState(title = "应用日志", showBack = true, navBarMode = NavBarMode.Hidden, contentKey = "app_log")
+        ShellPage.RustCore -> ShellState(title = "Rust 核心", showBack = true, navBarMode = NavBarMode.Hidden, contentKey = "rust_core")
     }
 
     private fun repositoryShellState(title: String, selectedId: String, contentKey: String): ShellState {
@@ -516,6 +518,7 @@ class ShellHostController(
             ShellPage.Terminal -> terminalViewModel.loadInitialWorkspace()
             ShellPage.DeviceFlowCode -> deviceFlowViewModel.start()
             ShellPage.AppLog -> appLogText = AppLogger.readLogText()
+            ShellPage.RustCore -> refreshRustCore()
             else -> Unit
         }
     }
@@ -537,6 +540,7 @@ class ShellHostController(
             action.startsWith("settings.section.") -> handleSettingsSectionMove(action)
             action == "settings.open_account" -> push(ShellPage.Account)
             action == "settings.open_app_log" -> push(ShellPage.AppLog)
+            action == "settings.open_rust_core" -> push(ShellPage.RustCore)
             action == "settings.open_sync" -> push(ShellPage.WorkspaceSync)
             action == "settings.open_terminal" -> push(ShellPage.Terminal)
             action == "dashboard.load_more" -> dashboardViewModel.loadMoreRepositories()
@@ -591,6 +595,7 @@ class ShellHostController(
             action.startsWith("workspace_push.") -> handleWorkspacePushAction(action)
             action == "app_log.copy" -> handleAppLogCopy()
             action == "app_log.refresh" -> appLogText = AppLogger.readLogText()
+            action == "rust_core.refresh" -> refreshRustCore()
             action.startsWith("terminal.") -> handleTerminalAction(action)
             action == "account.switch" -> AppLogger.w(TAG, "account.switch not bridged yet")
             action == "account.sign_out" -> accountViewModel.signOut()
@@ -977,6 +982,43 @@ class ShellHostController(
         const val TAG = "ShellHost"
     }
 
+    // ---- Rust 核心自检（阶段 6：UniFFI 桥接） ----
+    var rustCoreStatus by mutableStateOf("未加载")
+        private set
+    var rustCoreSizeLines by mutableStateOf(listOf<String>())
+        private set
+    var rustCoreCategoryLines by mutableStateOf(listOf<String>())
+        private set
+    var rustCoreMarkdownHtml by mutableStateOf("")
+        private set
+
+    /** 调用 sunset-ffi（UniFFI Kotlin 绑定）刷新自检数据。 */
+    fun refreshRustCore() {
+        try {
+            rustCoreStatus = uniffi.sunset_ffi.hello()
+            rustCoreSizeLines = listOf(
+                "0 B → ${uniffi.sunset_ffi.fileSizeLabel(0UL)}",
+                "1 KB → ${uniffi.sunset_ffi.fileSizeLabel(1024UL)}",
+                "1.5 MB → ${uniffi.sunset_ffi.fileSizeLabel(1572864UL)}",
+                "2.4 GB → ${uniffi.sunset_ffi.fileSizeLabel(2576980378UL)}",
+            )
+            rustCoreCategoryLines = listOf(
+                "README.md → ${uniffi.sunset_ffi.fileCategory("README.md")}",
+                "app.apk → ${uniffi.sunset_ffi.fileCategory("app.apk")}",
+                "photo.jpg → ${uniffi.sunset_ffi.fileCategory("photo.jpg")}",
+                "script.sh → ${uniffi.sunset_ffi.fileCategory("script.sh")}",
+            )
+            rustCoreMarkdownHtml = uniffi.sunset_ffi.markdownToHtml(
+                "# SunsetGitHub\n\nRust 核心 **UniFFI** 桥接验证：`markdown_to_html()` 由 sunset-core 渲染。\n\n- 项目：SunsetGitHub\n- 状态：OK\n"
+            )
+        } catch (t: Throwable) {
+            rustCoreStatus = "加载失败：${t.message ?: t.javaClass.simpleName}"
+            rustCoreSizeLines = emptyList()
+            rustCoreCategoryLines = emptyList()
+            rustCoreMarkdownHtml = ""
+        }
+    }
+
     /** 当前账号判断（委托 AccountViewModel）。 */
     fun isCurrentAccount(account: com.Sunset.REN.GitHub.domain.auth.GitHubAccount): Boolean =
         accountViewModel.isCurrentAccount(account)
@@ -1211,6 +1253,13 @@ fun ShellHost(controller: ShellHostController) {
                         controller.appLogText = AppLogger.readLogText()
                         controller.appLogText
                     },
+                ).renderPage(controller::handleAction)
+            ShellPage.RustCore ->
+                RustCorePage.schemaFor(
+                    rustStatus = controller.rustCoreStatus,
+                    sizeLines = controller.rustCoreSizeLines,
+                    categoryLines = controller.rustCoreCategoryLines,
+                    markdownHtml = controller.rustCoreMarkdownHtml,
                 ).renderPage(controller::handleAction)
         }
     }

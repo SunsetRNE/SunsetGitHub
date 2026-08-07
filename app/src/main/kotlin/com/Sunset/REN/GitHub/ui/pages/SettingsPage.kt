@@ -180,6 +180,18 @@ object SettingsPage {
                         ),
                     ),
                 )
+                add(
+                    row(
+                        cell(
+                            ButtonComponent(
+                                id = "settings.open_rust_core",
+                                text = "Rust 核心自检",
+                                kind = ButtonKind.Secondary,
+                                action = "settings.open_rust_core",
+                            ),
+                        ),
+                    ),
+                )
             }
             add(
                 row(
@@ -384,6 +396,7 @@ fun SettingsPageContent(
     onOpenWorkspaceSync: () -> Unit = {},
     onOpenWorkspaceTerminal: () -> Unit = {},
     onOpenAppLog: () -> Unit = {},
+    onOpenRustCore: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
     val handleAction: (String) -> Unit = { action ->
@@ -393,6 +406,7 @@ fun SettingsPageContent(
             action == "settings.open_sync" -> onOpenWorkspaceSync()
             action == "settings.open_terminal" -> onOpenWorkspaceTerminal()
             action == "settings.open_app_log" -> onOpenAppLog()
+            action == "settings.open_rust_core" -> onOpenRustCore()
             action == "settings.toggle.floating_nav" -> onFloatingNavigationChange(!floatingNavigationEnabled)
             action == "settings.toggle.sora_editor" -> onSoraEditorChange(!soraEditorEnabled)
             action == "settings.toggle.ui_debug_overlay" -> onUiDebugOverlayChange(!uiDebugOverlayEnabled)

@@ -1,0 +1,104 @@
+name: Rust + Android CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # ─── Job 1：Rust 核心验证 + 多重交叉编译（arm64-v8a / armeabi-v7a / x86_64）───
+  rust-cross:
+    name: Rust core (lint/test/multi-target FFI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Add Android targets
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-ndk
+        uses: taiki-e/install-action@cargo-ndk
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@cargo-deny
+
+      - name: Set up NDK r26
+        uses: android-ndk/ndk-r26@v1.3.0
+
+      - name: Format check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy (workspace)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Tests (workspace)
+        run: cargo test --workspace
+
+      - name: License gate
+        run: cargo deny check
+
+      - name: Cross compile sunset-ffi (arm64-v8a / armeabi-v7a / x86_64)
+        run: |
+          cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 \
+            -o app/src/main/jniLibs build -p sunset-ffi --release
+
+      - name: Verify .so outputs
+        run: |
+          find app/src/main/jniLibs -name '*.so' -ls
+          test -f app/src/main/jniLibs/arm64-v8a/libsunset_ffi.so
+          test -f app/src/main/jniLibs/armeabi-v7a/libsunset_ffi.so
+          test -f app/src/main/jniLibs/x86_64/libsunset_ffi.so
+
+      - name: Upload jniLibs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jni-libs
+          path: app/src/main/jniLibs/
+          if-no-files-found: error
+
+  # ─── Job 2：Android Debug APK（依赖 Job 1 的 .so）───
+  android-apk:
+    name: Android debug APK
+    needs: rust-cross
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download jniLibs
+        uses: actions/download-artifact@v4
+        with:
+          name: jni-libs
+          path: app/src/main/jniLibs/
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Grant gradlew permission
+        run: chmod +x gradlew
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
