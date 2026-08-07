@@ -38,3 +38,12 @@ wildcards = "deny"
 [sources]
 unknown-registry = "deny"
 unknown-git = "deny"
+
+[advisories]
+# 2026-08-07：rusty-axml 0.2.1 锁定 quick-xml 0.38.4（上游未发布修复版）。
+# 影响面：仅用于解析用户自行选择/下载的 APK 的 AXML（reverse 工具链），
+# 不解析不可信网络输入，DoS 风险可控，暂以忽略处理；上游修复后解除。
+ignore = [
+    "RUSTSEC-2026-0194", # quick-xml：重复属性名解析二次方运行时间
+    "RUSTSEC-2026-0195", # quick-xml：NsReader 命名空间声明无界分配
+]
