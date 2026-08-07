@@ -58,6 +58,19 @@ android {
     }
 
     signingConfigs {
+        // 固定 debug 签名：keystore 入库，本地/CI 产物签名一致，支持覆盖安装。
+        // debug keystore 密码为公开默认值（android/android），仅用于 debug 测试包；
+        // 正式分发使用下方 release 签名（jks，经 local.properties 配置，不入库）。
+        getByName("debug") {
+            storeFile = rootProject.file("app/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+            enableV4Signing = false
+        }
         if (hasCompleteReleaseSigningConfig) {
             create("release") {
                 val releaseStoreFile = rootProject.file(releaseStoreFilePath)
@@ -77,6 +90,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             if (hasCompleteReleaseSigningConfig) {
                 signingConfig = signingConfigs.getByName("release")

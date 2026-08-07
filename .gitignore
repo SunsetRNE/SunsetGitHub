@@ -15,6 +15,7 @@ local.properties.bak
 .backup/
 *.jks
 *.keystore
+!app/debug.keystore
 
 # IDE / editor
 .idea/
