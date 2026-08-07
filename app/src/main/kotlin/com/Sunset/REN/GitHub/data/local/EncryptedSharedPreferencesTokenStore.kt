@@ -24,7 +24,18 @@ class EncryptedSharedPreferencesTokenStore(
 
     override suspend fun getAccessToken(accountId: Long): String? {
         val encoded = preferences.getString(keyForAccount(accountId), null) ?: return null
-        return helper.decrypt(decodePayload(encoded))
+        return try {
+            helper.decrypt(decodePayload(encoded))
+        } catch (exception: java.security.GeneralSecurityException) {
+            // Keystore 密钥失效（换机/备份恢复/OEM 实现差异）或密文损坏。
+            // 降级：清除该条目并让用户重新登录，而不是把异常抛给 UI。
+            preferences.edit { remove(keyForAccount(accountId)) }
+            null
+        } catch (exception: IllegalArgumentException) {
+            // Base64 / 载荷格式损坏。
+            preferences.edit { remove(keyForAccount(accountId)) }
+            null
+        }
     }
 
     override suspend fun clearAccessToken(accountId: Long) {

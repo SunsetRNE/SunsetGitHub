@@ -22,7 +22,8 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
 
     private val _rememberedAccounts = MutableLiveData<List<RememberedAccount>>(emptyList())
     val rememberedAccounts: LiveData<List<RememberedAccount>> = _rememberedAccounts
-
+    private val _signOutHint = MutableLiveData<String?>(null)
+    val signOutHint: LiveData<String?> = _signOutHint
     private var currentAccount: GitHubAccount? = null
 
     init {
@@ -61,7 +62,12 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             withContext(Dispatchers.IO) { authSessionRepository.signOutCurrent() }
             refreshAccountState()
+            _signOutHint.value = "已退出登录（本地凭据仍加密保留，切换账号可免登录返回）。如需彻底撤销 GitHub 授权，请到 GitHub → Settings → Applications 撤销本应用，再在账号页移除该账号。"
         }
+    }
+
+    fun consumeSignOutHint() {
+        _signOutHint.value = null
     }
 
     fun isCurrentAccount(account: GitHubAccount): Boolean = account.id == currentAccount?.id

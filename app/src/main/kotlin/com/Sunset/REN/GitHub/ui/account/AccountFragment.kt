@@ -1,6 +1,7 @@
 package com.Sunset.REN.GitHub.ui.account
 
 import android.os.Bundle
+import android.widget.Toast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,6 +93,12 @@ class AccountFragment : Fragment() {
             }
         }
         viewModel.rememberedAccounts.observe(viewLifecycleOwner) { accounts -> rememberedAccounts = accounts }
+        viewModel.signOutHint.observe(viewLifecycleOwner) { hint ->
+            if (!hint.isNullOrBlank()) {
+                Toast.makeText(requireContext(), hint, Toast.LENGTH_LONG).show()
+                viewModel.consumeSignOutHint()
+            }
+        }
     }
 
     override fun onResume() {
