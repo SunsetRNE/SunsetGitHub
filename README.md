@@ -80,7 +80,7 @@ chmod +x ./setup_android_env.sh
 `app/src/main/jniLibs/` 与 `app/src/main/kotlin/uniffi/` 为 CI 产物，不入库。
 
 > **⚠️ 设备码登录（Device Flow）的 client_id**：CI runner 上没有 `local.properties`，
-> `GITHUB_OAUTH_CLIENT_ID` 必须通过仓库 Actions secret 注入（Settings → Secrets and variables → Actions），
+> `OAUTH_CLIENT_ID` 必须通过仓库 Actions secret 注入（Settings → Secrets and variables → Actions），
 > 否则 CI 产出的 APK 中 client_id 为空，设备码登录不可用。本地构建则读取 `local.properties` 的 `github.oauth.client.id`。
 
 技术栈：Kotlin · AndroidX · Material Components · AppCompat/ViewBinding · Jetpack Compose（渐进迁移）· Gradle Kotlin DSL · Version Catalog。

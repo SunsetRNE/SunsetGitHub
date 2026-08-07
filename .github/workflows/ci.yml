@@ -123,14 +123,14 @@ jobs:
 
       - name: Check OAuth client id secret
         env:
-          GITHUB_OAUTH_CLIENT_ID: ${{ secrets.GITHUB_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
         run: |
-          if [ -z "$GITHUB_OAUTH_CLIENT_ID" ]; then
-            echo "::warning::GITHUB_OAUTH_CLIENT_ID secret 未配置——APK 内设备码登录（Device Flow）将不可用。请在仓库 Settings → Secrets and variables → Actions 添加该 secret（值为 OAuth App 的 client_id）。"
+          if [ -z "$OAUTH_CLIENT_ID" ]; then
+            echo "::warning::OAUTH_CLIENT_ID secret 未配置——APK 内设备码登录（Device Flow）将不可用。请在仓库 Settings → Secrets and variables → Actions 添加该 secret（值为 OAuth App 的 client_id）。"
           fi
       - name: Build debug APK
         env:
-          GITHUB_OAUTH_CLIENT_ID: ${{ secrets.GITHUB_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
         run: ./gradlew :app:assembleDebug --stacktrace
 
       - name: Upload APK
