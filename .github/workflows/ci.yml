@@ -77,13 +77,18 @@ jobs:
             --language kotlin --out-dir app/src/main/kotlin/
           find app/src/main/kotlin/uniffi -name '*.kt' -ls
 
-      - name: Upload jniLibs + bindings
+      - name: Upload jniLibs
         uses: actions/upload-artifact@v4
         with:
           name: jni-libs
-          path: |
-            app/src/main/jniLibs/
-            app/src/main/kotlin/uniffi/
+          path: app/src/main/jniLibs/
+          if-no-files-found: error
+
+      - name: Upload Kotlin bindings
+        uses: actions/upload-artifact@v4
+        with:
+          name: kotlin-bindings
+          path: app/src/main/kotlin/uniffi/
           if-no-files-found: error
 
   # ─── Job 2：Android Debug APK（依赖 Job 1 的 .so）───
@@ -99,6 +104,12 @@ jobs:
         with:
           name: jni-libs
           path: app/src/main/jniLibs/
+
+      - name: Download Kotlin bindings
+        uses: actions/download-artifact@v4
+        with:
+          name: kotlin-bindings
+          path: app/src/main/kotlin/uniffi/
 
       - uses: actions/setup-java@v4
         with:

@@ -12,9 +12,6 @@ import com.Sunset.REN.GitHub.ui.schema.SpacerComponent
 import com.Sunset.REN.GitHub.ui.schema.TextColor
 import com.Sunset.REN.GitHub.ui.schema.TextComponent
 import com.Sunset.REN.GitHub.ui.schema.TextStyle
-import com.Sunset.REN.GitHub.ui.shell.AppShell
-import com.Sunset.REN.GitHub.ui.shell.NavBarMode
-import com.Sunset.REN.GitHub.ui.shell.ShellState
 
 /**
  * Rust 核心自检页（阶段 6：UniFFI 接入演示）。
@@ -154,7 +151,6 @@ object RustCorePage {
             id = "rust_core",
             columns = 12,
             scrollable = true,
-            shell = ShellState(navBar = NavBarMode.Hidden, showBack = true),
             rows = rows,
         )
     }
