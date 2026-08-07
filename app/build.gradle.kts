@@ -1,3 +1,4 @@
+import java.security.SecureRandom
 import java.util.Properties
 import org.gradle.api.GradleException
 
@@ -19,6 +20,26 @@ if (localPropertiesFile.exists()) {
 // 否则产物 APK 的设备码登录（Device Flow）会因缺少 client_id 无法工作。
 val githubOAuthClientId = (System.getenv("OAUTH_CLIENT_ID")
     ?: localProperties.getProperty("github.oauth.client.id", "")).trim()
+
+// ─── P2：client_id 构建期混淆 ────────────────────────────────────────────────
+// 目标：APK 内无明文 client_id。构建期随机盐 + XOR 生成密文，运行时由 Rust(.so)
+// 解码（crates/sunset-ffi OAUTH_KEY 与本 oauthKey 必须保持一致！）。
+val oauthKey = "SunsetGitHub::OAuth::2026::v1"
+fun hexToBytes(hex: String): ByteArray =
+    ByteArray(hex.length / 2) { hex.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
+fun xorObfuscate(plain: String, saltHex: String, key: String): String {
+    if (plain.isEmpty()) return ""
+    val salt = hexToBytes(saltHex)
+    val keyBytes = key.toByteArray(Charsets.UTF_8)
+    val out = StringBuilder()
+    for (i in plain.indices) {
+        val mixed = plain[i].code.toInt() xor salt[i % salt.size].toInt() xor keyBytes[i % keyBytes.size].toInt()
+        out.append(String.format("%02x", mixed and 0xff))
+    }
+    return out.toString()
+}
+val oauthSalt = SecureRandom().generateSeed(16).joinToString("") { String.format("%02x", it) }
+val oauthObfuscated = xorObfuscate(githubOAuthClientId, oauthSalt, oauthKey)
 
 fun localProperty(name: String): String = localProperties.getProperty(name, "").trim()
 
@@ -54,7 +75,10 @@ android {
         versionName = "1.0.0-2026-7-29（1）"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "GITHUB_OAUTH_CLIENT_ID", "\"$githubOAuthClientId\"")
+        // P2：不再注入明文 client_id——APK 内只有 OAUTH_CLIENT_ID_OBFUSCATED + SALT，
+        // 明文由 Rust(.so) 运行时解码（GitHubOAuthConfig）。
+        buildConfigField("String", "OAUTH_CLIENT_ID_OBFUSCATED", "\"$oauthObfuscated\"")
+        buildConfigField("String", "OAUTH_CLIENT_ID_SALT", "\"$oauthSalt\"")
     }
 
     signingConfigs {
