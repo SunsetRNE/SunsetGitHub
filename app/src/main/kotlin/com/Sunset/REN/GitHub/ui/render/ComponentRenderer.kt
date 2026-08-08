@@ -38,6 +38,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -284,12 +287,15 @@ private fun renderImage(component: ImageComponent, onAction: (String) -> Unit) {
                 modifier = base,
             )
         }
-        // 远程图（头像等）：无网络加载依赖，先用占位图标，阶段 6 接 Coil
-        is ImageSource.Remote -> Icon(
-            painter = painterResource(R.drawable.ic_people_24),
+        // 远程图（头像等）：Coil 异步加载真实图片，加载中/失败回退占位图标。
+        is ImageSource.Remote -> AsyncImage(
+            model = source.url,
             contentDescription = null,
-            tint = SunsetGitHubThemeTokens.colors.textMuted,
-            modifier = base,
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.ic_people_24),
+            error = painterResource(R.drawable.ic_people_24),
+            fallback = painterResource(R.drawable.ic_people_24),
+            modifier = base.clip(CircleShape),
         )
     }
 }

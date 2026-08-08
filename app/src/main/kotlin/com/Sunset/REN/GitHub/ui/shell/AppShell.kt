@@ -20,12 +20,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.Sunset.REN.GitHub.ui.compose.SunsetGitHubThemeTokens
 import com.Sunset.REN.GitHub.ui.render.iconRes
 import com.Sunset.REN.GitHub.ui.schema.IconId
+import androidx.compose.foundation.shape.CircleShape
 
 /** 壳级固定高度（设计文档 §6：TopBar/NavBar 固定高度）。 */
 private val ShellTopBarHeight = 56.dp
@@ -110,14 +114,29 @@ private fun ShellTopBar(state: ShellState, onAction: (String) -> Unit) {
             modifier = Modifier.weight(1f),
         )
         state.menuItems.forEach { menuItem ->
-            Icon(
-                painter = painterResource(iconRes(menuItem.icon)),
-                contentDescription = menuItem.id,
-                tint = colors.textSecondary,
-                modifier = Modifier
-                    .size(spacing.xl)
-                    .clickable { onAction(menuItem.action) },
-            )
+            val itemModifier = Modifier
+                .size(spacing.xl)
+                .clickable { onAction(menuItem.action) }
+            val avatarUrl = menuItem.avatarUrl?.takeIf { it.isNotBlank() }
+            if (avatarUrl != null) {
+                // 远程头像（Coil 异步加载，失败回退图标）
+                AsyncImage(
+                    model = avatarUrl,
+                    contentDescription = menuItem.id,
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(iconRes(menuItem.icon)),
+                    error = painterResource(iconRes(menuItem.icon)),
+                    fallback = painterResource(iconRes(menuItem.icon)),
+                    modifier = itemModifier.clip(CircleShape),
+                )
+            } else {
+                Icon(
+                    painter = painterResource(iconRes(menuItem.icon)),
+                    contentDescription = menuItem.id,
+                    tint = colors.textSecondary,
+                    modifier = itemModifier,
+                )
+            }
             Spacer(Modifier.width(spacing.xs))
         }
     }

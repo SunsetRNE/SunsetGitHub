@@ -336,6 +336,7 @@ dependencies {
     implementation(libs.androidsvg)
     implementation(libs.commons.compress)
     implementation(libs.pdfbox.android)
+    implementation(libs.coil.compose)
     annotationProcessor(libs.glide.compiler)
     implementation(platform(libs.sora.editor.bom))
     implementation(libs.sora.editor)

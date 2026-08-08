@@ -165,6 +165,10 @@ class ShellHostController(
         private set
     var profileState by mutableStateOf<ProfileUiState>(ProfileUiState.Loading)
         private set
+
+    /** 当前登录用户头像 URL（Profile Content 态；未登录/加载中返回 null）。 */
+    val currentProfileAvatarUrl: String?
+        get() = (profileState as? ProfileUiState.Content)?.profile?.avatarUrl?.takeIf { it.isNotBlank() }
     var settingsFlags by mutableStateOf(SettingsFlags())
         private set
 
@@ -433,7 +437,7 @@ class ShellHostController(
 
     private fun deriveShellState(page: ShellPage): ShellState = when (page) {
         ShellPage.Login -> LoginHomePage.shellState()
-        ShellPage.Home -> HomePage.shellState()
+        ShellPage.Home -> HomePage.shellState(controller.currentProfileAvatarUrl)
         ShellPage.Dashboard -> DashboardPage.shellState()
         ShellPage.Notifications -> NotificationsPage.shellState()
         ShellPage.Profile -> ProfilePage.shellState()

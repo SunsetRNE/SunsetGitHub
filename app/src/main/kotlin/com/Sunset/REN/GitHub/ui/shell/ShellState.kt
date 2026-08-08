@@ -43,11 +43,12 @@ data class ShellNavItem(
     val action: String,
 )
 
-/** 顶栏菜单项：{ id, icon, action }，固定字段。 */
+/** 顶栏菜单项：{ id, icon, action }，固定字段；[avatarUrl] 非空时渲染远程头像。 */
 data class ShellMenuItem(
     val id: String,
     val icon: IconId,
     val action: String,
+    val avatarUrl: String? = null,
 )
 
 /** 构造辅助：主导航条目。 */

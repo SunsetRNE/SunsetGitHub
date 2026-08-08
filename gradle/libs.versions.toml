@@ -22,6 +22,7 @@ soraEditor = "0.24.4"
 commonsCompress = "1.28.0"
 pdfboxAndroid = "2.0.27.0"
 junit = "4.13.2"
+coil = "2.7.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -63,6 +64,7 @@ androidsvg = { group = "com.caverock", name = "androidsvg", version.ref = "andro
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commonsCompress" }
 pdfbox-android = { group = "com.tom-roush", name = "pdfbox-android", version.ref = "pdfboxAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 sora-editor-bom = { group = "io.github.rosemoe", name = "editor-bom", version.ref = "soraEditor" }
 sora-editor = { group = "io.github.rosemoe", name = "editor" }
 sora-language-java = { group = "io.github.rosemoe", name = "language-java" }

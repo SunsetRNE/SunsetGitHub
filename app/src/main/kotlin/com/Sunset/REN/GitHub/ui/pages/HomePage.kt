@@ -257,11 +257,11 @@ object HomePage {
     private const val MaxRecentRepositories = 5
 
     /** 主页壳状态（主 Tab，选中 home；右上角头像入口 → 个人主页）。 */
-    fun shellState(): ShellState = ShellState(
+    fun shellState(avatarUrl: String? = null): ShellState = ShellState(
         title = "SunsetGitHub",
         navBarMode = NavBarMode.Main,
         menuItems = listOf(
-            ShellMenuItem(id = "home.avatar", icon = IconId.Person, action = "nav.profile"),
+            ShellMenuItem(id = "home.avatar", icon = IconId.Person, action = "nav.profile", avatarUrl = avatarUrl),
         ),
         navItems = listOf(
             shellNavItem(id = "home", label = "主页", icon = IconId.Home),
