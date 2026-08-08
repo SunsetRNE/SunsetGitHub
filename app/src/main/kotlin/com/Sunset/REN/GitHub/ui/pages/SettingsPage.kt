@@ -155,6 +155,8 @@ object SettingsPage {
                     ),
                 ),
             )
+            // 「查看应用日志」「Rust 核心自检」为诊断入口，无条件显示；
+            // 仅「UI 渲染诊断」开关受 Debug 构建条件控制。
             if (showUiDebugOverlaySetting) {
                 add(
                     row(
@@ -169,31 +171,31 @@ object SettingsPage {
                         ),
                     ),
                 )
-                add(
-                    row(
-                        cell(
-                            ButtonComponent(
-                                id = "settings.open_app_log",
-                                text = "查看应用日志",
-                                kind = ButtonKind.Secondary,
-                                action = "settings.open_app_log",
-                            ),
-                        ),
-                    ),
-                )
-                add(
-                    row(
-                        cell(
-                            ButtonComponent(
-                                id = "settings.open_rust_core",
-                                text = "Rust 核心自检",
-                                kind = ButtonKind.Secondary,
-                                action = "settings.open_rust_core",
-                            ),
-                        ),
-                    ),
-                )
             }
+            add(
+                row(
+                    cell(
+                        ButtonComponent(
+                            id = "settings.open_app_log",
+                            text = "查看应用日志",
+                            kind = ButtonKind.Secondary,
+                            action = "settings.open_app_log",
+                        ),
+                    ),
+                ),
+            )
+            add(
+                row(
+                    cell(
+                        ButtonComponent(
+                            id = "settings.open_rust_core",
+                            text = "Rust 核心自检",
+                            kind = ButtonKind.Secondary,
+                            action = "settings.open_rust_core",
+                        ),
+                    ),
+                ),
+            )
             add(
                 row(
                     cell(
