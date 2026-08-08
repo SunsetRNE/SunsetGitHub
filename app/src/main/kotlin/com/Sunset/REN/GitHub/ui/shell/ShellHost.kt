@@ -437,7 +437,7 @@ class ShellHostController(
 
     private fun deriveShellState(page: ShellPage): ShellState = when (page) {
         ShellPage.Login -> LoginHomePage.shellState()
-        ShellPage.Home -> HomePage.shellState(controller.currentProfileAvatarUrl)
+        ShellPage.Home -> HomePage.shellState(currentProfileAvatarUrl)
         ShellPage.Dashboard -> DashboardPage.shellState()
         ShellPage.Notifications -> NotificationsPage.shellState()
         ShellPage.Profile -> ProfilePage.shellState()
