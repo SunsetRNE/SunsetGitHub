@@ -1,4 +1,6 @@
 import java.security.SecureRandom
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Properties
 import org.gradle.api.GradleException
 
@@ -63,6 +65,40 @@ if (hasPartialReleaseSigningConfig) {
     )
 }
 
+// ── 动态构建版本：1.0.0-YYYY-MM-DD-HH-mm-ss-变更数 ──────────────────────────
+// 本地构建：变更数（当天第 N 次构建）与内部工程号记录于 version-state.properties
+//           （仓库根目录，不入库），工程号每次构建 +1。
+// CI 构建：无本地状态文件（runner 全新环境），工程号/变更数直接取
+//           GITHUB_RUN_NUMBER（workflow run 全局递增，天然持久且唯一）。
+val versionStateFile = rootProject.file("version-state.properties")
+fun readVersionState(): Properties =
+    Properties().apply {
+        if (versionStateFile.exists()) {
+            versionStateFile.inputStream().use { load(it) }
+        }
+    }
+fun writeVersionState(props: Properties) {
+    versionStateFile.outputStream().use { props.store(it, "SunsetGitHub build version state (local only, do not commit)") }
+}
+val buildNow = LocalDateTime.now()
+val versionDate = buildNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+val versionStamp = buildNow.format(DateTimeFormatter.ofPattern("HH-mm-ss"))
+val ciRunNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
+val (buildVersionCode, buildChangeCount) = if (ciRunNumber != null) {
+    ciRunNumber to ciRunNumber
+} else {
+    val props = readVersionState()
+    val lastDay = props.getProperty("day", "")
+    val count = if (lastDay == versionDate) (props.getProperty("count", "0").toIntOrNull() ?: 0) + 1 else 1
+    val nextCode = (props.getProperty("versionCode", "308").toIntOrNull() ?: 308) + 1
+    props.setProperty("day", versionDate)
+    props.setProperty("count", count.toString())
+    props.setProperty("versionCode", nextCode.toString())
+    writeVersionState(props)
+    nextCode to count
+}
+val buildVersionName = "1.0.0-$versionDate-$versionStamp-$buildChangeCount"
+
 android {
     namespace = "com.Sunset.REN.GitHub"
     compileSdk = 36
@@ -71,8 +107,8 @@ android {
         applicationId = "com.Sunset.REN.GitHub"
         minSdk = 28
         targetSdk = 35
-        versionCode = 308
-        versionName = "1.0.0-2026-7-29（1）"
+        versionCode = buildVersionCode
+        versionName = buildVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // P2：不再注入明文 client_id——APK 内只有 OAUTH_CLIENT_ID_OBFUSCATED + SALT，
