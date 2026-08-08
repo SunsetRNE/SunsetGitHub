@@ -229,7 +229,7 @@ object NotificationsPage {
             shellNavItem(id = "home", label = "主页", icon = IconId.Home),
             shellNavItem(id = "dashboard", label = "仓库", icon = IconId.Folder),
             shellNavItem(id = "notifications", label = "通知", icon = IconId.Bell),
-            shellNavItem(id = "profile", label = "我的", icon = IconId.Person),
+            shellNavItem(id = "settings", label = "设置", icon = IconId.Settings, action = "nav.settings"),
         ),
         selectedNavId = "notifications",
         contentKey = "notifications",

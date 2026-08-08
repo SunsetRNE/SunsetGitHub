@@ -21,6 +21,7 @@ import com.Sunset.REN.GitHub.ui.schema.TextStyle
 import com.Sunset.REN.GitHub.ui.shell.AppShell
 import com.Sunset.REN.GitHub.ui.shell.NavBarMode
 import com.Sunset.REN.GitHub.ui.shell.ShellState
+import com.Sunset.REN.GitHub.ui.shell.shellNavItem
 
 /**
  * 设置页（Settings）垂直切片（步骤 5：首个次级页面）。
@@ -370,9 +371,14 @@ object SettingsPage {
     /** 设置页壳状态：次级页面（返回 + 无底导航）。 */
     fun shellState(): ShellState = ShellState(
         title = "设置",
-        showBack = true,
-        backAction = "shell.back",
-        navBarMode = NavBarMode.Hidden,
+        navBarMode = NavBarMode.Main,
+        navItems = listOf(
+            shellNavItem(id = "home", label = "主页", icon = IconId.Home),
+            shellNavItem(id = "dashboard", label = "仓库", icon = IconId.Folder),
+            shellNavItem(id = "notifications", label = "通知", icon = IconId.Bell),
+            shellNavItem(id = "settings", label = "设置", icon = IconId.Settings, action = "nav.settings"),
+        ),
+        selectedNavId = "settings",
         contentKey = "settings",
     )
 }

@@ -578,7 +578,7 @@ class ShellHostController(
             action == "nav.dashboard" -> navigateTo(ShellPage.Dashboard)
             action == "nav.notifications" -> navigateTo(ShellPage.Notifications)
             action == "nav.profile" -> navigateTo(ShellPage.Profile)
-            action == "nav.settings" -> push(ShellPage.Settings)
+            action == "nav.settings" -> navigateTo(ShellPage.Settings)
             action == "nav.search" -> push(ShellPage.SearchPage())
             action == "home.create_repository" -> push(ShellPage.RepoCreate)
             action == "home.refresh" -> dashboardViewModel.refreshRepositories(forceRefresh = true)

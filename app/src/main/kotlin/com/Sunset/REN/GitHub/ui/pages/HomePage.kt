@@ -23,6 +23,7 @@ import com.Sunset.REN.GitHub.ui.schema.TextComponent
 import com.Sunset.REN.GitHub.ui.schema.TextStyle
 import com.Sunset.REN.GitHub.ui.shell.AppShell
 import com.Sunset.REN.GitHub.ui.shell.NavBarMode
+import com.Sunset.REN.GitHub.ui.shell.ShellMenuItem
 import com.Sunset.REN.GitHub.ui.shell.ShellState
 import com.Sunset.REN.GitHub.ui.shell.shellNavItem
 
@@ -255,15 +256,18 @@ object HomePage {
 
     private const val MaxRecentRepositories = 5
 
-    /** 主页壳状态（主 Tab，选中 home）。 */
+    /** 主页壳状态（主 Tab，选中 home；右上角头像入口 → 个人主页）。 */
     fun shellState(): ShellState = ShellState(
         title = "SunsetGitHub",
         navBarMode = NavBarMode.Main,
+        menuItems = listOf(
+            ShellMenuItem(id = "home.avatar", icon = IconId.Person, action = "nav.profile"),
+        ),
         navItems = listOf(
             shellNavItem(id = "home", label = "主页", icon = IconId.Home),
             shellNavItem(id = "dashboard", label = "仓库", icon = IconId.Folder),
             shellNavItem(id = "notifications", label = "通知", icon = IconId.Bell),
-            shellNavItem(id = "profile", label = "我的", icon = IconId.Person),
+            shellNavItem(id = "settings", label = "设置", icon = IconId.Settings, action = "nav.settings"),
         ),
         selectedNavId = "home",
         contentKey = "home",
